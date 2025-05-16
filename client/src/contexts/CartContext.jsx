@@ -11,11 +11,11 @@ export const CartProvider = ({ children }) => {
 	const [cartItems, setCartItems] = useState([]);
 
 	const addToCart = (item) => {
-		setCartItems([...cartItems, item]);
+		setCartItems(prevItems => [...prevItems, item]);
 	};
 
 	const removeFromCart = (itemId) => {
-		setCartItems(cartItems.filter((item) => item.id !== itemId));
+		setCartItems(prevItems => prevItems.filter((item) => item.id !== itemId));
 	};
 
 	const getTotalItems = () => {
