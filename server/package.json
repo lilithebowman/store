@@ -15,12 +15,14 @@
     "dotenv": "^8.6.0",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
-    "mongoose": "^5.13.23",
+    "mysql2": "^3.14.1",
     "passport": "^0.4.1",
     "passport-facebook": "^3.0.0",
     "passport-google-oauth20": "^2.0.0",
     "passport-jwt": "^4.0.1",
-    "passport-local": "^1.0.0"
+    "passport-local": "^1.0.0",
+    "sequelize": "^6.37.7",
+    "sequelize-cli": "^6.6.3"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.3",
