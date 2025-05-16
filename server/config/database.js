@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize');
-require('dotenv').config({ path: '../../.env' });
+require('dotenv').config();
 
 // Parse the connection string from DATABASE_URL
 // or use individual environment variables
