@@ -64,6 +64,11 @@ exports.authenticate = (req, res, next) => {
 exports.oauthCallback = (req, res) => {
     // Get the user info from the OAuth provider
     const user = req.user;
+    
+    // Check if user exists
+    if (!user) {
+        return res.status(401).json({ message: 'Authentication failed' });
+    }
 
     // Generate JWT token for the authenticated user
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
