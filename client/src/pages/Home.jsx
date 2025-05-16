@@ -1,31 +1,46 @@
 import React, { useState, useEffect } from 'react';
 import ProductList from '../components/product/ProductList/ProductList';
+import axios from 'axios';
+
+const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
 
 const Home = () => {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     
     useEffect(() => {
-        // Simulate API call with dummy data
-        setTimeout(() => {
-            const dummyProducts = [
-                { id: 1, name: 'Product 1', price: 19.99, image: 'https://via.placeholder.com/150', description: 'This is product 1' },
-                { id: 2, name: 'Product 2', price: 29.99, image: 'https://via.placeholder.com/150', description: 'This is product 2' },
-                { id: 3, name: 'Product 3', price: 39.99, image: 'https://via.placeholder.com/150', description: 'This is product 3' },
-            ];
-            setProducts(dummyProducts);
-            setLoading(false);
-        }, 500);
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get(`${API_URL}/products`);
+                setProducts(response.data);
+                setLoading(false);
+            } catch (err) {
+                console.error('Error fetching products:', err);
+                setError('Failed to load products. Please try again later.');
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
     }, []);
     
     if (loading) {
         return <div>Loading products...</div>;
     }
+
+    if (error) {
+        return <div className="error-message">{error}</div>;
+    }
     
     return (
         <div className="home-container">
             <h1>Welcome to our Store</h1>
-            <ProductList products={products} />
+            {products.length === 0 ? (
+                <p>No products available at the moment.</p>
+            ) : (
+                <ProductList products={products} />
+            )}
         </div>
     );
 };
