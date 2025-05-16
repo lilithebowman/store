@@ -80,7 +80,9 @@ echo "Favicon created successfully: favicon.ico"
 
 # Copy to public directory
 echo "Copying favicon to public directory..."
-cp favicon.ico /home/lilithe/e-commerce-platform/client/public/
+PUBLIC_DIR=${PUBLIC_DIR:-"./public"}
+mkdir -p "$PUBLIC_DIR"
+cp favicon.ico "$PUBLIC_DIR/"
 
 echo "Cleaning up temporary files..."
 rm -rf "$TEMP_DIR"
