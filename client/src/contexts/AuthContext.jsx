@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import authService from '../services/auth';
 
 export const AuthContext = createContext();
@@ -9,9 +9,14 @@ export const AuthProvider = ({ children }) => {
 
     useEffect(() => {
         const fetchUser = async () => {
-            const currentUser = authService.getCurrentUser();
-            setUser(currentUser);
-            setLoading(false);
+            try {
+                const currentUser = authService.getCurrentUser();
+                setUser(currentUser);
+            } catch (error) {
+                console.error('Error fetching user:', error);
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchUser();
@@ -37,4 +42,12 @@ export const AuthProvider = ({ children }) => {
             {children}
         </AuthContext.Provider>
     );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

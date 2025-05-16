@@ -1,9 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import ProductCard from '../ProductCard/ProductCard';
 import './ProductList.css';
 
-const ProductList = ({ products }) => {
+const ProductList = ({ products = [] }) => {
+    if (!products || products.length === 0) {
+        return <div className="no-products">No products available</div>;
+    }
+    
     return (
         <div className="product-list">
             {products.map(product => (
@@ -11,18 +14,6 @@ const ProductList = ({ products }) => {
             ))}
         </div>
     );
-};
-
-ProductList.propTypes = {
-    products: PropTypes.arrayOf(
-        PropTypes.shape({
-            id: PropTypes.string.isRequired,
-            name: PropTypes.string.isRequired,
-            price: PropTypes.number.isRequired,
-            image: PropTypes.string,
-            description: PropTypes.string,
-        })
-    ).isRequired,
 };
 
 export default ProductList;
