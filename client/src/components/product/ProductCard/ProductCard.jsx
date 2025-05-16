@@ -18,10 +18,10 @@ const ProductCard = ({ product }) => {
 	};
 	
 	return (
-		<Card sx={{ maxWidth: 345, height: '100%', display: 'flex', flexDirection: 'column' }}>
+		<Card sx={{ maxWidth: 400, height: '100%', display: 'flex', flexDirection: 'column' }}>
 			<CardMedia
 				component="img"
-				height="140"
+				height="300"
 				image={product.image}
 				alt={product.name}
 			/>
