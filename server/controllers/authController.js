@@ -74,6 +74,13 @@ exports.oauthCallback = (req, res) => {
 
 // Logout handler
 exports.logout = (req, res) => {
-    req.logout();
-    res.status(200).json({ message: 'Logged out successfully' });
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Error logging out',
+                error: err.message || err
+            });
+        }
+        res.status(200).json({ message: 'Logged out successfully' });
+    });
 };
