@@ -2,11 +2,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import Home from './pages/Home';
-import Product from './pages/Product';
-import Cart from './pages/Cart';
-import Checkout from './pages/Checkout';
-import Auth from './pages/Auth';
+import { Auth, Cart, Checkout, Home, Product } from './pages/index';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 

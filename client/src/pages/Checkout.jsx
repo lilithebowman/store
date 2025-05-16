@@ -1,10 +1,12 @@
-import React, { useContext } from 'react';
-import { CartContext } from '../../contexts/CartContext';
-import { AuthContext } from '../../contexts/AuthContext';
+import React from 'react';
+import { useCart } from '../contexts/CartContext';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/AuthContext';
 import { useHistory } from 'react-router-dom';
 
 const Checkout = () => {
-    const { cartItems, totalAmount } = useContext(CartContext);
+    // Use the useCart hook instead of using useContext with CartContext
+    const { cartItems, getTotalPrice } = useCart();
     const { user } = useContext(AuthContext);
     const history = useHistory();
 
@@ -31,7 +33,7 @@ const Checkout = () => {
                             <li key={index}>{item.name} - ${item.price}</li>
                         ))}
                     </ul>
-                    <h3>Total Amount: ${totalAmount}</h3>
+                    <h3>Total Amount: ${getTotalPrice()}</h3>
                     <button onClick={handleCheckout}>Proceed to Checkout</button>
                 </div>
             )}
