@@ -59,3 +59,21 @@ exports.authenticate = (req, res, next) => {
         next();
     });
 };
+
+// OAuth callback handler
+exports.oauthCallback = (req, res) => {
+    // Get the user info from the OAuth provider
+    const user = req.user;
+
+    // Generate JWT token for the authenticated user
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Redirect or respond with the token
+    res.status(200).json({ token, user: { id: user._id, email: user.email, username: user.username } });
+};
+
+// Logout handler
+exports.logout = (req, res) => {
+    req.logout();
+    res.status(200).json({ message: 'Logged out successfully' });
+};
