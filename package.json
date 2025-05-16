@@ -7,10 +7,11 @@
     "concurrently": "^6.5.1"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "start": "npm run dev",
+    "client:start": "npm start --prefix client",
+    "client:build": "npm run build --prefix client",
+    "client:test": "npm run test --prefix client",
+    "client:eject": "npm run eject --prefix client",
     "prepare": "husky install",
     "client": "npm start --prefix client",
     "server": "npm start --prefix server",
