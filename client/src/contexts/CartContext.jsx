@@ -18,8 +18,12 @@ export const CartProvider = ({ children }) => {
 		setCartItems(cartItems.filter((item) => item.id !== itemId));
 	};
 
+	const getTotalItems = () => {
+		return cartItems.length;
+	};
+
 	return (
-		<CartContext.Provider value={{ cartItems, addToCart, removeFromCart }}>
+		<CartContext.Provider value={{ cartItems, addToCart, removeFromCart, getTotalItems }}>
 			{children}
 		</CartContext.Provider>
 	);
