@@ -21,7 +21,16 @@ fs.readdirSync(__dirname)
 	})
 	.forEach(file => {
 		// Simply require the model (don't try to call it as a function)
-		const model = require(path.join(__dirname, file));
+		let model;
+		try {
+		  model = require(path.join(__dirname, file));
+		} catch (err) {
+		  console.error(`Failed to load model file ${file}:`, err);
+		  throw err; // re-throw so CI fails fast
+		}
+		if (!model?.name) {
+		  throw new Error(`Model in ${file} does not export a Sequelize model instance`);
+		}
 		db[model.name] = model;
 	});
 
