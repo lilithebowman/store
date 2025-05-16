@@ -26,9 +26,14 @@ fs.readdirSync(__dirname)
 	});
 
 // Define model associations
-const { User } = db;
-const { Product } = db;
-const { Order } = db;
+const { User, Product, Order } = db;
+
+if (!User || !Product || !Order) {
+  throw new Error(
+    'Required models (User, Product, Order) were not registered. ' +
+    'Check model filenames and exports.'
+  );
+}
 
 // Set up associations
 User.hasMany(Order, { foreignKey: 'userId' });
