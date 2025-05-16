@@ -1,0 +1,44 @@
+{
+  "name": "e-commerce-platform-client",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
+  },
+  "dependencies": {
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "4.0.3",
+    "react-router-dom": "^5.2.0",
+    "axios": "^0.21.1",
+    "styled-components": "^5.3.0"
+  },
+  "devDependencies": {
+    "@storybook/react": "^6.3.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/jest-dom": "^5.16.0"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
