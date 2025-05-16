@@ -1,5 +1,3 @@
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
@@ -23,13 +21,13 @@ fs.readdirSync(__dirname)
 		// Simply require the model (don't try to call it as a function)
 		let model;
 		try {
-		  model = require(path.join(__dirname, file));
+			model = require(path.join(__dirname, file));
 		} catch (err) {
-		  console.error(`Failed to load model file ${file}:`, err);
-		  throw err; // re-throw so CI fails fast
+			console.error(`Failed to load model file ${file}:`, err);
+			throw err; // re-throw so CI fails fast
 		}
 		if (!model?.name) {
-		  throw new Error(`Model in ${file} does not export a Sequelize model instance`);
+			throw new Error(`Model in ${file} does not export a Sequelize model instance`);
 		}
 		db[model.name] = model;
 	});
@@ -38,10 +36,10 @@ fs.readdirSync(__dirname)
 const { User, Product, Order } = db;
 
 if (!User || !Product || !Order) {
-  throw new Error(
-    'Required models (User, Product, Order) were not registered. ' +
-    'Check model filenames and exports.'
-  );
+	throw new Error(
+		'Required models (User, Product, Order) were not registered. ' +
+		'Check model filenames and exports.'
+	);
 }
 
 // Set up associations
