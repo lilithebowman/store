@@ -7,14 +7,13 @@ exports.createUser = async (req, res) => {
 	const { username, email, password } = req.body;
 
 	try {
-		const hashedPassword = await bcrypt.hash(password, 10);
-		const newUser = new User({
+		// Use Sequelize create method instead of new User + save
+		await User.create({
 			username,
 			email,
-			password: hashedPassword,
+			password // Password will be hashed by the beforeCreate hook
 		});
 
-		await newUser.save();
 		res.status(201).json({ message: 'User created successfully' });
 	} catch (error) {
 		res.status(500).json({ message: 'Error creating user', error });
@@ -24,7 +23,10 @@ exports.createUser = async (req, res) => {
 // Get all users
 exports.getAllUsers = async (req, res) => {
 	try {
-		const users = await User.find({}, '-password'); // Exclude password field
+		// Use findAll instead of find
+		const users = await User.findAll({
+			attributes: { exclude: ['password'] } // Exclude password field
+		});
 		res.status(200).json(users);
 	} catch (error) {
 		res.status(500).json({ message: 'Error fetching users', error });
@@ -36,12 +38,16 @@ exports.getUserById = async (req, res) => {
 	const { id } = req.params;
 
 	try {
-        const user = await User.findByPk(id);
-        if (!user) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        res.status(200).json(user);
-    } catch (error) {
+		// findByPk is already Sequelize
+		const user = await User.findByPk(id, {
+			attributes: { exclude: ['password'] }
+		});
+
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+		res.status(200).json(user);
+	} catch (error) {
 		res.status(500).json({ message: 'Error fetching user', error });
 	}
 };
@@ -57,10 +63,19 @@ exports.updateUser = async (req, res) => {
 			updatedData.password = await bcrypt.hash(password, 10);
 		}
 
-		const updatedUser = await User.findByIdAndUpdate(id, updatedData, { new: true });
-		if (!updatedUser) {
+		// Replace findByIdAndUpdate with update + findByPk
+		const [updated] = await User.update(updatedData, {
+			where: { id }
+		});
+
+		if (updated === 0) {
 			return res.status(404).json({ message: 'User not found' });
 		}
+
+		const updatedUser = await User.findByPk(id, {
+			attributes: { exclude: ['password'] }
+		});
+
 		res.status(200).json(updatedUser);
 	} catch (error) {
 		res.status(500).json({ message: 'Error updating user', error });
@@ -72,10 +87,15 @@ exports.deleteUser = async (req, res) => {
 	const { id } = req.params;
 
 	try {
-		const deletedUser = await User.findByIdAndDelete(id);
-		if (!deletedUser) {
+		// Replace findByIdAndDelete with destroy
+		const deleted = await User.destroy({
+			where: { id }
+		});
+
+		if (deleted === 0) {
 			return res.status(404).json({ message: 'User not found' });
 		}
+
 		res.status(200).json({ message: 'User deleted successfully' });
 	} catch (error) {
 		res.status(500).json({ message: 'Error deleting user', error });
