@@ -17,9 +17,13 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: sessionSecret,
+    secret: process.env.SESSION_SECRET || sessionSecret,
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
+    cookie: {
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }
 }));
 app.use(passport.initialize());
 app.use(passport.session());

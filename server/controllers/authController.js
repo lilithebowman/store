@@ -59,3 +59,33 @@ exports.authenticate = (req, res, next) => {
         next();
     });
 };
+
+// OAuth callback handler
+exports.oauthCallback = (req, res) => {
+    // Get the user info from the OAuth provider
+    const user = req.user;
+    
+    // Check if user exists
+    if (!user) {
+        return res.status(401).json({ message: 'Authentication failed' });
+    }
+
+    // Generate JWT token for the authenticated user
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    // Redirect or respond with the token
+    res.status(200).json({ token, user: { id: user._id, email: user.email, username: user.username } });
+};
+
+// Logout handler
+exports.logout = (req, res) => {
+    req.logout((err) => {
+        if (err) {
+            return res.status(500).json({
+                message: 'Error logging out',
+                error: err.message || err
+            });
+        }
+        res.status(200).json({ message: 'Logged out successfully' });
+    });
+};
