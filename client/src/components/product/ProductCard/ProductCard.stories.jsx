@@ -10,17 +10,21 @@ const Template = (args) => <ProductCard {...args} />;
 
 export const Default = Template.bind({});
 Default.args = {
-  title: 'Sample Product',
-  price: '$19.99',
-  imageUrl: 'https://via.placeholder.com/150',
-  description: 'This is a sample product description.',
+  product: {
+    name: 'Sample Product',
+    price: 19.99,
+    image: 'https://via.placeholder.com/150',
+    description: 'This is a sample product description.',
+  }
 };
 
 export const OutOfStock = Template.bind({});
 OutOfStock.args = {
-  title: 'Out of Stock Product',
-  price: '$29.99',
-  imageUrl: 'https://via.placeholder.com/150',
-  description: 'This product is currently out of stock.',
-  isOutOfStock: true,
+  product: {
+    name: 'Out of Stock Product',
+    price: 29.99,
+    image: 'https://via.placeholder.com/150',
+    description: 'This product is currently out of stock.',
+    isOutOfStock: true,
+  }
 };
