@@ -67,7 +67,7 @@ To get started with the project, follow these steps:
    - Copy `.env.example` to `.env` and fill in the required values.
    - Create a new JWT secret
      - `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
-     or
+     - or
      - `openssl rand -hex 64`
      - put the result in place of `your_jwt_secret`
      
