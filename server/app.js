@@ -17,21 +17,21 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-    secret: process.env.SESSION_SECRET || sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+	secret: process.env.SESSION_SECRET || sessionSecret,
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 24 * 60 * 60 * 1000 // 24 hours
+	}
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // Database connection
 mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected'))
-    .catch(err => console.error('MongoDB connection error:', err));
+	.then(() => console.log('MongoDB connected'))
+	.catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -41,8 +41,8 @@ app.use('/api/users', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
+	console.error(err.stack);
+	res.status(500).send('Something broke!');
 });
 
 module.exports = app;

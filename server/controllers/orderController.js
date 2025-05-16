@@ -1,10 +1,24 @@
 const Order = require('../models/Order');
+const { OrderProduct } = require('../models'); // Import the OrderProduct model
 
 // Create a new order
 exports.createOrder = async (req, res) => {
     try {
-        const order = new Order(req.body);
-        await order.save();
+        // Use create instead of new + save
+        const order = await Order.create(req.body);
+
+        // If products are included in the request, create order items
+        if (req.body.products && Array.isArray(req.body.products)) {
+            const orderItems = req.body.products.map(product => ({
+                orderId: order.id,
+                productId: product.id,
+                quantity: product.quantity,
+                price: product.price
+            }));
+
+            await OrderProduct.bulkCreate(orderItems);
+        }
+
         res.status(201).json(order);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -14,7 +28,10 @@ exports.createOrder = async (req, res) => {
 // Get all orders
 exports.getAllOrders = async (req, res) => {
     try {
-        const orders = await Order.find();
+        // Use findAll instead of find
+        const orders = await Order.findAll({
+            include: ['products'] // Include associated products
+        });
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -24,10 +41,15 @@ exports.getAllOrders = async (req, res) => {
 // Get a single order by ID
 exports.getOrderById = async (req, res) => {
     try {
-        const order = await Order.findById(req.params.id);
+        // Use findByPk instead of findById
+        const order = await Order.findByPk(req.params.id, {
+            include: ['products'] // Include associated products
+        });
+
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
+
         res.status(200).json(order);
     } catch (error) {
         res.status(500).json({ message: error.message });
@@ -37,10 +59,19 @@ exports.getOrderById = async (req, res) => {
 // Update an order by ID
 exports.updateOrder = async (req, res) => {
     try {
-        const order = await Order.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!order) {
+        // Replace findByIdAndUpdate with update + findByPk
+        const [updated] = await Order.update(req.body, {
+            where: { id: req.params.id }
+        });
+
+        if (updated === 0) {
             return res.status(404).json({ message: 'Order not found' });
         }
+
+        const order = await Order.findByPk(req.params.id, {
+            include: ['products']
+        });
+
         res.status(200).json(order);
     } catch (error) {
         res.status(400).json({ message: error.message });
@@ -50,10 +81,15 @@ exports.updateOrder = async (req, res) => {
 // Delete an order by ID
 exports.deleteOrder = async (req, res) => {
     try {
-        const order = await Order.findByIdAndDelete(req.params.id);
-        if (!order) {
+        // Replace findByIdAndDelete with destroy
+        const deleted = await Order.destroy({
+            where: { id: req.params.id }
+        });
+
+        if (deleted === 0) {
             return res.status(404).json({ message: 'Order not found' });
         }
+
         res.status(204).send();
     } catch (error) {
         res.status(500).json({ message: error.message });

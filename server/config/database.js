@@ -1,16 +1,31 @@
-const mongoose = require('mongoose');
+const { Sequelize } = require('sequelize');
+require('dotenv').config();
+
+// Parse the connection string from DATABASE_URL
+// or use individual environment variables
+const sequelize = new Sequelize(process.env.DATABASE_URL || {
+	dialect: 'mysql',
+	host: process.env.MYSQL_HOST || 'localhost',
+	username: process.env.MYSQL_USERNAME,
+	password: process.env.MYSQL_PASSWORD,
+	database: process.env.MYSQL_DATABASE || 'ecommerce_db',
+	pool: {
+		max: 10,
+		min: 0,
+		acquire: 30000,
+		idle: 10000
+	},
+	logging: process.env.NODE_ENV === 'development' ? console.log : false
+});
 
 const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-        });
-        console.log('MongoDB connected successfully');
-    } catch (error) {
-        console.error('MongoDB connection failed:', error.message);
-        process.exit(1);
-    }
+	try {
+		await sequelize.authenticate();
+		console.log('MySQL connection established successfully');
+	} catch (error) {
+		console.error('MySQL connection failed:', error.message);
+		process.exit(1);
+	}
 };
 
-module.exports = connectDB;
+module.exports = { sequelize, connectDB };
