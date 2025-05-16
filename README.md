@@ -65,6 +65,12 @@ To get started with the project, follow these steps:
 
 5. Set up environment variables:
    - Copy `.env.example` to `.env` and fill in the required values.
+   - Create a new JWT secret
+     - `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
+     or
+     - `openssl rand -hex 64`
+     - put the result in place of `your_jwt_secret`
+     
 
 6. Start the server:
    ```
