@@ -50,12 +50,10 @@
     "react-scripts": "5.0.1"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,ts,tsx,json,css,scss}": [
-      "prettier --write"
-    ],
-    "src/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix"
-    ]
+    "client/src/**/*.{js,jsx,ts,tsx,json,css,scss}": ["prettier --write"],
+    "client/src/**/*.{js,jsx,ts,tsx}": ["eslint --fix"],
+    "server/src/**/*.{js,jsx,ts,tsx,json,css,scss}": ["prettier --write"],
+    "server/src/**/*.{js,jsx,ts,tsx}": ["eslint --fix"]
   }
 }
 
