@@ -15,50 +15,50 @@ import { useAuth } from '../../contexts/AuthContext';
 const Header = () => {
 	const { getTotalItems } = useCart();
 	const { user } = useAuth();
-	
+
 	return (
 		<AppBar position="static">
 			<Toolbar>
-				<Typography 
-					variant="h6" 
-					component={RouterLink} 
-					to="/" 
-					sx={{ 
-						flexGrow: 1, 
-						textDecoration: 'none', 
-						color: 'inherit' 
+				<Typography
+					variant="h6"
+					component={RouterLink}
+					to="/"
+					sx={{
+						flexGrow: 1,
+						textDecoration: 'none',
+						color: 'inherit'
 					}}
 				>
 					E-Commerce Store
 				</Typography>
-				
+
 				<Box sx={{ display: 'flex', alignItems: 'center' }}>
-					<Button 
-						color="inherit" 
-						component={RouterLink} 
+					<Button
+						color="inherit"
+						component={RouterLink}
 						to="/"
 					>
 						Home
 					</Button>
-					
-					<IconButton 
-						color="inherit" 
-						component={RouterLink} 
+
+					<IconButton
+						color="inherit"
+						component={RouterLink}
 						to="/cart"
 					>
 						<Badge badgeContent={getTotalItems()} color="secondary">
 							<ShoppingCartIcon />
 						</Badge>
 					</IconButton>
-					
+
 					{user ? (
 						<IconButton color="inherit">
 							<AccountCircleIcon />
 						</IconButton>
 					) : (
-						<Button 
-							color="inherit" 
-							component={RouterLink} 
+						<Button
+							color="inherit"
+							component={RouterLink}
 							to="/auth"
 						>
 							Login

@@ -16,7 +16,7 @@ const ProductList = ({ products = [] }) => {
 			</Box>
 		);
 	}
-	
+
 	return (
 		<Grid container spacing={3} sx={{ p: 2 }}>
 			{products.map(product => (
