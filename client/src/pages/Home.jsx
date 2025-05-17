@@ -38,13 +38,9 @@ const Home = () => {
 	return (
 		<>
 			<h1>Welcome to our Store</h1>
-			<Card style={{ padding: '20px', marginTop: '20px' }}>
+			<Card sx={{ p: 3, mt: 3 }}>
 				<h2>Available Products</h2>
-				{products.length === 0 ? (
-					<p>No products available at the moment.</p>
-				) : (
-					<ProductList products={products} />
-				)}
+				<ProductList products={products} />
 			</Card>
 		</>
 	);
