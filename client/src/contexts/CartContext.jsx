@@ -1,44 +1,35 @@
-import React, { createContext, useState, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
+import PropTypes from 'prop-types'; // Import PropTypes
 
 const CartContext = createContext();
 
 export const useCart = () => {
-    return useContext(CartContext);
+	return useContext(CartContext);
 };
 
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState([]);
+	const [cartItems, setCartItems] = useState([]);
 
-    const getTotalPrice = () => {
-        return cartItems.reduce((total, item) => total + (item.price * (item.quantity || 1)), 0).toFixed(2);
-    };
-    
-    const getTotalItems = () => {
-        return cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
-    };
+	const addToCart = (item) => {
+		setCartItems(prevItems => [...prevItems, item]);
+	};
 
-    const addToCart = (item) => {
-        setCartItems((prevItems) => [...prevItems, item]);
-    };
+	const removeFromCart = (itemId) => {
+		setCartItems(prevItems => prevItems.filter((item) => item.id !== itemId));
+	};
 
-    const removeFromCart = (itemId) => {
-        setCartItems((prevItems) => prevItems.filter(item => item.id !== itemId));
-    };
+	const getTotalItems = () => {
+		return cartItems.length;
+	};
 
-    const clearCart = () => {
-        setCartItems([]);
-    };
+	return (
+		<CartContext.Provider value={{ cartItems, addToCart, removeFromCart, getTotalItems }}>
+			{children}
+		</CartContext.Provider>
+	);
+};
 
-    return (
-        <CartContext.Provider value={{ 
-            cartItems, 
-            addToCart, 
-            removeFromCart, 
-            clearCart,
-            getTotalPrice,
-            getTotalItems
-        }}>
-            {children}
-        </CartContext.Provider>
-    );
+// Add PropTypes validation for CartProvider
+CartProvider.propTypes = {
+	children: PropTypes.node.isRequired,
 };

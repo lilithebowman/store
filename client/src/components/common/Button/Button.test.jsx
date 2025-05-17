@@ -1,25 +1,32 @@
 import React from 'react';
+
 import { render, screen } from '@testing-library/react';
 import Button from './Button';
+import '@testing-library/jest-dom';
 
 describe('Button Component', () => {
-    it('renders the button with the correct text', () => {
-        render(<Button>Click Me</Button>);
-        const buttonElement = screen.getByRole('button', { name: /click me/i });
-        expect(buttonElement).toBeInTheDocument();
-    });
+	it('renders with default props', () => {
+		render(<Button label="Click Me" />);
+		const buttonElement = screen.getByRole('button', { name: /click me/i });
+		expect(buttonElement).toBeInTheDocument();
+		expect(buttonElement).toHaveClass('MuiButton-contained');
+	});
 
-    it('renders the button with the correct class', () => {
-        render(<Button className="test-class">Click Me</Button>);
-        const buttonElement = screen.getByRole('button', { name: /click me/i });
-        expect(buttonElement).toHaveClass('test-class');
-    });
+	it('renders with custom variant', () => {
+		render(<Button label="Outlined Button" variant="outlined" />);
+		const buttonElement = screen.getByRole('button', { name: /outlined button/i });
+		expect(buttonElement).toHaveClass('MuiButton-outlined');
+	});
 
-    it('handles click events', () => {
-        const handleClick = jest.fn();
-        render(<Button onClick={handleClick}>Click Me</Button>);
-        const buttonElement = screen.getByRole('button', { name: /click me/i });
-        buttonElement.click();
-        expect(handleClick).toHaveBeenCalledTimes(1);
-    });
+	it('renders with custom color', () => {
+		render(<Button label="Primary Button" color="primary" />);
+		const buttonElement = screen.getByRole('button', { name: /primary button/i });
+		expect(buttonElement).toHaveClass('MuiButton-containedPrimary');
+	});
+
+	it('renders with icon', () => {
+		render(<Button label="Add to Cart" startIcon={<span>🛒</span>} />);
+		const buttonElement = screen.getByRole('button', { name: /add to cart/i });
+		expect(buttonElement).toContainHTML('<span>🛒</span>');
+	});
 });

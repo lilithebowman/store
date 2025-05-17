@@ -5,40 +5,40 @@ import { AuthContext } from '../contexts/AuthContext';
 import { useHistory } from 'react-router-dom';
 
 const Checkout = () => {
-    // Use the useCart hook instead of using useContext with CartContext
-    const { cartItems, getTotalPrice } = useCart();
-    const { user } = useContext(AuthContext);
-    const history = useHistory();
+	// Use the useCart hook instead of using useContext with CartContext
+	const { cartItems, getTotalPrice } = useCart();
+	const { user } = useContext(AuthContext);
+	const history = useHistory();
 
-    const handleCheckout = () => {
-        if (!user) {
-            history.push('/auth'); // Redirect to Auth page if not logged in
-        } else {
-            // Proceed with checkout logic
-            console.log('Proceeding to checkout with items:', cartItems);
-            // Add your checkout logic here (e.g., API call to create an order)
-        }
-    };
+	const handleCheckout = () => {
+		if (!user) {
+			history.push('/auth'); // Redirect to Auth page if not logged in
+		} else {
+			// Proceed with checkout logic
+			console.log('Proceeding to checkout with items:', cartItems);
+			// Add your checkout logic here (e.g., API call to create an order)
+		}
+	};
 
-    return (
-        <div className="checkout">
-            <h1>Checkout</h1>
-            {cartItems.length === 0 ? (
-                <p>Your cart is empty.</p>
-            ) : (
-                <div>
-                    <h2>Your Items:</h2>
-                    <ul>
-                        {cartItems.map((item, index) => (
-                            <li key={index}>{item.name} - ${item.price}</li>
-                        ))}
-                    </ul>
-                    <h3>Total Amount: ${getTotalPrice()}</h3>
-                    <button onClick={handleCheckout}>Proceed to Checkout</button>
-                </div>
-            )}
-        </div>
-    );
+	return (
+		<div className="checkout">
+			<h1>Checkout</h1>
+			{cartItems.length === 0 ? (
+				<p>Your cart is empty.</p>
+			) : (
+				<div>
+					<h2>Your Items:</h2>
+					<ul>
+						{cartItems.map((item, index) => (
+							<li key={index}>{item.name} - ${item.price}</li>
+						))}
+					</ul>
+					<h3>Total Amount: ${getTotalPrice()}</h3>
+					<button onClick={handleCheckout}>Proceed to Checkout</button>
+				</div>
+			)}
+		</div>
+	);
 };
 
 export default Checkout;
