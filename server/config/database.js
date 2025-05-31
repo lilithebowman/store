@@ -16,7 +16,6 @@ const createDatabaseIfNotExists = async () => {
 
 // Parse the connection string from DATABASE_URL
 // or use individual environment variables
-console.log(process.env.MYSQL_USERNAME);
 const sequelize = new Sequelize(process.env.DATABASE_URL || {
 	dialect: 'mysql',
 	host: process.env.MYSQL_HOST || 'localhost',
