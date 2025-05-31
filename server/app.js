@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const passport = require('passport');
 const session = require('express-session');
 const bodyParser = require('body-parser');
@@ -8,7 +7,7 @@ const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
-const { mongoURI, sessionSecret } = require('./config/database');
+const { sessionSecret } = require('./config/database');
 
 const app = express();
 
@@ -27,11 +26,6 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Database connection
-mongoose.connect(mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
-	.then(() => console.log('MongoDB connected'))
-	.catch(err => console.error('MongoDB connection error:', err));
 
 // Routes
 app.use('/api/auth', authRoutes);
