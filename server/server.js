@@ -9,7 +9,7 @@ const { connectDB } = require('./config/database');
 const { syncDatabase } = require('./models');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 2048;
 // Generate a random session secret if not provided
 const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
 
