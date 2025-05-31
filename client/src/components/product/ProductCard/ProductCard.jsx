@@ -55,10 +55,10 @@ const ProductCard = ({ product }) => {
 
 ProductCard.propTypes = {
 	product: PropTypes.shape({
-		image: PropTypes.string.isRequired,
+		image: PropTypes.string,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string,
-		price: PropTypes.number.isRequired,
+		price: PropTypes.string.isRequired,
 	}).isRequired,
 };
 
