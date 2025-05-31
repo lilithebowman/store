@@ -5,6 +5,7 @@
   "private": true,
   "dependencies": {
     "concurrently": "^6.5.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.5.0"
   },
   "scripts": {
