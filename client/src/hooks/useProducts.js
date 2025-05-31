@@ -9,12 +9,19 @@ const useProducts = () => {
 	const [error, setError] = useState(null);
 
 	useEffect(() => {
+		const abortController = new AbortController();
+
 		const fetchProducts = async () => {
 			try {
-				const response = await axios.get(`${API_URL}/products`);
+				const response = await axios.get(`${API_URL}/products`, {
+					signal: abortController.signal
+				});
 				setProducts(response.data);
 				setLoading(false);
 			} catch (err) {
+				if (axios.isCancel(err)) {
+					return; // Component unmounted, ignore
+				}
 				console.error('Error fetching products:', err);
 				setError('Failed to load products. Please try again later.');
 				setLoading(false);
@@ -22,6 +29,10 @@ const useProducts = () => {
 		};
 
 		fetchProducts();
+
+		return () => {
+			abortController.abort();
+		};
 	}, []);
 
 	return {
