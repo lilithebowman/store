@@ -8,14 +8,20 @@ export const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
 	const [user, setUser] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [isAuthenticated, setIsAuthenticated] = useState(false);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
 				const currentUser = authService.getCurrentUser();
-				setUser(currentUser);
+				if (currentUser) {
+					setUser(currentUser);
+					setIsAuthenticated(true);
+				}
 			} catch (error) {
 				console.error('Error fetching user:', error);
+				setIsAuthenticated(false);
 			} finally {
 				setLoading(false);
 			}
@@ -24,23 +30,75 @@ export const AuthProvider = ({ children }) => {
 		fetchUser();
 	}, []);
 
-	const login = async (credentials) => {
-		const loggedInUser = await authService.login(credentials);
-		setUser(loggedInUser);
+	const handleLogin = async (email, password) => {
+		try {
+			setError(null);
+			const response = await authService.login(email, password);
+			setUser(response.user);
+			localStorage.setItem('token', response.token);
+			localStorage.setItem('user', JSON.stringify(response.user));
+			setIsAuthenticated(true);
+			return response;
+		} catch (error) {
+			console.error('Login failed:', error);
+			setError(error.message || 'Login failed');
+			setIsAuthenticated(false);
+			throw error;
+		}
 	};
 
-	const register = async (userData) => {
-		const newUser = await authService.register(userData);
-		setUser(newUser);
+	const register = async userData => {
+		try {
+			setError(null);
+			const response = await authService.register(
+				userData.username,
+				userData.email,
+				userData.password
+			);
+			// Registration doesn't return user data, so redirect to login
+			setError(null);
+			return response;
+		} catch (error) {
+			console.error('Registration failed:', error);
+			setError(error.message || 'Registration failed');
+			throw error;
+		}
 	};
 
 	const logout = async () => {
-		authService.logout();
-		setUser(null);
+		try {
+			await authService.logout();
+			setUser(null);
+			setIsAuthenticated(false);
+			setError(null);
+			localStorage.removeItem('token');
+			localStorage.removeItem('user');
+		} catch (error) {
+			console.error('Logout failed:', error);
+			// Still clear local state even if server call fails
+			setUser(null);
+			setIsAuthenticated(false);
+			localStorage.removeItem('token');
+			localStorage.removeItem('user');
+		}
 	};
 
+	// Alias for compatibility
+	const login = handleLogin;
+
 	return (
-		<AuthContext.Provider value={{ user, loading, login, register, logout }}>
+		<AuthContext.Provider
+			value={{
+				user,
+				loading,
+				error,
+				isAuthenticated,
+				handleLogin,
+				login,
+				register,
+				logout,
+			}}
+		>
 			{children}
 		</AuthContext.Provider>
 	);
@@ -63,6 +121,9 @@ AuthProvider.propTypes = {
 AuthContext.propTypes = {
 	user: PropTypes.object,
 	loading: PropTypes.bool.isRequired,
+	isAuthenticated: PropTypes.bool.isRequired,
+	error: PropTypes.string,
+	handleLogin: PropTypes.func.isRequired,
 	login: PropTypes.func.isRequired,
 	register: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,

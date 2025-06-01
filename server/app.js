@@ -13,8 +13,10 @@ const app = express();
 
 // Middleware
 app.use(cors({
-	origin: `http://${window.location.hostname}:3000`, // Allow requests from this origin
-	credentials: true // Allow credentials (cookies, authorization headers, etc.)
+	origin: ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.REACT_APP_URL],
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,6 +31,11 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+	res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);

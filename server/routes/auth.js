@@ -6,8 +6,8 @@ const authController = require('../controllers/authController');
 // User registration
 router.post('/register', authController.register);
 
-// User login
-router.post('/login', passport.authenticate('local', { session: false }), authController.login);
+// User login - Remove passport middleware for basic auth
+router.post('/login', authController.login);
 
 // OAuth routes
 router.get('/oauth/:provider', passport.authenticate('oauth2', { session: false }));
