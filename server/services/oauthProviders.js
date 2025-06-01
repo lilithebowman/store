@@ -5,18 +5,26 @@ const User = require('../models/User');
 
 // Configure Google OAuth
 passport.use(new GoogleStrategy({
-    clientID: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    clientID: process.env.OAUTH_CLIENT_ID,
+    clientSecret: process.env.OAUTH_CLIENT_SECRET,
     callbackURL: '/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ googleId: profile.id });
+        let user = await User.findOne({ 
+            where: { 
+                oauthProvider: 'google',
+                oauthId: profile.id 
+            }
+        });
+        
         if (!user) {
-            user = await new User({
-                googleId: profile.id,
+            user = await User.create({
+                oauthProvider: 'google',
+                oauthId: profile.id,
                 username: profile.displayName,
-                thumbnail: profile._json.picture
-            }).save();
+                email: profile.emails[0].value,
+                password: 'oauth_placeholder'
+            });
         }
         done(null, user);
     } catch (err) {
@@ -24,7 +32,7 @@ passport.use(new GoogleStrategy({
     }
 }));
 
-// Configure Facebook OAuth
+// Configure Facebook OAuth (if needed)
 passport.use(new FacebookStrategy({
     clientID: process.env.FACEBOOK_APP_ID,
     clientSecret: process.env.FACEBOOK_APP_SECRET,
@@ -32,13 +40,20 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'displayName', 'photos', 'email']
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ facebookId: profile.id });
+        let user = await User.findOne({ 
+            where: { 
+                oauthProvider: 'facebook',
+                oauthId: profile.id 
+            }
+        });
+        
         if (!user) {
-            user = await new User({
-                facebookId: profile.id,
+            user = await User.create({
+                oauthProvider: 'facebook',
+                oauthId: profile.id,
                 username: profile.displayName,
-                thumbnail: profile.photos[0].value
-            }).save();
+                email: profile.emails?.[0]?.value || `facebook_${profile.id}@example.com`
+            });
         }
         done(null, user);
     } catch (err) {
@@ -50,8 +65,13 @@ passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-    User.findById(id).then(user => {
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await User.findByPk(id);
         done(null, user);
-    });
+    } catch (error) {
+        done(error, null);
+    }
 });
+
+module.exports = passport;
