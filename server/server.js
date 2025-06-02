@@ -48,8 +48,8 @@ const startServer = async () => {
         console.log('Database synchronized successfully');
 
         app.listen(PORT, () => {
-            console.log(`Server is running on http://localhost:${PORT}`);
-            console.log(`API endpoints available at http://localhost:${PORT}/api`);
+            console.log(`Server is running on ${window.location.hostname}:${PORT}`);
+            console.log(`API endpoints available at ${window.location.hostname}:${PORT}/api`);
         });
     } catch (err) {
         console.error('Error starting server:', err);

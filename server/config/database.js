@@ -5,7 +5,7 @@ require('dotenv').config();
 // Function to create the database if it doesn't exist
 const createDatabaseIfNotExists = async () => {
 	const connection = await mysql.createConnection({
-		host: process.env.MYSQL_HOST || 'localhost',
+		host: process.env.MYSQL_HOST || `${window.location.hostname}`,
 		user: process.env.MYSQL_USERNAME,
 		password: process.env.MYSQL_PASSWORD,
 	});
@@ -18,7 +18,7 @@ const createDatabaseIfNotExists = async () => {
 // or use individual environment variables
 const sequelize = new Sequelize(process.env.DATABASE_URL || {
 	dialect: 'mysql',
-	host: process.env.MYSQL_HOST || 'localhost',
+	host: process.env.MYSQL_HOST || `${window.location.hostname}`,
 	username: process.env.MYSQL_USERNAME,
 	password: process.env.MYSQL_PASSWORD,
 	database: process.env.MYSQL_DATABASE || 'ecommerce_db',
