@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
-import authService from '../services/auth';
+import authService, { getCurrentUser } from '../services/auth';
 import PropTypes from 'prop-types';
 
 export const AuthContext = createContext();
@@ -14,7 +14,7 @@ export const AuthProvider = ({ children }) => {
 	useEffect(() => {
 		const fetchUser = async () => {
 			try {
-				const currentUser = authService.getCurrentUser();
+				const currentUser = getCurrentUser();
 				if (currentUser) {
 					setUser(currentUser);
 					setIsAuthenticated(true);

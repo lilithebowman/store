@@ -11,13 +11,40 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-// Middleware
+// FIX: Simpler CORS configuration that won't reject preflight requests
 app.use(cors({
-    origin: ['http://localhost:3000', 'http://127.0.0.1:3000', process.env.REACT_APP_URL],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+	origin: function(origin, callback) {
+		// Allow requests with no origin (like mobile apps)
+		if(!origin) return callback(null, true);
+		
+		// Check against allowed origins
+		if([
+		'http://localhost:3000',
+		'http://127.0.0.1:3000',
+		process.env.REACT_APP_URL].indexOf(origin) !== -1){
+			return callback(null, origin);
+		}
+		
+		callback(null, false);  // Reject all other origins
+	},
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization']
 }));
+
+// Alternative: If the above doesn't work, try this manual preflight handler
+app.options('*', (req, res) => {
+	const origin = req.headers.origin;
+	const allowedOrigins = ['http://localhost:3000', 'http://127.0.0.1:3000'];
+	
+	if (allowedOrigins.includes(origin)) {
+		res.header('Access-Control-Allow-Origin', origin);
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+		res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+		res.header('Access-Control-Allow-Credentials', 'true');
+	}
+	res.status(200).end();
+});
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -26,13 +53,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
 
 app.use(session({
-    secret: sessionSecret,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        secure: process.env.NODE_ENV === 'production',
-        maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
+	secret: sessionSecret,
+	resave: false,
+	saveUninitialized: false,
+	cookie: {
+		secure: process.env.NODE_ENV === 'production',
+		maxAge: 24 * 60 * 60 * 1000, // 24 hours
+		sameSite: 'lax' // Changed from dynamic to just 'lax' for simplicity
+	}
 }));
 
 // Initialize passport configuration
@@ -42,7 +70,7 @@ app.use(passport.session());
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
+	res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
 });
 
 // Routes
@@ -53,8 +81,8 @@ app.use('/api/users', userRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: 'Something broke!', error: err.message });
+	console.error(err.stack);
+	res.status(500).json({ message: 'Something went wrong', error: process.env.NODE_ENV === 'development' ? err.message : 'Server error' });
 });
 
 module.exports = app;
