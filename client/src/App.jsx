@@ -18,11 +18,11 @@ const App = () => {
 					<Router>
 						<Header />
 						<Routes>
-							<Route path="/" exact component={Home} />
-							<Route path="/product/:id" component={Product} />
-							<Route path="/cart" component={Cart} />
-							<Route path="/checkout" component={Checkout} />
-							<Route path="/auth" component={Auth} />
+							<Route path="/" element={<Home />} />
+							<Route path="/product/:id" element={<Product />} />
+							<Route path="/cart" element={<Cart />} />
+							<Route path="/checkout" element={<Checkout />} />
+							<Route path="/auth" element={<Auth />} />
 						</Routes>
 						<Footer />
 					</Router>
