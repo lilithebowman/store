@@ -37,7 +37,7 @@ To start the server, run:
 npm start
 ```
 
-The server will run on `http://localhost:5000` by default.
+The server will run on `${window.location.hostname}:2048/api` by default.
 
 ## API Endpoints
 

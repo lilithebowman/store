@@ -12,7 +12,10 @@ const { sessionSecret } = require('./config/database');
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+	origin: 'http://localhost:3000', // Allow requests from this origin
+	credentials: true // Allow credentials (cookies, authorization headers, etc.)
+}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({

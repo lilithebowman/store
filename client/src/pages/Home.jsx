@@ -5,6 +5,7 @@ import { Card } from '@mui/material';
 
 const Home = () => {
 	const { products, loading, error } = useProducts();
+
 	if (loading) {
 		return <div>Loading products...</div>;
 	}
