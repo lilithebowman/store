@@ -50,12 +50,14 @@ const ProductCard = ({ product }) => {
 		canvas.style.display = 'block';
 	};
 
+	const imageSrc = product.image || 'path/to/substitute/image.jpg'; // Replace with the actual path to the substitute image
+
 	return (
 		<Card sx={{ maxWidth: 400, height: '100%', display: 'flex', flexDirection: 'column' }}>
 			<CardMedia
 				component="img"
 				height="300"
-				image={product.image}
+				image={imageSrc}
 				alt={product.name}
 				onError={handleImageError}
 				style={{ display: 'block' }}
