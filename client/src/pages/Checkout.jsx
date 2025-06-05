@@ -2,17 +2,17 @@ import React from 'react';
 import { useCart } from '../contexts/CartContext';
 import { useContext } from 'react';
 import { AuthContext } from '../contexts/AuthContext';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Checkout = () => {
 	// Use the useCart hook instead of using useContext with CartContext
 	const { cartItems, getTotalPrice } = useCart();
 	const { user } = useContext(AuthContext);
-	const history = useHistory();
+	const navigate = useNavigate(); // Use useNavigate instead of useHistory
 
 	const handleCheckout = () => {
 		if (!user) {
-			history.push('/auth'); // Redirect to Auth page if not logged in
+			navigate('/auth'); // Redirect to Auth page if not logged in
 		} else {
 			// Proceed with checkout logic
 			console.log('Proceeding to checkout with items:', cartItems);

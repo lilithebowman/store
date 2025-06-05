@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
 			ctx.font = '100px Arial';
 			ctx.textAlign = 'center';
 			ctx.textBaseline = 'middle';
-			ctx.fillText('⛔', width / 2, height / 2 - 20);
+			ctx.fillText('🤷🏽‍♀️', width / 2, height / 2 - 20);
 
 			// Draw "Image Not Found" text with stroke
 			ctx.font = '20px Arial';

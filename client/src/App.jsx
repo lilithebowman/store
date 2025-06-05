@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
@@ -17,13 +17,13 @@ const App = () => {
 				<CartProvider>
 					<Router>
 						<Header />
-						<Switch>
+						<Routes>
 							<Route path="/" exact component={Home} />
 							<Route path="/product/:id" component={Product} />
 							<Route path="/cart" component={Cart} />
 							<Route path="/checkout" component={Checkout} />
 							<Route path="/auth" component={Auth} />
-						</Switch>
+						</Routes>
 						<Footer />
 					</Router>
 				</CartProvider>
