@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useHistory } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import {
 	Container,
 	Paper,
@@ -18,7 +18,7 @@ const Auth = () => {
 	const [username, setUsername] = useState('');
 	const [isRegistering, setIsRegistering] = useState(false);
 	const [localError, setLocalError] = useState('');
-	const history = useHistory();
+	const navigate = useNavigate();
 
 	const handleSubmit = async e => {
 		e.preventDefault();
@@ -37,7 +37,7 @@ const Auth = () => {
 				setPassword('');
 			} else {
 				await login(email, password);
-				history.push('/'); // Redirect to home after login
+				navigate('/'); // Redirect to home after login
 			}
 		} catch (err) {
 			console.error('Auth error:', err);
