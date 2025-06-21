@@ -35,6 +35,11 @@ const User = sequelize.define('User', {
     oauthId: {
         type: DataTypes.STRING,
         allowNull: true
+    },
+    isAdmin: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 }, {
     timestamps: true,

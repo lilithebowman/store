@@ -73,29 +73,9 @@ const syncDatabase = async () => {
 		await sequelize.sync();
 		console.log('Database synchronized successfully');
 
-		// Check if the User table is empty
-		const userCount = await User.count();
-		if (userCount === 0) {
-			// Create a default admin user
-			const defaultUser = await User.create({
-				username: 'admin',
-				email: 'admin@example.com',
-				password: 'Admin123!', // This will be hashed by the beforeCreate hook
-				createdAt: new Date(),
-				updatedAt: new Date()
-			});
-			console.log('Default admin user created with email: admin@example.com');
-
-			// Create a test user
-			const testUser = await User.create({
-				username: 'testuser',
-				email: 'test@example.com',
-				password: 'password123', // This will be hashed by the beforeCreate hook
-				createdAt: new Date(),
-				updatedAt: new Date()
-			});
-			console.log('Test user created with email: test@example.com');
-
+		// Check if there are any products, and create sample ones if needed
+		const productCount = await Product.count();
+		if (productCount === 0) {
 			// Create some sample products
 			const sampleProducts = [
 				{

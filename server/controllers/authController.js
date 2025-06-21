@@ -15,12 +15,21 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: 'User already exists with this email' });
         }
 
+        // Check if this is the first user (make them admin)
+        const userCount = await User.count();
+        const isFirstUser = userCount === 0;
+
         // Create new user
         const user = await User.create({
             username,
             email,
-            password // Password will be hashed by the beforeCreate hook
+            password, // Password will be hashed by the beforeCreate hook
+            isAdmin: isFirstUser
         });
+
+        if (isFirstUser) {
+            console.log('First user created as admin:', email);
+        }
 
         // Ensure JWT_SECRET is available
         if (!process.env.JWT_SECRET) {
@@ -39,7 +48,8 @@ exports.register = async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isAdmin: user.isAdmin
             }
         });
     } catch (error) {
@@ -89,7 +99,8 @@ exports.login = async (req, res) => {
             user: {
                 id: user.id,
                 username: user.username,
-                email: user.email
+                email: user.email,
+                isAdmin: user.isAdmin
             }
         });
     } catch (error) {
@@ -133,7 +144,8 @@ exports.oauthCallback = (req, res) => {
         user: {
             id: user.id,
             email: user.email,
-            username: user.username
+            username: user.username,
+            isAdmin: user.isAdmin
         }
     });
 };

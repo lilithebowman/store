@@ -42,6 +42,7 @@ export class SecureAuth {
 			id: userData.id,
 			username: userData.username,
 			email: userData.email,
+			isAdmin: userData.isAdmin || false,
 			// Never store: passwords, tokens, sensitive personal info
 		};
 		localStorage.setItem('user', JSON.stringify(safeData));

@@ -10,21 +10,30 @@ passport.use(new GoogleStrategy({
     callbackURL: '/auth/google/callback'
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ 
-            where: { 
+        let user = await User.findOne({
+            where: {
                 oauthProvider: 'google',
-                oauthId: profile.id 
+                oauthId: profile.id
             }
         });
-        
+
         if (!user) {
+            // Check if this is the first user (make them admin)
+            const userCount = await User.count();
+            const isFirstUser = userCount === 0;
+
             user = await User.create({
                 oauthProvider: 'google',
                 oauthId: profile.id,
                 username: profile.displayName,
                 email: profile.emails[0].value,
-                password: 'oauth_placeholder'
+                password: 'oauth_placeholder',
+                isAdmin: isFirstUser
             });
+
+            if (isFirstUser) {
+                console.log('First user (via Google OAuth) created as admin:', profile.emails[0].value);
+            }
         }
         done(null, user);
     } catch (err) {
@@ -40,20 +49,29 @@ passport.use(new FacebookStrategy({
     profileFields: ['id', 'displayName', 'photos', 'email']
 }, async (accessToken, refreshToken, profile, done) => {
     try {
-        let user = await User.findOne({ 
-            where: { 
+        let user = await User.findOne({
+            where: {
                 oauthProvider: 'facebook',
-                oauthId: profile.id 
+                oauthId: profile.id
             }
         });
-        
+
         if (!user) {
+            // Check if this is the first user (make them admin)
+            const userCount = await User.count();
+            const isFirstUser = userCount === 0;
+
             user = await User.create({
                 oauthProvider: 'facebook',
                 oauthId: profile.id,
                 username: profile.displayName,
-                email: profile.emails?.[0]?.value || `facebook_${profile.id}@example.com`
+                email: profile.emails?.[0]?.value || `facebook_${profile.id}@example.com`,
+                isAdmin: isFirstUser
             });
+
+            if (isFirstUser) {
+                console.log('First user (via Facebook OAuth) created as admin:', profile.emails?.[0]?.value || `facebook_${profile.id}@example.com`);
+            }
         }
         done(null, user);
     } catch (err) {
