@@ -57,8 +57,12 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+// Generate session secret
+const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
+
 app.use(session({
-	secret: process.env.SESSION_SECRET,
+	secret: sessionSecret,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {

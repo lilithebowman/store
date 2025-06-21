@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { SecureAuth } from '../utils/secureAuth';
 
 // Create axios instance with base URL
 const api = axios.create({
@@ -12,7 +13,7 @@ const api = axios.create({
 // Add request interceptor to include token
 api.interceptors.request.use(
 	(config) => {
-		const token = localStorage.getItem('token');
+		const token = SecureAuth.getToken(); // Use secure token retrieval
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
@@ -28,20 +29,15 @@ export const login = async (email, password) => {
 		console.log('Login request starting...');
 		const response = await api.post('/auth/login', { email, password });
 
-		// Store token securely (consider using httpOnly cookies instead)
+		console.log('Response status:', response.status);
+		console.log('Response data:', response.data);
+
+		// Store token and user data securely
 		if (response.data && response.data.token) {
-			// For now, store in localStorage but consider httpOnly cookies for production
-			localStorage.setItem('token', response.data.token);
+			SecureAuth.setToken(response.data.token);
 		}
 		if (response.data && response.data.user) {
-			// Only store non-sensitive user data
-			const safeUserData = {
-				id: response.data.user.id,
-				username: response.data.user.username,
-				email: response.data.user.email
-				// Never store passwords or sensitive data
-			};
-			localStorage.setItem('user', JSON.stringify(safeUserData));
+			SecureAuth.setUserData(response.data.user);
 		}
 
 		return response.data;
@@ -69,8 +65,10 @@ export const register = async (username, email, password) => {
 	try {
 		const response = await api.post('/auth/register', { username, email, password });
 		if (response.data.token) {
-			localStorage.setItem('token', response.data.token);
-			localStorage.setItem('user', JSON.stringify(response.data.user));
+			SecureAuth.setToken(response.data.token);
+		}
+		if (response.data.user) {
+			SecureAuth.setUserData(response.data.user);
 		}
 		return response.data;
 	} catch (error) {
@@ -90,55 +88,18 @@ export const logout = async () => {
 	} catch (error) {
 		console.error('Logout error:', error);
 	} finally {
-		localStorage.removeItem('token');
-		localStorage.removeItem('user');
-	}
-};
-
-// Simple JWT decode function for client-side use
-const decodeJWT = (token) => {
-	try {
-		const base64Url = token.split('.')[1];
-		const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-		const jsonPayload = decodeURIComponent(atob(base64).split('').map(function (c) {
-			return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-		}).join(''));
-		return JSON.parse(jsonPayload);
-	} catch (error) {
-		return null;
+		SecureAuth.clearAuth(); // Use secure clear method
 	}
 };
 
 export const getCurrentUser = () => {
-	const token = localStorage.getItem('token');
+	const token = SecureAuth.getToken();
 	if (!token) {
 		return null;
 	}
 
-	try {
-		// Decode JWT token to check expiration
-		const payload = decodeJWT(token);
-		if (!payload) {
-			localStorage.removeItem('token');
-			localStorage.removeItem('user');
-			return null;
-		}
-
-		// Check if token is expired
-		if (payload.exp && payload.exp * 1000 < Date.now()) {
-			localStorage.removeItem('token');
-			localStorage.removeItem('user');
-			return null;
-		}
-
-		// Return user info from localStorage
-		const storedUser = localStorage.getItem('user');
-		return storedUser ? JSON.parse(storedUser) : { id: payload.id };
-	} catch (error) {
-		localStorage.removeItem('token');
-		localStorage.removeItem('user');
-		return null;
-	}
+	// Return user data from secure storage
+	return SecureAuth.getUserData();
 };
 
 // Default export

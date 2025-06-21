@@ -94,8 +94,8 @@ const Profile = () => {
 									secondary={
 										user.createdAt
 											? new Date(
-													user.createdAt
-												).toLocaleDateString()
+												user.createdAt
+											).toLocaleDateString()
 											: 'Unknown'
 									}
 								/>
