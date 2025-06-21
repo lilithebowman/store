@@ -14,8 +14,10 @@ const api = axios.create({
 api.interceptors.request.use(
 	(config) => {
 		const token = SecureAuth.getToken(); // Use secure token retrieval
+		console.log('API interceptor - Token being sent:', token);
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
+			console.log('API interceptor - Authorization header set:', config.headers.Authorization);
 		}
 		return config;
 	},
@@ -104,6 +106,10 @@ export const getCurrentUser = () => {
 
 export const updateProfileImage = async (imageFile) => {
 	try {
+		const token = SecureAuth.getToken();
+		console.log('updateProfileImage - Token available:', !!token);
+		console.log('updateProfileImage - Token preview:', token ? token.substring(0, 20) + '...' : 'none');
+
 		const formData = new FormData();
 		formData.append('profileImage', imageFile);
 
@@ -118,6 +124,7 @@ export const updateProfileImage = async (imageFile) => {
 
 		return response.data;
 	} catch (error) {
+		console.error('updateProfileImage error:', error);
 		if (error.response) {
 			throw error.response.data;
 		} else if (error.request) {
