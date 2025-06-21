@@ -280,9 +280,54 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 					<Box sx={{ pt: 1 }}>
 						{Object.entries(
 							componentConfig.editableProps || {}
-						).map(([propKey, propConfig]) =>
-							renderPropEditor(propKey, propConfig)
-						)}
+						).map(([propKey, propConfig]) => {
+							// For buttons, conditionally show properties based on actionType
+							if (component?.componentId === 'button') {
+								const currentActionType =
+									getPropValue('actionType') || 'custom';
+
+								// Always show basic properties
+								if (
+									[
+										'label',
+										'variant',
+										'color',
+										'size',
+										'fullWidth',
+										'actionType',
+									].includes(propKey)
+								) {
+									return renderPropEditor(
+										propKey,
+										propConfig
+									);
+								}
+
+								// Show link properties only when actionType is 'link'
+								if (
+									propKey === 'linkUrl' &&
+									currentActionType !== 'link'
+								) {
+									return null;
+								}
+
+								// Show product properties only when actionType is 'addToCart'
+								if (
+									[
+										'productId',
+										'productName',
+										'productPrice',
+										'productImage',
+										'productDescription',
+									].includes(propKey) &&
+									currentActionType !== 'addToCart'
+								) {
+									return null;
+								}
+							}
+
+							return renderPropEditor(propKey, propConfig);
+						})}
 
 						{Object.keys(componentConfig.editableProps || {})
 							.length === 0 && (

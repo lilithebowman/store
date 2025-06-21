@@ -2,31 +2,12 @@
 import React from 'react';
 
 // Import all available components
-import { Button as StorybookButton } from '../../stories/Button';
 import { Header as StorybookHeader } from '../../stories/Header';
 import Button from '../common/Button/Button';
 import ProductCard from '../product/ProductCard/ProductCard';
 
 // Define available components with their configurations
 export const COMPONENT_REGISTRY = {
-	'storybook-button': {
-		id: 'storybook-button',
-		name: 'Storybook Button',
-		category: 'Basic',
-		component: StorybookButton,
-		icon: '🔘',
-		defaultProps: {
-			label: 'Click me',
-			primary: false,
-			size: 'medium'
-		},
-		editableProps: {
-			label: { type: 'text', label: 'Button Text' },
-			primary: { type: 'boolean', label: 'Primary Style' },
-			size: { type: 'select', label: 'Size', options: ['small', 'medium', 'large'] },
-			backgroundColor: { type: 'color', label: 'Background Color' }
-		}
-	},
 	'storybook-header': {
 		id: 'storybook-header',
 		name: 'Header',
@@ -43,23 +24,40 @@ export const COMPONENT_REGISTRY = {
 			user: { type: 'object', label: 'User Data (JSON)' }
 		}
 	},
-	'mui-button': {
-		id: 'mui-button',
-		name: 'MUI Button',
+	'button': {
+		id: 'button',
+		name: 'Button',
 		category: 'Basic',
 		component: Button,
 		icon: '🔘',
 		defaultProps: {
-			label: 'MUI Button',
+			label: 'Button',
 			variant: 'contained',
 			color: 'primary',
-			size: 'medium'
+			size: 'medium',
+			fullWidth: false,
+			actionType: 'custom',
+			linkUrl: '',
+			productId: '',
+			productName: 'Sample Product',
+			productPrice: '99.99',
+			productImage: 'https://via.placeholder.com/400x300',
+			productDescription: 'Sample product description',
+			showNotifications: true
 		},
 		editableProps: {
 			label: { type: 'text', label: 'Button Text' },
 			variant: { type: 'select', label: 'Variant', options: ['text', 'contained', 'outlined'] },
 			color: { type: 'select', label: 'Color', options: ['primary', 'secondary', 'success', 'error', 'info', 'warning'] },
-			size: { type: 'select', label: 'Size', options: ['small', 'medium', 'large'] }
+			size: { type: 'select', label: 'Size', options: ['small', 'medium', 'large'] },
+			fullWidth: { type: 'boolean', label: 'Full Width' },
+			actionType: { type: 'select', label: 'Action Type', options: ['custom', 'none', 'link', 'addToCart'] },
+			linkUrl: { type: 'text', label: 'Link URL (for link action)' },
+			productId: { type: 'text', label: 'Product ID (for cart action)' },
+			productName: { type: 'text', label: 'Product Name (for cart action)' },
+			productPrice: { type: 'text', label: 'Product Price (for cart action)' },
+			productImage: { type: 'text', label: 'Product Image URL (for cart action)' },
+			productDescription: { type: 'textarea', label: 'Product Description (for cart action)' }
 		}
 	},
 	'product-card': {
