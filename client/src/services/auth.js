@@ -3,7 +3,7 @@ import { SecureAuth } from '../utils/secureAuth';
 
 // Create axios instance with base URL
 const api = axios.create({
-	baseURL: process.env.REACT_APP_API_URL || `http://${window.location.hostname}:2048/api`,
+	baseURL: process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`,
 	withCredentials: true
 	// Don't set default Content-Type - let axios determine it automatically
 });
