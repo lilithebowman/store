@@ -153,3 +153,24 @@ exports.deleteUser = async (req, res) => {
 		res.status(500).json({ message: 'Error deleting user', error });
 	}
 };
+
+// Get user permissions
+exports.getUserPermissions = async (req, res) => {
+	const { id } = req.params;
+
+	try {
+		const user = await User.findByPk(id);
+		if (!user) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		const permissions = await user.getPermissions();
+		res.status(200).json({
+			userId: user.id,
+			permissions
+		});
+	} catch (error) {
+		console.error('Get user permissions error:', error);
+		res.status(500).json({ message: 'Error fetching user permissions', error: error.message });
+	}
+};
