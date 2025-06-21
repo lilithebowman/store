@@ -327,8 +327,9 @@ const UserManagement = () => {
 				<DialogTitle>Confirm User Deletion</DialogTitle>
 				<DialogContent>
 					<Typography>
-						Are you sure you want to delete user "
-						{selectedUser?.username}"? This action cannot be undone.
+						Are you sure you want to delete user &quot;
+						{selectedUser?.username}&quot;? This action cannot be
+						undone.
 					</Typography>
 					<Alert severity="warning" sx={{ mt: 2 }}>
 						Deleting a user will permanently remove their account

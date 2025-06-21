@@ -40,6 +40,11 @@ const Header = () => {
 		navigate('/profile');
 	};
 
+	const handleAdminPanel = () => {
+		handleUserMenuClose();
+		navigate('/admin/users');
+	};
+
 	const handleLogout = async () => {
 		handleUserMenuClose();
 		try {
@@ -122,6 +127,16 @@ const Header = () => {
 									</ListItemIcon>
 									<ListItemText>Profile</ListItemText>
 								</MenuItem>
+								{user.isAdmin && (
+									<MenuItem onClick={handleAdminPanel}>
+										<ListItemIcon>
+											<AdminPanelSettingsIcon fontSize="small" />
+										</ListItemIcon>
+										<ListItemText>
+											User Management
+										</ListItemText>
+									</MenuItem>
+								)}
 								<MenuItem onClick={handleLogout}>
 									<ListItemIcon>
 										<LogoutIcon fontSize="small" />
