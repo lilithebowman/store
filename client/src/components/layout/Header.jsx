@@ -1,20 +1,53 @@
-import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Badge from '@mui/material/Badge';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import Divider from '@mui/material/Divider';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import PersonIcon from '@mui/icons-material/Person';
+import LogoutIcon from '@mui/icons-material/Logout';
 import Box from '@mui/material/Box';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 
 const Header = () => {
 	const { getTotalItems } = useCart();
-	const { user } = useAuth();
+	const { user, logout } = useAuth();
+	const navigate = useNavigate();
+	const [anchorEl, setAnchorEl] = useState(null);
+	const open = Boolean(anchorEl);
+
+	const handleUserMenuClick = event => {
+		setAnchorEl(event.currentTarget);
+	};
+
+	const handleUserMenuClose = () => {
+		setAnchorEl(null);
+	};
+
+	const handleProfile = () => {
+		handleUserMenuClose();
+		navigate('/profile');
+	};
+
+	const handleLogout = async () => {
+		handleUserMenuClose();
+		try {
+			await logout();
+			navigate('/');
+		} catch (error) {
+			console.error('Logout error:', error);
+		}
+	};
 
 	return (
 		<AppBar position="static">
@@ -26,18 +59,14 @@ const Header = () => {
 					sx={{
 						flexGrow: 1,
 						textDecoration: 'none',
-						color: 'inherit'
+						color: 'inherit',
 					}}
 				>
 					E-Commerce Store
 				</Typography>
 
 				<Box sx={{ display: 'flex', alignItems: 'center' }}>
-					<Button
-						color="inherit"
-						component={RouterLink}
-						to="/"
-					>
+					<Button color="inherit" component={RouterLink} to="/">
 						Home
 					</Button>
 
@@ -52,9 +81,54 @@ const Header = () => {
 					</IconButton>
 
 					{user ? (
-						<IconButton color="inherit">
-							<AccountCircleIcon />
-						</IconButton>
+						<>
+							<IconButton
+								color="inherit"
+								onClick={handleUserMenuClick}
+								aria-controls={open ? 'user-menu' : undefined}
+								aria-haspopup="true"
+								aria-expanded={open ? 'true' : undefined}
+							>
+								<AccountCircleIcon />
+							</IconButton>
+							<Menu
+								id="user-menu"
+								anchorEl={anchorEl}
+								open={open}
+								onClose={handleUserMenuClose}
+								MenuListProps={{
+									'aria-labelledby': 'user-button',
+								}}
+								transformOrigin={{
+									horizontal: 'right',
+									vertical: 'top',
+								}}
+								anchorOrigin={{
+									horizontal: 'right',
+									vertical: 'bottom',
+								}}
+							>
+								<MenuItem disabled>
+									<ListItemText
+										primary={user.username || user.email}
+										secondary={user.email}
+									/>
+								</MenuItem>
+								<Divider />
+								<MenuItem onClick={handleProfile}>
+									<ListItemIcon>
+										<PersonIcon fontSize="small" />
+									</ListItemIcon>
+									<ListItemText>Profile</ListItemText>
+								</MenuItem>
+								<MenuItem onClick={handleLogout}>
+									<ListItemIcon>
+										<LogoutIcon fontSize="small" />
+									</ListItemIcon>
+									<ListItemText>Logout</ListItemText>
+								</MenuItem>
+							</Menu>
+						</>
 					) : (
 						<Button
 							color="inherit"

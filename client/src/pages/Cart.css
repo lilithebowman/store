@@ -1,19 +1,7 @@
-/* Cart.css */
-.cart-container {
-  padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+/* Cart.css - Custom styles for cart page */
 
-.cart-items {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
-}
-
-@media (max-width: 768px) {
-  .cart-items {
-    grid-template-columns: 1fr;
-  }
+/* Custom styles can be added here if needed for specific cart customizations */
+.cart-custom-style {
+  /* placeholder for custom styles */
+  display: block;
 }

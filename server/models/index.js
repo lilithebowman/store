@@ -72,6 +72,41 @@ const syncDatabase = async () => {
 		// In production, use { alter: true } or no options
 		await sequelize.sync();
 		console.log('Database synchronized successfully');
+
+		// Check if there are any products, and create sample ones if needed
+		const productCount = await Product.count();
+		if (productCount === 0) {
+			// Create some sample products
+			const sampleProducts = [
+				{
+					name: 'Laptop',
+					description: 'High-performance laptop with latest specs',
+					price: 999.99,
+					imageUrl: 'https://via.placeholder.com/300x200?text=Laptop',
+					category: 'Electronics',
+					stock: 15
+				},
+				{
+					name: 'Smartphone',
+					description: 'Latest smartphone with advanced camera',
+					price: 699.99,
+					imageUrl: 'https://via.placeholder.com/300x200?text=Smartphone',
+					category: 'Electronics',
+					stock: 25
+				},
+				{
+					name: 'Coffee Maker',
+					description: 'Premium coffee maker for perfect brew',
+					price: 129.99,
+					imageUrl: 'https://via.placeholder.com/300x200?text=CoffeeMaker',
+					category: 'Home',
+					stock: 10
+				}
+			];
+
+			await Product.bulkCreate(sampleProducts);
+			console.log('Sample products created successfully');
+		}
 	} catch (error) {
 		console.error('Error synchronizing database:', error);
 		throw error;  // Re-throw to be caught by the caller

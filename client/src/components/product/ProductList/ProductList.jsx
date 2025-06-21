@@ -33,8 +33,8 @@ ProductList.propTypes = {
 		PropTypes.shape({
 			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
 			name: PropTypes.string.isRequired,
-			price: PropTypes.number.isRequired,
-			image: PropTypes.string.isRequired,
+			price: PropTypes.string.isRequired,
+			image: PropTypes.string,
 			description: PropTypes.string,
 		})
 	),
