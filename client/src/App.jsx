@@ -4,7 +4,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import { Auth, Cart, Checkout, Home, Product } from './pages/index';
+import { Auth, Cart, Checkout, Home, Product, Profile } from './pages/index';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import theme from './theme';
@@ -31,6 +31,10 @@ const App = () => {
 										element={<Checkout />}
 									/>
 									<Route path="/auth" element={<Auth />} />
+									<Route
+										path="/profile"
+										element={<Profile />}
+									/>
 								</Routes>
 							</main>
 							<Footer />
