@@ -164,6 +164,28 @@ const Profile = () => {
 									: user.email.charAt(0).toUpperCase()
 								: null}
 						</Avatar>
+						{user.isAdmin && (
+							<Box
+								sx={{
+									position: 'absolute',
+									top: -8,
+									left: -8,
+									fontSize: '1.5rem',
+									background: 'rgba(255, 255, 255, 0.9)',
+									borderRadius: '50%',
+									width: 32,
+									height: 32,
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									boxShadow: 2,
+									zIndex: 1,
+								}}
+								title="Administrator"
+							>
+								👑
+							</Box>
+						)}
 						<IconButton
 							sx={{
 								position: 'absolute',
