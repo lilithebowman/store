@@ -33,7 +33,7 @@ fs.readdirSync(__dirname)
 	});
 
 // Define model associations
-const { User, Product, Order } = db;
+const { User, Product, Order, Role, Page } = db;
 
 if (!User || !Product || !Order) {
 	throw new Error(
@@ -45,6 +45,12 @@ if (!User || !Product || !Order) {
 // Set up associations
 User.hasMany(Order, { foreignKey: 'userId' });
 Order.belongsTo(User, { foreignKey: 'userId' });
+
+// Page-User associations (if Page model exists)
+if (Page) {
+	User.hasMany(Page, { foreignKey: 'authorId', as: 'pages' });
+	Page.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+}
 
 // Create the join table for Order-Product
 const OrderProduct = sequelize.define('OrderProduct', {

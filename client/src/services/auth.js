@@ -138,13 +138,29 @@ export const updateProfileImage = async (imageFile) => {
 	}
 };
 
+export const getUserPermissions = async (userId) => {
+	try {
+		const response = await api.get(`/users/${userId}/permissions`);
+		return response.data.permissions;
+	} catch (error) {
+		if (error.response) {
+			throw error.response.data;
+		} else if (error.request) {
+			throw { message: 'No response from server. Check if server is running.' };
+		} else {
+			throw { message: error.message || 'Unknown error occurred' };
+		}
+	}
+};
+
 // Default export
 const authService = {
 	login,
 	register,
 	logout,
 	getCurrentUser,
-	updateProfileImage
+	updateProfileImage,
+	getUserPermissions
 };
 
 export default authService;

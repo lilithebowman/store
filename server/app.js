@@ -10,6 +10,7 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
 const roleRoutes = require('./routes/roles');
+const pageRoutes = require('./routes/pages');
 
 const app = express();
 
@@ -89,6 +90,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/roles', roleRoutes);
+app.use('/api/pages', pageRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

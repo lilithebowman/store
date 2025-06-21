@@ -20,6 +20,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import Box from '@mui/material/Box';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
+import CogMenu from './CogMenu';
 
 const Header = () => {
 	const { getTotalItems } = useCart();
@@ -91,6 +92,8 @@ const Header = () => {
 							<ShoppingCartIcon />
 						</Badge>
 					</IconButton>
+
+					<CogMenu />
 
 					{user ? (
 						<>

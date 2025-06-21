@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [error, setError] = useState(null);
+	const [userPermissions, setUserPermissions] = useState({});
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -18,6 +19,8 @@ export const AuthProvider = ({ children }) => {
 				if (currentUser) {
 					setUser(currentUser);
 					setIsAuthenticated(true);
+					// Fetch user permissions
+					await fetchUserPermissions(currentUser.id);
 				}
 			} catch (error) {
 				console.error('Error fetching user:', error);
@@ -30,6 +33,16 @@ export const AuthProvider = ({ children }) => {
 		fetchUser();
 	}, []);
 
+	const fetchUserPermissions = async userId => {
+		try {
+			const permissions = await authService.getUserPermissions(userId);
+			setUserPermissions(permissions);
+		} catch (error) {
+			console.error('Error fetching user permissions:', error);
+			setUserPermissions({});
+		}
+	};
+
 	const handleLogin = async (email, password) => {
 		try {
 			setError(null);
@@ -38,6 +51,8 @@ export const AuthProvider = ({ children }) => {
 			localStorage.setItem('token', response.token);
 			localStorage.setItem('user', JSON.stringify(response.user));
 			setIsAuthenticated(true);
+			// Fetch user permissions after successful login
+			await fetchUserPermissions(response.user.id);
 			return response;
 		} catch (error) {
 			console.error('Login failed:', error);
@@ -112,6 +127,7 @@ export const AuthProvider = ({ children }) => {
 				register,
 				logout,
 				updateProfileImage,
+				userPermissions,
 			}}
 		>
 			{children}
@@ -143,4 +159,5 @@ AuthContext.propTypes = {
 	register: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
 	updateProfileImage: PropTypes.func.isRequired,
+	userPermissions: PropTypes.object.isRequired,
 };
