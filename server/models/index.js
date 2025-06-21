@@ -68,8 +68,7 @@ Product.belongsToMany(Order, { through: OrderProduct });
 // Add syncDatabase function to synchronize models with the database
 const syncDatabase = async () => {
 	try {
-		// In development, you might want to use { force: true } to recreate tables
-		// In production, use { alter: true } or no options
+		// Database sync - no force or alter needed in production
 		await sequelize.sync();
 		console.log('Database synchronized successfully');
 

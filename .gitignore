@@ -7,3 +7,6 @@ node_modules/*
 
 client/build
 client/build/*
+
+server/uploads
+server/uploads/*
