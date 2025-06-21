@@ -10,7 +10,8 @@ const useAuth = () => {
 	useEffect(() => {
 		const checkAuthStatus = async () => {
 			try {
-				const response = await fetch('/api/auth/status');
+				const baseURL = process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`;
+				const response = await fetch(`${baseURL}/auth/status`);
 				const data = await response.json();
 				if (data.isAuthenticated) {
 					setAuthData(data.user);

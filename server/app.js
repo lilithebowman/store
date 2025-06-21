@@ -3,11 +3,14 @@ const passport = require('passport');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const path = require('path');
 require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
+const roleRoutes = require('./routes/roles');
+const pageRoutes = require('./routes/pages');
 
 const app = express();
 
@@ -73,6 +76,9 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
 	res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
@@ -83,6 +89,8 @@ app.use('/api/auth', authRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/roles', roleRoutes);
+app.use('/api/pages', pageRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

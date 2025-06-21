@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
 	const [loading, setLoading] = useState(true);
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [error, setError] = useState(null);
+	const [userPermissions, setUserPermissions] = useState({});
 
 	useEffect(() => {
 		const fetchUser = async () => {
@@ -18,6 +19,8 @@ export const AuthProvider = ({ children }) => {
 				if (currentUser) {
 					setUser(currentUser);
 					setIsAuthenticated(true);
+					// Fetch user permissions
+					await fetchUserPermissions(currentUser.id);
 				}
 			} catch (error) {
 				console.error('Error fetching user:', error);
@@ -30,6 +33,16 @@ export const AuthProvider = ({ children }) => {
 		fetchUser();
 	}, []);
 
+	const fetchUserPermissions = async userId => {
+		try {
+			const permissions = await authService.getUserPermissions(userId);
+			setUserPermissions(permissions);
+		} catch (error) {
+			console.error('Error fetching user permissions:', error);
+			setUserPermissions({});
+		}
+	};
+
 	const handleLogin = async (email, password) => {
 		try {
 			setError(null);
@@ -38,6 +51,8 @@ export const AuthProvider = ({ children }) => {
 			localStorage.setItem('token', response.token);
 			localStorage.setItem('user', JSON.stringify(response.user));
 			setIsAuthenticated(true);
+			// Fetch user permissions after successful login
+			await fetchUserPermissions(response.user.id);
 			return response;
 		} catch (error) {
 			console.error('Login failed:', error);
@@ -83,6 +98,20 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
+	const updateProfileImage = async imageFile => {
+		try {
+			setError(null);
+			const response = await authService.updateProfileImage(imageFile);
+			setUser(response.user);
+			localStorage.setItem('user', JSON.stringify(response.user));
+			return response;
+		} catch (error) {
+			console.error('Profile image update failed:', error);
+			setError(error.message || 'Profile image update failed');
+			throw error;
+		}
+	};
+
 	// Alias for compatibility
 	const login = handleLogin;
 
@@ -97,6 +126,8 @@ export const AuthProvider = ({ children }) => {
 				login,
 				register,
 				logout,
+				updateProfileImage,
+				userPermissions,
 			}}
 		>
 			{children}
@@ -127,4 +158,6 @@ AuthContext.propTypes = {
 	login: PropTypes.func.isRequired,
 	register: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
+	updateProfileImage: PropTypes.func.isRequired,
+	userPermissions: PropTypes.object.isRequired,
 };

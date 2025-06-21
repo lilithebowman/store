@@ -14,10 +14,13 @@ import ListItemText from '@mui/material/ListItemText';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonIcon from '@mui/icons-material/Person';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Box from '@mui/material/Box';
 import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
+import CogMenu from './CogMenu';
 
 const Header = () => {
 	const { getTotalItems } = useCart();
@@ -37,6 +40,16 @@ const Header = () => {
 	const handleProfile = () => {
 		handleUserMenuClose();
 		navigate('/profile');
+	};
+
+	const handleAdminPanel = () => {
+		handleUserMenuClose();
+		navigate('/admin/users');
+	};
+
+	const handleRoles = () => {
+		handleUserMenuClose();
+		navigate('/admin/roles');
 	};
 
 	const handleLogout = async () => {
@@ -80,6 +93,8 @@ const Header = () => {
 						</Badge>
 					</IconButton>
 
+					<CogMenu />
+
 					{user ? (
 						<>
 							<IconButton
@@ -121,6 +136,24 @@ const Header = () => {
 									</ListItemIcon>
 									<ListItemText>Profile</ListItemText>
 								</MenuItem>
+								{user.isAdmin && (
+									<>
+										<MenuItem onClick={handleAdminPanel}>
+											<ListItemIcon>
+												<AdminPanelSettingsIcon fontSize="small" />
+											</ListItemIcon>
+											<ListItemText>
+												User Management
+											</ListItemText>
+										</MenuItem>
+										<MenuItem onClick={handleRoles}>
+											<ListItemIcon>
+												<SupervisorAccountIcon fontSize="small" />
+											</ListItemIcon>
+											<ListItemText>Roles</ListItemText>
+										</MenuItem>
+									</>
+								)}
 								<MenuItem onClick={handleLogout}>
 									<ListItemIcon>
 										<LogoutIcon fontSize="small" />

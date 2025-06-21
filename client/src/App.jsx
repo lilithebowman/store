@@ -4,7 +4,19 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { AuthProvider } from './contexts/AuthContext';
 import { CartProvider } from './contexts/CartContext';
-import { Auth, Cart, Checkout, Home, Product, Profile } from './pages/index';
+import {
+	Auth,
+	Cart,
+	Checkout,
+	Home,
+	Product,
+	Profile,
+	UserManagement,
+	RoleManagement,
+	ProductManagement,
+	PageManagement,
+	Page,
+} from './pages/index';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
 import theme from './theme';
@@ -34,6 +46,26 @@ const App = () => {
 									<Route
 										path="/profile"
 										element={<Profile />}
+									/>
+									<Route
+										path="/pages/:slug"
+										element={<Page />}
+									/>
+									<Route
+										path="/admin/users"
+										element={<UserManagement />}
+									/>
+									<Route
+										path="/admin/roles"
+										element={<RoleManagement />}
+									/>
+									<Route
+										path="/admin/products"
+										element={<ProductManagement />}
+									/>
+									<Route
+										path="/admin/pages"
+										element={<PageManagement />}
 									/>
 								</Routes>
 							</main>

@@ -3,11 +3,9 @@ import { SecureAuth } from '../utils/secureAuth';
 
 // Create axios instance with base URL
 const api = axios.create({
-	baseURL: process.env.REACT_APP_API_URL || `http://${window.location.hostname}:2048/api`,
-	withCredentials: true,
-	headers: {
-		'Content-Type': 'application/json'
-	}
+	baseURL: process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`,
+	withCredentials: true
+	// Don't set default Content-Type - let axios determine it automatically
 });
 
 // Add request interceptor to include token
@@ -27,7 +25,11 @@ api.interceptors.request.use(
 export const login = async (email, password) => {
 	try {
 		console.log('Login request starting...');
-		const response = await api.post('/auth/login', { email, password });
+		const response = await api.post('/auth/login', { email, password }, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
 		console.log('Response status:', response.status);
 		console.log('Response data:', response.data);
@@ -63,7 +65,11 @@ export const login = async (email, password) => {
 
 export const register = async (username, email, password) => {
 	try {
-		const response = await api.post('/auth/register', { username, email, password });
+		const response = await api.post('/auth/register', { username, email, password }, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 		if (response.data.token) {
 			SecureAuth.setToken(response.data.token);
 		}
@@ -84,7 +90,11 @@ export const register = async (username, email, password) => {
 
 export const logout = async () => {
 	try {
-		await api.post('/auth/logout');
+		await api.post('/auth/logout', {}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 	} catch (error) {
 		console.error('Logout error:', error);
 	} finally {
@@ -102,12 +112,55 @@ export const getCurrentUser = () => {
 	return SecureAuth.getUserData();
 };
 
+export const updateProfileImage = async (imageFile) => {
+	try {
+		const formData = new FormData();
+		formData.append('profileImage', imageFile);
+
+		// Don't set Content-Type manually - let axios set it automatically for FormData
+		// This preserves the Authorization header from the interceptor
+		const response = await api.put('/users/profile/image', formData);
+
+		// Update stored user data
+		if (response.data.user) {
+			SecureAuth.setUserData(response.data.user);
+		}
+
+		return response.data;
+	} catch (error) {
+		if (error.response) {
+			throw error.response.data;
+		} else if (error.request) {
+			throw { message: 'No response from server. Check if server is running.' };
+		} else {
+			throw { message: error.message || 'Unknown error occurred' };
+		}
+	}
+};
+
+export const getUserPermissions = async (userId) => {
+	try {
+		const response = await api.get(`/users/${userId}/permissions`);
+		return response.data.permissions;
+	} catch (error) {
+		if (error.response) {
+			throw error.response.data;
+		} else if (error.request) {
+			throw { message: 'No response from server. Check if server is running.' };
+		} else {
+			throw { message: error.message || 'Unknown error occurred' };
+		}
+	}
+};
+
 // Default export
 const authService = {
 	login,
 	register,
 	logout,
-	getCurrentUser
+	getCurrentUser,
+	updateProfileImage,
+	getUserPermissions
 };
 
 export default authService;

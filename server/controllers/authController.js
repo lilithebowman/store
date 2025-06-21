@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
 
 // Register a new user
 exports.register = async (req, res) => {
@@ -49,7 +51,8 @@ exports.register = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage
             }
         });
     } catch (error) {
@@ -100,7 +103,8 @@ exports.login = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage
             }
         });
     } catch (error) {
@@ -145,7 +149,8 @@ exports.oauthCallback = (req, res) => {
             id: user.id,
             email: user.email,
             username: user.username,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            profileImage: user.profileImage
         }
     });
 };
@@ -153,4 +158,59 @@ exports.oauthCallback = (req, res) => {
 // Logout handler
 exports.logout = (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
+};
+
+// Update profile image
+exports.updateProfileImage = async (req, res) => {
+    const userId = req.userId; // From auth middleware
+
+    try {
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image file provided' });
+        }
+
+        // Delete old profile image if it exists
+        const existingUser = await User.findByPk(userId);
+        if (existingUser && existingUser.profileImage) {
+            const oldImagePath = path.join(__dirname, '..', existingUser.profileImage);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+        }
+
+        // Update user profile image with relative path
+        const relativePath = `uploads/profile-images/${req.file.filename}`;
+        const [updated] = await User.update(
+            { profileImage: relativePath },
+            { where: { id: userId } }
+        );
+
+        if (updated === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get updated user data
+        const user = await User.findByPk(userId, {
+            attributes: { exclude: ['password'] }
+        });
+
+        res.status(200).json({
+            message: 'Profile image updated successfully',
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Profile image update error:', error);
+        res.status(500).json({
+            message: 'Error updating profile image',
+            error: error.message
+        });
+    }
 };

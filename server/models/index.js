@@ -33,7 +33,7 @@ fs.readdirSync(__dirname)
 	});
 
 // Define model associations
-const { User, Product, Order } = db;
+const { User, Product, Order, Role, Page } = db;
 
 if (!User || !Product || !Order) {
 	throw new Error(
@@ -45,6 +45,12 @@ if (!User || !Product || !Order) {
 // Set up associations
 User.hasMany(Order, { foreignKey: 'userId' });
 Order.belongsTo(User, { foreignKey: 'userId' });
+
+// Page-User associations (if Page model exists)
+if (Page) {
+	User.hasMany(Page, { foreignKey: 'authorId', as: 'pages' });
+	Page.belongsTo(User, { foreignKey: 'authorId', as: 'author' });
+}
 
 // Create the join table for Order-Product
 const OrderProduct = sequelize.define('OrderProduct', {
@@ -68,8 +74,7 @@ Product.belongsToMany(Order, { through: OrderProduct });
 // Add syncDatabase function to synchronize models with the database
 const syncDatabase = async () => {
 	try {
-		// In development, you might want to use { force: true } to recreate tables
-		// In production, use { alter: true } or no options
+		// Database sync - no force or alter needed in production
 		await sequelize.sync();
 		console.log('Database synchronized successfully');
 

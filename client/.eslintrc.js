@@ -25,7 +25,7 @@ module.exports = {
 	rules: {
 		'indent': ['warn', 'tab'],
 		'no-tabs': 'off',
-		'react/jsx-indent': ['warn', 'tab'],
-		'react/jsx-indent-props': ['warn', 'tab'],
+		'react/jsx-indent': ['none', 'tab'],
+		'react/jsx-indent-props': ['none', 'tab'],
 	},
 };
