@@ -26,6 +26,9 @@ import {
 	MenuItem,
 	Chip,
 	Link,
+	Tab,
+	Tabs,
+	Divider,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,8 +37,11 @@ import WebIcon from '@mui/icons-material/Web';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import BuildIcon from '@mui/icons-material/Build';
 import { useAuth } from '../contexts/AuthContext';
 import { Link as RouterLink } from 'react-router-dom';
+import PageBuilder from '../components/pageBuilder/PageBuilder';
+import PageRenderer from '../components/pageBuilder/PageRenderer';
 
 const PageManagement = () => {
 	const { user, userPermissions } = useAuth();
@@ -48,9 +54,11 @@ const PageManagement = () => {
 		title: '',
 		slug: '',
 		content: '',
+		components: [],
 		status: 'draft',
 		metaDescription: '',
 	});
+	const [editorTab, setEditorTab] = useState(0); // 0: Visual Builder, 1: Text Editor
 	const [snackbar, setSnackbar] = useState({
 		open: false,
 		message: '',
