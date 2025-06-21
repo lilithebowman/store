@@ -49,7 +49,8 @@ exports.register = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage
             }
         });
     } catch (error) {
@@ -100,7 +101,8 @@ exports.login = async (req, res) => {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                isAdmin: user.isAdmin
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage
             }
         });
     } catch (error) {
@@ -145,7 +147,8 @@ exports.oauthCallback = (req, res) => {
             id: user.id,
             email: user.email,
             username: user.username,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            profileImage: user.profileImage
         }
     });
 };
@@ -153,4 +156,49 @@ exports.oauthCallback = (req, res) => {
 // Logout handler
 exports.logout = (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
+};
+
+// Update profile image
+exports.updateProfileImage = async (req, res) => {
+    const { profileImage } = req.body;
+    const userId = req.userId; // From auth middleware
+
+    try {
+        if (!profileImage) {
+            return res.status(400).json({ message: 'Profile image URL is required' });
+        }
+
+        // Update user profile image
+        const [updated] = await User.update(
+            { profileImage },
+            { where: { id: userId } }
+        );
+
+        if (updated === 0) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Get updated user data
+        const user = await User.findByPk(userId, {
+            attributes: { exclude: ['password'] }
+        });
+
+        res.status(200).json({
+            message: 'Profile image updated successfully',
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                isAdmin: user.isAdmin,
+                profileImage: user.profileImage,
+                createdAt: user.createdAt
+            }
+        });
+    } catch (error) {
+        console.error('Profile image update error:', error);
+        res.status(500).json({
+            message: 'Error updating profile image',
+            error: error.message
+        });
+    }
 };

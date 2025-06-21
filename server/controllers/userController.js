@@ -55,12 +55,15 @@ exports.getUserById = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
 	const { id } = req.params;
-	const { username, email, password } = req.body;
+	const { username, email, password, profileImage } = req.body;
 
 	try {
 		const updatedData = { username, email };
 		if (password) {
 			updatedData.password = await bcrypt.hash(password, 10);
+		}
+		if (profileImage !== undefined) {
+			updatedData.profileImage = profileImage;
 		}
 
 		// Replace findByIdAndUpdate with update + findByPk
@@ -79,6 +82,42 @@ exports.updateUser = async (req, res) => {
 		res.status(200).json(updatedUser);
 	} catch (error) {
 		res.status(500).json({ message: 'Error updating user', error });
+	}
+};
+
+// Update profile image
+exports.updateProfileImage = async (req, res) => {
+	const userId = req.user.id; // From auth middleware
+	const { profileImage } = req.body;
+
+	try {
+		if (!profileImage) {
+			return res.status(400).json({ message: 'Profile image URL is required' });
+		}
+
+		const [updated] = await User.update(
+			{ profileImage },
+			{ where: { id: userId } }
+		);
+
+		if (updated === 0) {
+			return res.status(404).json({ message: 'User not found' });
+		}
+
+		const updatedUser = await User.findByPk(userId, {
+			attributes: { exclude: ['password'] }
+		});
+
+		res.status(200).json({
+			message: 'Profile image updated successfully',
+			user: updatedUser
+		});
+	} catch (error) {
+		console.error('Profile image update error:', error);
+		res.status(500).json({
+			message: 'Error updating profile image',
+			error: error.message
+		});
 	}
 };
 

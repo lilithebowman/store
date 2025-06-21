@@ -40,6 +40,15 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+    profileImage: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isUrl: {
+                msg: 'Profile image must be a valid URL'
+            }
+        }
     }
 }, {
     timestamps: true,

@@ -102,12 +102,36 @@ export const getCurrentUser = () => {
 	return SecureAuth.getUserData();
 };
 
+export const updateProfileImage = async (profileImageUrl) => {
+	try {
+		const response = await api.put('/users/profile/image', {
+			profileImage: profileImageUrl
+		});
+
+		// Update stored user data
+		if (response.data.user) {
+			SecureAuth.setUserData(response.data.user);
+		}
+
+		return response.data;
+	} catch (error) {
+		if (error.response) {
+			throw error.response.data;
+		} else if (error.request) {
+			throw { message: 'No response from server. Check if server is running.' };
+		} else {
+			throw { message: error.message || 'Unknown error occurred' };
+		}
+	}
+};
+
 // Default export
 const authService = {
 	login,
 	register,
 	logout,
-	getCurrentUser
+	getCurrentUser,
+	updateProfileImage
 };
 
 export default authService;

@@ -83,6 +83,21 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
+	const updateProfileImage = async profileImageUrl => {
+		try {
+			setError(null);
+			const response =
+				await authService.updateProfileImage(profileImageUrl);
+			setUser(response.user);
+			localStorage.setItem('user', JSON.stringify(response.user));
+			return response;
+		} catch (error) {
+			console.error('Profile image update failed:', error);
+			setError(error.message || 'Profile image update failed');
+			throw error;
+		}
+	};
+
 	// Alias for compatibility
 	const login = handleLogin;
 
@@ -97,6 +112,7 @@ export const AuthProvider = ({ children }) => {
 				login,
 				register,
 				logout,
+				updateProfileImage,
 			}}
 		>
 			{children}
@@ -127,4 +143,5 @@ AuthContext.propTypes = {
 	login: PropTypes.func.isRequired,
 	register: PropTypes.func.isRequired,
 	logout: PropTypes.func.isRequired,
+	updateProfileImage: PropTypes.func.isRequired,
 };

@@ -15,6 +15,9 @@ router.post('/', userController.createUser);
 // Route to update a user by ID
 router.put('/:id', authenticate, userController.updateUser);
 
+// Route to update profile image
+router.put('/profile/image', authenticate, userController.updateProfileImage);
+
 // Route to delete a user by ID
 router.delete('/:id', authenticate, userController.deleteUser);
 
