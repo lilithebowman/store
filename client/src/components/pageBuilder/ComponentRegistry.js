@@ -90,7 +90,7 @@ export const COMPONENT_REGISTRY = {
 		id: 'text-block',
 		name: 'Text Block',
 		category: 'Content',
-		component: ({ content, variant = 'body1' }) => React.createElement('div', {
+		component: ({ content }) => React.createElement('div', {
 			style: { margin: '16px 0' }
 		}, React.createElement('div', {
 			dangerouslySetInnerHTML: { __html: content || 'Add your text here...' }

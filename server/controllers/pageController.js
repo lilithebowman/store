@@ -89,13 +89,14 @@ exports.getPageBySlug = async (req, res) => {
 
 // Create new page
 exports.createPage = async (req, res) => {
-    const { title, slug, content, metaDescription, status = 'draft' } = req.body;
+    const { title, slug, content, components, metaDescription, status = 'draft' } = req.body;
 
     try {
         const page = await Page.create({
             title,
             slug,
             content,
+            components,
             metaDescription,
             status,
             authorId: req.user.id
@@ -134,7 +135,7 @@ exports.createPage = async (req, res) => {
 // Update page
 exports.updatePage = async (req, res) => {
     const { id } = req.params;
-    const { title, slug, content, metaDescription, status } = req.body;
+    const { title, slug, content, components, metaDescription, status } = req.body;
 
     try {
         const page = await Page.findByPk(id);
@@ -146,6 +147,7 @@ exports.updatePage = async (req, res) => {
             title: title || page.title,
             slug: slug || page.slug,
             content: content !== undefined ? content : page.content,
+            components: components !== undefined ? components : page.components,
             metaDescription: metaDescription !== undefined ? metaDescription : page.metaDescription,
             status: status || page.status
         });

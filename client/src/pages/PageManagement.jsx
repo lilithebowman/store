@@ -41,7 +41,6 @@ import BuildIcon from '@mui/icons-material/Build';
 import { useAuth } from '../contexts/AuthContext';
 import { Link as RouterLink } from 'react-router-dom';
 import PageBuilder from '../components/pageBuilder/PageBuilder';
-import PageRenderer from '../components/pageBuilder/PageRenderer';
 
 const PageManagement = () => {
 	const { user, userPermissions } = useAuth();
@@ -158,6 +157,7 @@ const PageManagement = () => {
 				title: pageToEdit.title,
 				slug: pageToEdit.slug,
 				content: pageToEdit.content || '',
+				components: pageToEdit.components || [],
 				status: pageToEdit.status,
 				metaDescription: pageToEdit.metaDescription || '',
 			});
@@ -168,10 +168,12 @@ const PageManagement = () => {
 				title: '',
 				slug: '',
 				content: '',
+				components: [],
 				status: 'draft',
 				metaDescription: '',
 			});
 		}
+		setEditorTab(0); // Start with visual builder
 		setEditDialogOpen(true);
 	};
 
@@ -182,6 +184,7 @@ const PageManagement = () => {
 			title: '',
 			slug: '',
 			content: '',
+			components: [],
 			status: 'draft',
 			metaDescription: '',
 		});
@@ -468,14 +471,15 @@ const PageManagement = () => {
 			<Dialog
 				open={editDialogOpen}
 				onClose={closeEditDialog}
-				maxWidth="md"
+				maxWidth="xl"
 				fullWidth
+				PaperProps={{ sx: { height: '90vh' } }}
 			>
 				<DialogTitle>
 					{selectedPage ? 'Edit Page' : 'Create Page'}
 				</DialogTitle>
-				<DialogContent>
-					<Box sx={{ pt: 2 }}>
+				<DialogContent sx={{ p: 0 }}>
+					<Box sx={{ pt: 2, px: 3 }}>
 						<TextField
 							fullWidth
 							label="Page Title"
@@ -484,20 +488,40 @@ const PageManagement = () => {
 							margin="normal"
 							required
 						/>
-						<TextField
-							fullWidth
-							label="URL Slug"
-							value={editedPage.slug}
-							onChange={e =>
-								setEditedPage({
-									...editedPage,
-									slug: e.target.value,
-								})
-							}
-							margin="normal"
-							required
-							helperText="The URL-friendly version of the title"
-						/>
+						<Box sx={{ display: 'flex', gap: 2 }}>
+							<TextField
+								fullWidth
+								label="URL Slug"
+								value={editedPage.slug}
+								onChange={e =>
+									setEditedPage({
+										...editedPage,
+										slug: e.target.value,
+									})
+								}
+								margin="normal"
+								required
+								helperText="The URL-friendly version of the title"
+							/>
+							<FormControl fullWidth margin="normal">
+								<InputLabel>Status</InputLabel>
+								<Select
+									value={editedPage.status}
+									onChange={e =>
+										setEditedPage({
+											...editedPage,
+											status: e.target.value,
+										})
+									}
+									label="Status"
+								>
+									<MenuItem value="draft">Draft</MenuItem>
+									<MenuItem value="published">
+										Published
+									</MenuItem>
+								</Select>
+							</FormControl>
+						</Box>
 						<TextField
 							fullWidth
 							label="Meta Description"
@@ -511,37 +535,63 @@ const PageManagement = () => {
 							margin="normal"
 							helperText="Brief description for search engines"
 						/>
-						<FormControl fullWidth margin="normal">
-							<InputLabel>Status</InputLabel>
-							<Select
-								value={editedPage.status}
-								onChange={e =>
-									setEditedPage({
-										...editedPage,
-										status: e.target.value,
-									})
-								}
-								label="Status"
-							>
-								<MenuItem value="draft">Draft</MenuItem>
-								<MenuItem value="published">Published</MenuItem>
-							</Select>
-						</FormControl>
-						<TextField
-							fullWidth
-							label="Content"
-							value={editedPage.content}
-							onChange={e =>
-								setEditedPage({
-									...editedPage,
-									content: e.target.value,
-								})
-							}
-							margin="normal"
-							multiline
-							rows={6}
-							helperText="Page content (Markdown supported)"
-						/>
+					</Box>
+
+					<Divider sx={{ my: 2 }} />
+
+					{/* Editor Tabs */}
+					<Box
+						sx={{ borderBottom: 1, borderColor: 'divider', px: 3 }}
+					>
+						<Tabs
+							value={editorTab}
+							onChange={(e, newValue) => setEditorTab(newValue)}
+						>
+							<Tab
+								label="Visual Builder"
+								icon={<BuildIcon />}
+								iconPosition="start"
+							/>
+							<Tab label="Text Editor" />
+						</Tabs>
+					</Box>
+
+					{/* Tab Content */}
+					<Box sx={{ flex: 1, overflow: 'hidden' }}>
+						{editorTab === 0 && (
+							<Box sx={{ height: '400px', p: 2 }}>
+								<PageBuilder
+									initialComponents={
+										editedPage.components || []
+									}
+									onChange={components =>
+										setEditedPage({
+											...editedPage,
+											components,
+										})
+									}
+								/>
+							</Box>
+						)}
+
+						{editorTab === 1 && (
+							<Box sx={{ p: 3 }}>
+								<TextField
+									fullWidth
+									label="Content"
+									value={editedPage.content}
+									onChange={e =>
+										setEditedPage({
+											...editedPage,
+											content: e.target.value,
+										})
+									}
+									multiline
+									rows={12}
+									helperText="Page content (Markdown supported)"
+								/>
+							</Box>
+						)}
 					</Box>
 				</DialogContent>
 				<DialogActions>

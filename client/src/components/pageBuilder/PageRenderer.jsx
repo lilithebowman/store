@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Box, Container, Alert } from '@mui/material';
 import { renderComponent } from './ComponentRegistry';
 
@@ -25,6 +26,11 @@ const PageRenderer = ({ components = [], containerProps = {} }) => {
 			</Box>
 		</Container>
 	);
+};
+
+PageRenderer.propTypes = {
+	components: PropTypes.array,
+	containerProps: PropTypes.object,
 };
 
 export default PageRenderer;

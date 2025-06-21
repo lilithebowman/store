@@ -41,6 +41,11 @@ const Page = sequelize.define('Page', {
         type: DataTypes.TEXT,
         allowNull: true
     },
+    components: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: null
+    },
     metaDescription: {
         type: DataTypes.STRING(300),
         allowNull: true,

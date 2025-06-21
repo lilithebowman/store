@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
 	Dialog,
 	DialogTitle,
@@ -14,7 +15,6 @@ import {
 	Switch,
 	Box,
 	Typography,
-	Divider,
 	Tab,
 	Tabs,
 	Alert,
@@ -332,6 +332,16 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 			</DialogActions>
 		</Dialog>
 	);
+};
+
+ComponentPropsEditor.propTypes = {
+	open: PropTypes.bool.isRequired,
+	component: PropTypes.shape({
+		componentId: PropTypes.string.isRequired,
+		props: PropTypes.object,
+	}),
+	onClose: PropTypes.func.isRequired,
+	onSave: PropTypes.func.isRequired,
 };
 
 export default ComponentPropsEditor;

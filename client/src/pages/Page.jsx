@@ -11,6 +11,7 @@ import {
 	Divider,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import PageRenderer from '../components/pageBuilder/PageRenderer';
 
 // Styled component for content with basic markdown-like styling
 const PageContent = styled(Box)(({ theme }) => ({
@@ -248,7 +249,16 @@ const Page = () => {
 
 				{/* Page Content */}
 				<PageContent>
-					{page.content ? (
+					{/* Render components if they exist */}
+					{page.components && page.components.length > 0 ? (
+						<PageRenderer
+							components={page.components}
+							containerProps={{
+								maxWidth: false,
+								disableGutters: true,
+							}}
+						/>
+					) : page.content ? (
 						renderContent(page.content)
 					) : (
 						<Typography variant="body1" color="text.secondary">

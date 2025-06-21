@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
 	Box,
@@ -303,8 +304,8 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 												your page
 											</Typography>
 											<Typography variant="body2">
-												Or click "Add" buttons from the
-												component library
+												Or click &quot;Add&quot; buttons
+												from the component library
 											</Typography>
 										</Box>
 									) : (
@@ -452,6 +453,11 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 			)}
 		</DragDropContext>
 	);
+};
+
+PageBuilder.propTypes = {
+	initialComponents: PropTypes.array,
+	onChange: PropTypes.func,
 };
 
 export default PageBuilder;
