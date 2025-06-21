@@ -15,6 +15,7 @@ import {
 	RoleManagement,
 	ProductManagement,
 	PageManagement,
+	PageEditor,
 	Page,
 } from './pages/index';
 import Header from './components/layout/Header';
@@ -66,6 +67,10 @@ const App = () => {
 									<Route
 										path="/admin/pages"
 										element={<PageManagement />}
+									/>
+									<Route
+										path="/admin/pages/edit/:pageId"
+										element={<PageEditor />}
 									/>
 								</Routes>
 							</main>

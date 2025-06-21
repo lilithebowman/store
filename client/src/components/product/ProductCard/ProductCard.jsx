@@ -11,13 +11,19 @@ import Box from '@mui/material/Box';
 import { useCart } from '../../../contexts/CartContext';
 
 const ProductCard = ({ product }) => {
-	const { addToCart } = useCart();
+	const cartContext = useCart();
 	const canvasRef = useRef(null);
 
 	const handleAddToCart = () => {
-		addToCart(product);
+		if (cartContext && cartContext.addToCart) {
+			cartContext.addToCart(product);
+		} else {
+			console.warn(
+				'Cart context not available - add to cart functionality disabled'
+			);
+		}
 	};
-	
+
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas) {
@@ -44,7 +50,7 @@ const ProductCard = ({ product }) => {
 		}
 	}, []);
 
-	const handleImageError = (e) => {
+	const handleImageError = e => {
 		e.target.style.display = 'none';
 		const canvas = canvasRef.current;
 		canvas.style.display = 'block';
@@ -53,7 +59,14 @@ const ProductCard = ({ product }) => {
 	const imageSrc = product.image || 'path/to/substitute/image.jpg'; // Replace with the actual path to the substitute image
 
 	return (
-		<Card sx={{ maxWidth: 400, height: '100%', display: 'flex', flexDirection: 'column' }}>
+		<Card
+			sx={{
+				maxWidth: 400,
+				height: '100%',
+				display: 'flex',
+				flexDirection: 'column',
+			}}
+		>
 			<CardMedia
 				component="img"
 				height="300"
@@ -77,7 +90,10 @@ const ProductCard = ({ product }) => {
 				</Typography>
 				<Box sx={{ mt: 2 }}>
 					<Typography variant="h6" color="primary">
-						${product.price}
+						$
+						{typeof product.price === 'number'
+							? product.price.toFixed(2)
+							: product.price}
 					</Typography>
 				</Box>
 			</CardContent>
@@ -88,6 +104,7 @@ const ProductCard = ({ product }) => {
 					startIcon={<ShoppingCartIcon />}
 					onClick={handleAddToCart}
 					fullWidth
+					disabled={!cartContext || !cartContext.addToCart}
 				>
 					Add to Cart
 				</Button>
@@ -98,10 +115,13 @@ const ProductCard = ({ product }) => {
 
 ProductCard.propTypes = {
 	product: PropTypes.shape({
+		id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 		image: PropTypes.string,
 		name: PropTypes.string.isRequired,
 		description: PropTypes.string,
-		price: PropTypes.string.isRequired,
+		price: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+			.isRequired,
+		stock: PropTypes.number,
 	}).isRequired,
 };
 

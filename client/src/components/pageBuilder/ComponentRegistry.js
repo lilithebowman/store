@@ -73,16 +73,16 @@ export const COMPONENT_REGISTRY = {
 				id: 1,
 				name: 'Sample Product',
 				description: 'This is a sample product description',
-				price: 99.99,
-				imageUrl: 'https://via.placeholder.com/300x200',
+				price: '99.99',
+				image: 'https://via.placeholder.com/400x300',
 				stock: 10
 			}
 		},
 		editableProps: {
 			'product.name': { type: 'text', label: 'Product Name' },
 			'product.description': { type: 'textarea', label: 'Description' },
-			'product.price': { type: 'number', label: 'Price' },
-			'product.imageUrl': { type: 'text', label: 'Image URL' },
+			'product.price': { type: 'text', label: 'Price' },
+			'product.image': { type: 'text', label: 'Image URL' },
 			'product.stock': { type: 'number', label: 'Stock' }
 		}
 	},
