@@ -128,7 +128,9 @@ const Profile = () => {
 		// If it's already a full URL, return as is
 		if (imagePath.startsWith('http')) return imagePath;
 		// Otherwise, construct the URL from the server
-		const baseURL = process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`;
+		const baseURL =
+			process.env.REACT_APP_API_BASE_URL ||
+			`http://${window.location.hostname}:2048/api`;
 		// Remove /api from the end since we're serving static files from root
 		const serverURL = baseURL.replace('/api', '');
 		return `${serverURL}/${imagePath}`;
