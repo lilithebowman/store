@@ -57,7 +57,7 @@ exports.getUserById = async (req, res) => {
 // Update user
 exports.updateUser = async (req, res) => {
 	const { id } = req.params;
-	const { username, email, password, profileImage } = req.body;
+	const { username, email, password, profileImage, isAdmin, roles } = req.body;
 
 	try {
 		const updatedData = { username, email };
@@ -66,6 +66,12 @@ exports.updateUser = async (req, res) => {
 		}
 		if (profileImage !== undefined) {
 			updatedData.profileImage = profileImage;
+		}
+		if (isAdmin !== undefined) {
+			updatedData.isAdmin = isAdmin;
+		}
+		if (roles !== undefined) {
+			updatedData.roles = roles;
 		}
 
 		// Replace findByIdAndUpdate with update + findByPk

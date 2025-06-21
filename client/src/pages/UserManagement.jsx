@@ -24,6 +24,12 @@ import {
 	TextField,
 	FormControlLabel,
 	Switch,
+	FormControl,
+	InputLabel,
+	Select,
+	MenuItem,
+	OutlinedInput,
+	Box as MuiBox,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -34,6 +40,7 @@ import { useAuth } from '../contexts/AuthContext';
 const UserManagement = () => {
 	const { user } = useAuth();
 	const [users, setUsers] = useState([]);
+	const [roles, setRoles] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 	const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -42,6 +49,7 @@ const UserManagement = () => {
 		username: '',
 		email: '',
 		isAdmin: false,
+		roles: '',
 	});
 	const [snackbar, setSnackbar] = useState({
 		open: false,
@@ -51,7 +59,29 @@ const UserManagement = () => {
 
 	useEffect(() => {
 		fetchUsers();
+		fetchRoles();
 	}, []);
+
+	const fetchRoles = async () => {
+		try {
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(`${baseURL}/roles`, {
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+					'Content-Type': 'application/json',
+				},
+			});
+
+			if (response.ok) {
+				const data = await response.json();
+				setRoles(data);
+			}
+		} catch (error) {
+			console.error('Error fetching roles:', error);
+		}
+	};
 
 	const fetchUsers = async () => {
 		try {
@@ -141,6 +171,7 @@ const UserManagement = () => {
 			username: userToEdit.username,
 			email: userToEdit.email,
 			isAdmin: userToEdit.isAdmin,
+			roles: userToEdit.roles || '',
 		});
 		setEditDialogOpen(true);
 	};
@@ -148,7 +179,7 @@ const UserManagement = () => {
 	const closeEditDialog = () => {
 		setEditDialogOpen(false);
 		setSelectedUser(null);
-		setEditedUser({ username: '', email: '', isAdmin: false });
+		setEditedUser({ username: '', email: '', isAdmin: false, roles: '' });
 	};
 
 	const handleEditUser = async () => {
@@ -247,6 +278,7 @@ const UserManagement = () => {
 							<TableRow>
 								<TableCell>User</TableCell>
 								<TableCell>Email</TableCell>
+								<TableCell>Roles</TableCell>
 								<TableCell>Status</TableCell>
 								<TableCell>Joined</TableCell>
 								<TableCell align="center">Actions</TableCell>
@@ -329,6 +361,51 @@ const UserManagement = () => {
 										</Box>
 									</TableCell>
 									<TableCell>{userItem.email}</TableCell>
+									<TableCell>
+										<Box
+											sx={{
+												display: 'flex',
+												flexWrap: 'wrap',
+												gap: 0.5,
+											}}
+										>
+											{userItem.roles &&
+											roles.length > 0 ? (
+												userItem.roles
+													.split(',')
+													.map(roleId => {
+														const roleIdNum =
+															parseInt(
+																roleId.trim()
+															);
+														const role = roles.find(
+															r =>
+																r.id ===
+																roleIdNum
+														);
+														return role ? (
+															<Chip
+																key={roleIdNum}
+																label={
+																	role.name
+																}
+																size="small"
+																variant="outlined"
+																color="secondary"
+															/>
+														) : null;
+													})
+													.filter(Boolean)
+											) : (
+												<Typography
+													variant="body2"
+													color="text.secondary"
+												>
+													No roles
+												</Typography>
+											)}
+										</Box>
+									</TableCell>
 									<TableCell>
 										{userItem.isAdmin ? (
 											<Chip
@@ -451,6 +528,63 @@ const UserManagement = () => {
 							label="Administrator"
 							sx={{ mt: 2 }}
 						/>
+						<FormControl fullWidth margin="normal">
+							<InputLabel id="roles-select-label">
+								Roles
+							</InputLabel>
+							<Select
+								labelId="roles-select-label"
+								multiple
+								value={
+									editedUser.roles
+										? editedUser.roles
+												.split(',')
+												.map(id => parseInt(id.trim()))
+												.filter(id => !isNaN(id))
+										: []
+								}
+								onChange={e => {
+									const selectedRoleIds = e.target.value;
+									setEditedUser({
+										...editedUser,
+										roles: selectedRoleIds.join(','),
+									});
+								}}
+								input={<OutlinedInput label="Roles" />}
+								renderValue={selected => (
+									<MuiBox
+										sx={{
+											display: 'flex',
+											flexWrap: 'wrap',
+											gap: 0.5,
+										}}
+									>
+										{selected.map(roleId => {
+											const role = roles.find(
+												r => r.id === roleId
+											);
+											return (
+												<Chip
+													key={roleId}
+													label={
+														role
+															? role.name
+															: `Role ${roleId}`
+													}
+													size="small"
+												/>
+											);
+										})}
+									</MuiBox>
+								)}
+							>
+								{roles.map(role => (
+									<MenuItem key={role.id} value={role.id}>
+										{role.name}
+									</MenuItem>
+								))}
+							</Select>
+						</FormControl>
 					</Box>
 				</DialogContent>
 				<DialogActions>
