@@ -55,7 +55,10 @@ const UserManagement = () => {
 
 	const fetchUsers = async () => {
 		try {
-			const response = await fetch('/api/users', {
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(`${baseURL}/users`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`,
 					'Content-Type': 'application/json',
@@ -84,13 +87,19 @@ const UserManagement = () => {
 		if (!selectedUser) return;
 
 		try {
-			const response = await fetch(`/api/users/${selectedUser.id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
-					'Content-Type': 'application/json',
-				},
-			});
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(
+				`${baseURL}/users/${selectedUser.id}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+						'Content-Type': 'application/json',
+					},
+				}
+			);
 
 			if (response.ok) {
 				setUsers(users.filter(u => u.id !== selectedUser.id));
@@ -146,14 +155,20 @@ const UserManagement = () => {
 		if (!selectedUser) return;
 
 		try {
-			const response = await fetch(`/api/users/${selectedUser.id}`, {
-				method: 'PUT',
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(editedUser),
-			});
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(
+				`${baseURL}/users/${selectedUser.id}`,
+				{
+					method: 'PUT',
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify(editedUser),
+				}
+			);
 
 			if (response.ok) {
 				const updatedUser = await response.json();
@@ -188,9 +203,11 @@ const UserManagement = () => {
 		if (!imagePath) return null;
 		if (imagePath.startsWith('http')) return imagePath;
 		const baseURL =
-			process.env.REACT_APP_API_URL ||
-			`http://${window.location.hostname}:2048`;
-		return `${baseURL}/${imagePath}`;
+			process.env.REACT_APP_API_BASE_URL ||
+			`http://${window.location.hostname}:2048/api`;
+		// Remove /api from the end since we're serving static files from root
+		const serverURL = baseURL.replace('/api', '');
+		return `${serverURL}/${imagePath}`;
 	};
 
 	// Check if current user is admin

@@ -69,7 +69,10 @@ const RoleManagement = () => {
 
 	const fetchRoles = async () => {
 		try {
-			const response = await fetch('/api/roles', {
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(`${baseURL}/roles`, {
 				headers: {
 					Authorization: `Bearer ${localStorage.getItem('token')}`,
 					'Content-Type': 'application/json',
@@ -98,13 +101,19 @@ const RoleManagement = () => {
 		if (!selectedRole) return;
 
 		try {
-			const response = await fetch(`/api/roles/${selectedRole.id}`, {
-				method: 'DELETE',
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
-					'Content-Type': 'application/json',
-				},
-			});
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
+			const response = await fetch(
+				`${baseURL}/roles/${selectedRole.id}`,
+				{
+					method: 'DELETE',
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+						'Content-Type': 'application/json',
+					},
+				}
+			);
 
 			if (response.ok) {
 				setRoles(roles.filter(r => r.id !== selectedRole.id));
@@ -168,10 +177,13 @@ const RoleManagement = () => {
 
 	const handleSaveRole = async () => {
 		try {
+			const baseURL =
+				process.env.REACT_APP_API_BASE_URL ||
+				`http://${window.location.hostname}:2048/api`;
 			const method = selectedRole ? 'PUT' : 'POST';
 			const url = selectedRole
-				? `/api/roles/${selectedRole.id}`
-				: '/api/roles';
+				? `${baseURL}/roles/${selectedRole.id}`
+				: `${baseURL}/roles`;
 
 			const response = await fetch(url, {
 				method,
