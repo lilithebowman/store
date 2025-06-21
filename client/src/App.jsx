@@ -16,15 +16,25 @@ const App = () => {
 			<AuthProvider>
 				<CartProvider>
 					<Router>
-						<Header />
-						<Routes>
-							<Route path="/" element={<Home />} />
-							<Route path="/product/:id" element={<Product />} />
-							<Route path="/cart" element={<Cart />} />
-							<Route path="/checkout" element={<Checkout />} />
-							<Route path="/auth" element={<Auth />} />
-						</Routes>
-						<Footer />
+						<div className="app-container">
+							<Header />
+							<main className="main-content">
+								<Routes>
+									<Route path="/" element={<Home />} />
+									<Route
+										path="/product/:id"
+										element={<Product />}
+									/>
+									<Route path="/cart" element={<Cart />} />
+									<Route
+										path="/checkout"
+										element={<Checkout />}
+									/>
+									<Route path="/auth" element={<Auth />} />
+								</Routes>
+							</main>
+							<Footer />
+						</div>
 					</Router>
 				</CartProvider>
 			</AuthProvider>

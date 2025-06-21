@@ -3,23 +3,58 @@ const passport = require('passport');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+require('dotenv').config();
 const authRoutes = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const userRoutes = require('./routes/users');
-const { sessionSecret } = require('./config/database');
 
 const app = express();
 
+// Load environment variables first
+require('dotenv').config();
+
+// Generate session secret with fallback
+const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
+
+// Ensure JWT_SECRET is available
+if (!process.env.JWT_SECRET) {
+	console.error('WARNING: JWT_SECRET environment variable is not set!');
+	process.env.JWT_SECRET = require('crypto').randomBytes(64).toString('hex');
+	console.log('Generated temporary JWT_SECRET. Please set JWT_SECRET in your .env file.');
+}
+
 // Middleware
 app.use(cors({
-	origin: 'http://localhost:3000', // Allow requests from this origin
-	credentials: true // Allow credentials (cookies, authorization headers, etc.)
+	origin: function (origin, callback) {
+		const allowedOrigins = [
+			'http://localhost:3000',
+			'http://127.0.0.1:3000',
+			'http://mouse:3000',          // Your frontend origin
+			'http://mouse:2048',          // Your backend origin
+			'http://localhost:2048'
+		];
+
+		console.log('CORS request from origin:', origin); // Debug logging
+
+		// Allow requests with no origin (like curl, Postman, or server-to-server)
+		if (!origin) return callback(null, allowedOrigins[0]);
+		if (allowedOrigins.includes(origin)) {
+			console.log('CORS: Origin allowed:', origin);
+			return callback(null, origin);
+		} else {
+			console.log('CORS: Origin blocked:', origin);
+			return callback(new Error('Not allowed by CORS'));
+		}
+	},
+	credentials: true,
+	methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+	allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-	secret: process.env.SESSION_SECRET || sessionSecret,
+	secret: sessionSecret,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
@@ -29,6 +64,11 @@ app.use(session({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+	res.json({ status: 'Server is running', timestamp: new Date().toISOString() });
+});
 
 // Routes
 app.use('/api/auth', authRoutes);
