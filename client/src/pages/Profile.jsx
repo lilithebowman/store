@@ -16,21 +16,23 @@ import {
 	DialogTitle,
 	DialogContent,
 	DialogActions,
-	TextField,
 	IconButton,
 	Snackbar,
 	Alert,
+	Input,
 } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import EmailIcon from '@mui/icons-material/Email';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import { useAuth } from '../contexts/AuthContext';
 
 const Profile = () => {
 	const { user, updateProfileImage } = useAuth();
 	const [open, setOpen] = useState(false);
-	const [imageUrl, setImageUrl] = useState('');
+	const [selectedFile, setSelectedFile] = useState(null);
+	const [previewUrl, setPreviewUrl] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [snackbar, setSnackbar] = useState({
 		open: false,
@@ -39,19 +41,64 @@ const Profile = () => {
 	});
 
 	const handleOpenDialog = () => {
-		setImageUrl(user?.profileImage || '');
+		setSelectedFile(null);
+		setPreviewUrl('');
 		setOpen(true);
 	};
 
 	const handleCloseDialog = () => {
 		setOpen(false);
-		setImageUrl('');
+		setSelectedFile(null);
+		setPreviewUrl('');
+	};
+
+	const handleFileSelect = event => {
+		const file = event.target.files[0];
+		if (file) {
+			// Validate file type
+			if (!file.type.startsWith('image/')) {
+				setSnackbar({
+					open: true,
+					message: 'Please select an image file',
+					severity: 'error',
+				});
+				return;
+			}
+
+			// Validate file size (5MB limit)
+			if (file.size > 5 * 1024 * 1024) {
+				setSnackbar({
+					open: true,
+					message: 'File size must be less than 5MB',
+					severity: 'error',
+				});
+				return;
+			}
+
+			setSelectedFile(file);
+
+			// Create preview URL
+			const reader = new FileReader();
+			reader.onload = e => {
+				setPreviewUrl(e.target.result);
+			};
+			reader.readAsDataURL(file);
+		}
 	};
 
 	const handleUpdateImage = async () => {
+		if (!selectedFile) {
+			setSnackbar({
+				open: true,
+				message: 'Please select an image file',
+				severity: 'warning',
+			});
+			return;
+		}
+
 		setLoading(true);
 		try {
-			await updateProfileImage(imageUrl);
+			await updateProfileImage(selectedFile);
 			setSnackbar({
 				open: true,
 				message: 'Profile image updated successfully!',
@@ -76,6 +123,17 @@ const Profile = () => {
 		setSnackbar({ ...snackbar, open: false });
 	};
 
+	const getImageUrl = imagePath => {
+		if (!imagePath) return null;
+		// If it's already a full URL, return as is
+		if (imagePath.startsWith('http')) return imagePath;
+		// Otherwise, construct the URL from the server
+		const baseURL =
+			process.env.REACT_APP_API_URL ||
+			`http://${window.location.hostname}:2048`;
+		return `${baseURL}/${imagePath}`;
+	};
+
 	if (!user) {
 		return (
 			<Container maxWidth="md" sx={{ mt: 4 }}>
@@ -92,7 +150,7 @@ const Profile = () => {
 				<Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
 					<Box sx={{ position: 'relative', mr: 3 }}>
 						<Avatar
-							src={user.profileImage}
+							src={getImageUrl(user.profileImage)}
 							sx={{
 								width: 80,
 								height: 80,
@@ -100,11 +158,11 @@ const Profile = () => {
 								fontSize: '2rem',
 							}}
 						>
-							{user.profileImage
-								? null
-								: user.username
+							{!user.profileImage
+								? user.username
 									? user.username.charAt(0).toUpperCase()
-									: user.email.charAt(0).toUpperCase()}
+									: user.email.charAt(0).toUpperCase()
+								: null}
 						</Avatar>
 						<IconButton
 							sx={{
@@ -190,7 +248,7 @@ const Profile = () => {
 				</Box>
 			</Paper>
 
-			{/* Profile Image Dialog */}
+			{/* Profile Image Upload Dialog */}
 			<Dialog
 				open={open}
 				onClose={handleCloseDialog}
@@ -199,49 +257,73 @@ const Profile = () => {
 			>
 				<DialogTitle>Update Profile Image</DialogTitle>
 				<DialogContent>
-					<TextField
-						autoFocus
-						margin="dense"
-						label="Image URL"
-						type="url"
-						fullWidth
-						variant="outlined"
-						value={imageUrl}
-						onChange={e => setImageUrl(e.target.value)}
-						placeholder="https://example.com/image.jpg"
-						helperText="Enter a valid image URL"
-					/>
-					{imageUrl && (
-						<Box sx={{ mt: 2, textAlign: 'center' }}>
+					<Box sx={{ mt: 2, mb: 3 }}>
+						<Input
+							type="file"
+							accept="image/*"
+							onChange={handleFileSelect}
+							sx={{ display: 'none' }}
+							id="image-upload-input"
+						/>
+						<label htmlFor="image-upload-input">
+							<Button
+								variant="outlined"
+								component="span"
+								startIcon={<CloudUploadIcon />}
+								fullWidth
+								sx={{ mb: 2 }}
+							>
+								Choose Image File
+							</Button>
+						</label>
+
+						{selectedFile && (
 							<Typography
 								variant="body2"
 								color="text.secondary"
-								sx={{ mb: 1 }}
+								sx={{ mb: 2 }}
 							>
-								Preview:
+								Selected: {selectedFile.name}
 							</Typography>
-							<Avatar
-								src={imageUrl}
-								sx={{ width: 100, height: 100, mx: 'auto' }}
-								onError={() => {
-									setSnackbar({
-										open: true,
-										message: 'Invalid image URL',
-										severity: 'warning',
-									});
-								}}
-							/>
-						</Box>
-					)}
+						)}
+
+						{previewUrl && (
+							<Box sx={{ textAlign: 'center' }}>
+								<Typography
+									variant="body2"
+									color="text.secondary"
+									sx={{ mb: 1 }}
+								>
+									Preview:
+								</Typography>
+								<Avatar
+									src={previewUrl}
+									sx={{ width: 120, height: 120, mx: 'auto' }}
+								/>
+							</Box>
+						)}
+
+						<Typography
+							variant="caption"
+							color="text.secondary"
+							display="block"
+							sx={{ mt: 2 }}
+						>
+							• Supported formats: JPG, PNG, GIF, WebP
+							<br />
+							• Maximum file size: 5MB
+							<br />• Recommended size: 300x300 pixels
+						</Typography>
+					</Box>
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleCloseDialog}>Cancel</Button>
 					<Button
 						onClick={handleUpdateImage}
 						variant="contained"
-						disabled={loading || !imageUrl.trim()}
+						disabled={loading || !selectedFile}
 					>
-						{loading ? 'Updating...' : 'Update'}
+						{loading ? 'Uploading...' : 'Upload Image'}
 					</Button>
 				</DialogActions>
 			</Dialog>

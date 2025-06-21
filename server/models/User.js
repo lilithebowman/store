@@ -45,8 +45,9 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: true,
         validate: {
-            isUrl: {
-                msg: 'Profile image must be a valid URL'
+            notEmpty: {
+                args: false,
+                msg: 'Profile image path cannot be empty'
             }
         }
     }

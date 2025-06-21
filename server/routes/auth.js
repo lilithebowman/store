@@ -3,6 +3,7 @@ const passport = require('passport');
 const router = express.Router();
 const authController = require('../controllers/authController');
 const { authenticate } = require('../middlewares/auth');
+const { uploadProfileImage } = require('../middlewares/upload');
 
 // User registration
 router.post('/register', authController.register);
@@ -11,7 +12,7 @@ router.post('/register', authController.register);
 router.post('/login', authController.login);
 
 // Update profile image
-router.put('/profile-image', authenticate, authController.updateProfileImage);
+router.put('/profile-image', authenticate, uploadProfileImage, authController.updateProfileImage);
 
 // OAuth routes
 router.get('/oauth/:provider', passport.authenticate('oauth2', { session: false }));

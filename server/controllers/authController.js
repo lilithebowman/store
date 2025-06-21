@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const fs = require('fs');
 
 // Register a new user
 exports.register = async (req, res) => {
@@ -160,17 +162,27 @@ exports.logout = (req, res) => {
 
 // Update profile image
 exports.updateProfileImage = async (req, res) => {
-    const { profileImage } = req.body;
     const userId = req.userId; // From auth middleware
 
     try {
-        if (!profileImage) {
-            return res.status(400).json({ message: 'Profile image URL is required' });
+        // Check if file was uploaded
+        if (!req.file) {
+            return res.status(400).json({ message: 'No image file provided' });
         }
 
-        // Update user profile image
+        // Delete old profile image if it exists
+        const existingUser = await User.findByPk(userId);
+        if (existingUser && existingUser.profileImage) {
+            const oldImagePath = path.join(__dirname, '..', existingUser.profileImage);
+            if (fs.existsSync(oldImagePath)) {
+                fs.unlinkSync(oldImagePath);
+            }
+        }
+
+        // Update user profile image with relative path
+        const relativePath = `uploads/profile-images/${req.file.filename}`;
         const [updated] = await User.update(
-            { profileImage },
+            { profileImage: relativePath },
             { where: { id: userId } }
         );
 

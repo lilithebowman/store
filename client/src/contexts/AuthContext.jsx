@@ -83,11 +83,10 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	const updateProfileImage = async profileImageUrl => {
+	const updateProfileImage = async imageFile => {
 		try {
 			setError(null);
-			const response =
-				await authService.updateProfileImage(profileImageUrl);
+			const response = await authService.updateProfileImage(imageFile);
 			setUser(response.user);
 			localStorage.setItem('user', JSON.stringify(response.user));
 			return response;

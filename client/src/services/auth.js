@@ -102,11 +102,14 @@ export const getCurrentUser = () => {
 	return SecureAuth.getUserData();
 };
 
-export const updateProfileImage = async (profileImageUrl) => {
+export const updateProfileImage = async (imageFile) => {
 	try {
-		const response = await api.put('/users/profile/image', {
-			profileImage: profileImageUrl
-		});
+		const formData = new FormData();
+		formData.append('profileImage', imageFile);
+
+		// Don't set Content-Type manually - let axios set it automatically for FormData
+		// This preserves the Authorization header from the interceptor
+		const response = await api.put('/users/profile/image', formData);
 
 		// Update stored user data
 		if (response.data.user) {
