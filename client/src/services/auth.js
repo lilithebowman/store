@@ -4,20 +4,16 @@ import { SecureAuth } from '../utils/secureAuth';
 // Create axios instance with base URL
 const api = axios.create({
 	baseURL: process.env.REACT_APP_API_URL || `http://${window.location.hostname}:2048/api`,
-	withCredentials: true,
-	headers: {
-		'Content-Type': 'application/json'
-	}
+	withCredentials: true
+	// Don't set default Content-Type - let axios determine it automatically
 });
 
 // Add request interceptor to include token
 api.interceptors.request.use(
 	(config) => {
 		const token = SecureAuth.getToken(); // Use secure token retrieval
-		console.log('API interceptor - Token being sent:', token);
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
-			console.log('API interceptor - Authorization header set:', config.headers.Authorization);
 		}
 		return config;
 	},
@@ -29,7 +25,11 @@ api.interceptors.request.use(
 export const login = async (email, password) => {
 	try {
 		console.log('Login request starting...');
-		const response = await api.post('/auth/login', { email, password });
+		const response = await api.post('/auth/login', { email, password }, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 
 		console.log('Response status:', response.status);
 		console.log('Response data:', response.data);
@@ -65,7 +65,11 @@ export const login = async (email, password) => {
 
 export const register = async (username, email, password) => {
 	try {
-		const response = await api.post('/auth/register', { username, email, password });
+		const response = await api.post('/auth/register', { username, email, password }, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 		if (response.data.token) {
 			SecureAuth.setToken(response.data.token);
 		}
@@ -86,7 +90,11 @@ export const register = async (username, email, password) => {
 
 export const logout = async () => {
 	try {
-		await api.post('/auth/logout');
+		await api.post('/auth/logout', {}, {
+			headers: {
+				'Content-Type': 'application/json'
+			}
+		});
 	} catch (error) {
 		console.error('Logout error:', error);
 	} finally {
@@ -106,10 +114,6 @@ export const getCurrentUser = () => {
 
 export const updateProfileImage = async (imageFile) => {
 	try {
-		const token = SecureAuth.getToken();
-		console.log('updateProfileImage - Token available:', !!token);
-		console.log('updateProfileImage - Token preview:', token ? token.substring(0, 20) + '...' : 'none');
-
 		const formData = new FormData();
 		formData.append('profileImage', imageFile);
 
@@ -124,7 +128,6 @@ export const updateProfileImage = async (imageFile) => {
 
 		return response.data;
 	} catch (error) {
-		console.error('updateProfileImage error:', error);
 		if (error.response) {
 			throw error.response.data;
 		} else if (error.request) {
