@@ -15,6 +15,7 @@ import {
 	RoleManagement,
 	ProductManagement,
 	PageManagement,
+	Page,
 } from './pages/index';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -45,6 +46,10 @@ const App = () => {
 									<Route
 										path="/profile"
 										element={<Profile />}
+									/>
+									<Route
+										path="/pages/:slug"
+										element={<Page />}
 									/>
 									<Route
 										path="/admin/users"

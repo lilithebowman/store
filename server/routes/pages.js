@@ -4,6 +4,11 @@ const pageController = require('../controllers/pageController');
 const { authenticate } = require('../middlewares/auth');
 const { requirePermission } = require('../middlewares/permissions');
 
+// Test route to debug
+router.get('/test', (req, res) => {
+	res.json({ message: 'Pages route is working' });
+});
+
 // Public routes (no authentication required)
 router.get('/published', pageController.getPublishedPages);
 router.get('/slug/:slug', pageController.getPageBySlug);

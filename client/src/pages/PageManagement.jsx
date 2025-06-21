@@ -25,6 +25,7 @@ import {
 	Select,
 	MenuItem,
 	Chip,
+	Link,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -32,7 +33,9 @@ import AddIcon from '@mui/icons-material/Add';
 import WebIcon from '@mui/icons-material/Web';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useAuth } from '../contexts/AuthContext';
+import { Link as RouterLink } from 'react-router-dom';
 
 const PageManagement = () => {
 	const { user, userPermissions } = useAuth();
@@ -320,6 +323,7 @@ const PageManagement = () => {
 							<TableRow>
 								<TableCell>Title</TableCell>
 								<TableCell>Slug</TableCell>
+								<TableCell>Route</TableCell>
 								<TableCell>Status</TableCell>
 								<TableCell>Created</TableCell>
 								<TableCell>Updated</TableCell>
@@ -345,6 +349,23 @@ const PageManagement = () => {
 										>
 											/{page.slug}
 										</Typography>
+									</TableCell>
+									<TableCell>
+										<Link
+											component={RouterLink}
+											to={`/pages/${page.slug}`}
+											variant="body2"
+											sx={{
+												fontFamily: 'monospace',
+												textDecoration: 'none',
+												color: 'primary.main',
+												'&:hover': {
+													textDecoration: 'underline',
+												},
+											}}
+										>
+											/pages/{page.slug}
+										</Link>
 									</TableCell>
 									<TableCell>
 										<Chip
@@ -379,6 +400,20 @@ const PageManagement = () => {
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">
+										{page.status === 'published' && (
+											<Tooltip title="View Page">
+												<IconButton
+													color="info"
+													size="small"
+													component={RouterLink}
+													to={`/pages/${page.slug}`}
+													target="_blank"
+													rel="noopener noreferrer"
+												>
+													<OpenInNewIcon />
+												</IconButton>
+											</Tooltip>
+										)}
 										{canEditPage && (
 											<Tooltip title="Edit Page">
 												<IconButton

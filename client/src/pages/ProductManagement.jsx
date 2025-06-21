@@ -188,8 +188,8 @@ const ProductManagement = () => {
 
 			const productData = {
 				...editedProduct,
-				price: parseFloat(editedProduct.price),
-				stock: parseInt(editedProduct.stock),
+				price: parseFloat(editedProduct.price) || 0,
+				stock: parseInt(editedProduct.stock) || 0,
 			};
 
 			const response = await fetch(url, {
@@ -344,11 +344,18 @@ const ProductManagement = () => {
 									</TableCell>
 									<TableCell>
 										$
-										{typeof product.price === 'number'
-											? product.price.toFixed(2)
-											: parseFloat(
-													product.price || 0
-												).toFixed(2)}
+										{(() => {
+											const price =
+												typeof product.price ===
+												'number'
+													? product.price
+													: parseFloat(
+															product.price || 0
+														);
+											return isNaN(price)
+												? '0.00'
+												: price.toFixed(2);
+										})()}
 									</TableCell>
 									<TableCell>
 										{product.stock !== undefined
@@ -459,6 +466,10 @@ const ProductManagement = () => {
 							}
 							margin="normal"
 							required
+							inputProps={{
+								min: 0,
+								step: 0.01,
+							}}
 							InputProps={{
 								startAdornment: (
 									<InputAdornment position="start">
@@ -501,7 +512,10 @@ const ProductManagement = () => {
 						color="primary"
 						variant="contained"
 						disabled={
-							!editedProduct.name.trim() || !editedProduct.price
+							!editedProduct.name.trim() ||
+							!editedProduct.price ||
+							isNaN(parseFloat(editedProduct.price)) ||
+							parseFloat(editedProduct.price) < 0
 						}
 					>
 						{selectedProduct ? 'Update Product' : 'Create Product'}
