@@ -14,14 +14,18 @@ const app = express();
 // Load environment variables first
 require('dotenv').config();
 
-// Generate session secret with fallback
-const sessionSecret = process.env.SESSION_SECRET || require('crypto').randomBytes(32).toString('hex');
-
 // Ensure JWT_SECRET is available
 if (!process.env.JWT_SECRET) {
-	console.error('WARNING: JWT_SECRET environment variable is not set!');
-	process.env.JWT_SECRET = require('crypto').randomBytes(64).toString('hex');
-	console.log('Generated temporary JWT_SECRET. Please set JWT_SECRET in your .env file.');
+	console.error('CRITICAL: JWT_SECRET environment variable is not set!');
+	console.error('Please create a .env file with a secure JWT_SECRET');
+	process.exit(1); // Don't start server without proper secrets
+}
+
+// Ensure SESSION_SECRET is available
+if (!process.env.SESSION_SECRET) {
+	console.error('CRITICAL: SESSION_SECRET environment variable is not set!');
+	console.error('Please create a .env file with a secure SESSION_SECRET');
+	process.exit(1); // Don't start server without proper secrets
 }
 
 // Middleware
@@ -54,7 +58,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({
-	secret: sessionSecret,
+	secret: process.env.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {

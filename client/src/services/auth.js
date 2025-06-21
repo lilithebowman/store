@@ -28,29 +28,32 @@ export const login = async (email, password) => {
 		console.log('Login request starting...');
 		const response = await api.post('/auth/login', { email, password });
 
-		console.log('Response status:', response.status);
-		console.log('Response headers:', response.headers);
-		console.log('Response data:', response.data);
-
-		// Store token and user data if they exist
+		// Store token securely (consider using httpOnly cookies instead)
 		if (response.data && response.data.token) {
+			// For now, store in localStorage but consider httpOnly cookies for production
 			localStorage.setItem('token', response.data.token);
 		}
 		if (response.data && response.data.user) {
-			localStorage.setItem('user', JSON.stringify(response.data.user));
+			// Only store non-sensitive user data
+			const safeUserData = {
+				id: response.data.user.id,
+				username: response.data.user.username,
+				email: response.data.user.email
+				// Never store passwords or sensitive data
+			};
+			localStorage.setItem('user', JSON.stringify(safeUserData));
 		}
 
 		return response.data;
 	} catch (error) {
-		console.error('Login error details:', {
-			message: error.message,
-			response: error.response ? {
-				status: error.response.status,
-				data: error.response.data,
-				headers: error.response.headers
-			} : 'No response',
-			request: error.request ? 'Request was made but no response received' : 'No request'
-		});
+		// Don't log sensitive data in production
+		if (process.env.NODE_ENV === 'development') {
+			console.error('Login error details:', {
+				message: error.message,
+				status: error.response?.status,
+				// Don't log full response data which might contain sensitive info
+			});
+		}
 
 		if (error.response) {
 			throw error.response.data || { message: `Server error: ${error.response.status}` };
