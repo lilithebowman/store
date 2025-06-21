@@ -21,6 +21,9 @@ import {
 	Snackbar,
 	Tooltip,
 	Avatar,
+	TextField,
+	FormControlLabel,
+	Switch,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,7 +36,13 @@ const UserManagement = () => {
 	const [users, setUsers] = useState([]);
 	const [loading, setLoading] = useState(true);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+	const [editDialogOpen, setEditDialogOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState(null);
+	const [editedUser, setEditedUser] = useState({
+		username: '',
+		email: '',
+		isAdmin: false,
+	});
 	const [snackbar, setSnackbar] = useState({
 		open: false,
 		message: '',
@@ -115,6 +124,60 @@ const UserManagement = () => {
 	const closeDeleteDialog = () => {
 		setDeleteDialogOpen(false);
 		setSelectedUser(null);
+	};
+
+	const openEditDialog = userToEdit => {
+		setSelectedUser(userToEdit);
+		setEditedUser({
+			username: userToEdit.username,
+			email: userToEdit.email,
+			isAdmin: userToEdit.isAdmin,
+		});
+		setEditDialogOpen(true);
+	};
+
+	const closeEditDialog = () => {
+		setEditDialogOpen(false);
+		setSelectedUser(null);
+		setEditedUser({ username: '', email: '', isAdmin: false });
+	};
+
+	const handleEditUser = async () => {
+		if (!selectedUser) return;
+
+		try {
+			const response = await fetch(`/api/users/${selectedUser.id}`, {
+				method: 'PUT',
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(editedUser),
+			});
+
+			if (response.ok) {
+				const updatedUser = await response.json();
+				setUsers(
+					users.map(u => (u.id === selectedUser.id ? updatedUser : u))
+				);
+				setSnackbar({
+					open: true,
+					message: 'User updated successfully',
+					severity: 'success',
+				});
+				closeEditDialog();
+			} else {
+				const errorData = await response.json();
+				throw new Error(errorData.message || 'Failed to update user');
+			}
+		} catch (error) {
+			console.error('Error updating user:', error);
+			setSnackbar({
+				open: true,
+				message: error.message || 'Failed to update user',
+				severity: 'error',
+			});
+		}
 	};
 
 	const handleCloseSnackbar = () => {
@@ -280,6 +343,9 @@ const UserManagement = () => {
 											<IconButton
 												color="primary"
 												size="small"
+												onClick={() =>
+													openEditDialog(userItem)
+												}
 												disabled={
 													userItem.id === user.id
 												} // Can't edit yourself
@@ -316,6 +382,71 @@ const UserManagement = () => {
 					</Box>
 				)}
 			</Paper>
+
+			{/* Edit User Dialog */}
+			<Dialog
+				open={editDialogOpen}
+				onClose={closeEditDialog}
+				maxWidth="sm"
+				fullWidth
+			>
+				<DialogTitle>Edit User</DialogTitle>
+				<DialogContent>
+					<Box sx={{ pt: 2 }}>
+						<TextField
+							fullWidth
+							label="Username"
+							value={editedUser.username}
+							onChange={e =>
+								setEditedUser({
+									...editedUser,
+									username: e.target.value,
+								})
+							}
+							margin="normal"
+						/>
+						<TextField
+							fullWidth
+							label="Email"
+							type="email"
+							value={editedUser.email}
+							onChange={e =>
+								setEditedUser({
+									...editedUser,
+									email: e.target.value,
+								})
+							}
+							margin="normal"
+						/>
+						<FormControlLabel
+							control={
+								<Switch
+									checked={editedUser.isAdmin}
+									onChange={e =>
+										setEditedUser({
+											...editedUser,
+											isAdmin: e.target.checked,
+										})
+									}
+									color="primary"
+								/>
+							}
+							label="Administrator"
+							sx={{ mt: 2 }}
+						/>
+					</Box>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={closeEditDialog}>Cancel</Button>
+					<Button
+						onClick={handleEditUser}
+						color="primary"
+						variant="contained"
+					>
+						Update User
+					</Button>
+				</DialogActions>
+			</Dialog>
 
 			{/* Delete Confirmation Dialog */}
 			<Dialog

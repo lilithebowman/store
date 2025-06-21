@@ -15,6 +15,7 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import PersonIcon from '@mui/icons-material/Person';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import LogoutIcon from '@mui/icons-material/Logout';
 import Box from '@mui/material/Box';
 import { useCart } from '../../contexts/CartContext';
@@ -43,6 +44,11 @@ const Header = () => {
 	const handleAdminPanel = () => {
 		handleUserMenuClose();
 		navigate('/admin/users');
+	};
+
+	const handleRoles = () => {
+		handleUserMenuClose();
+		navigate('/admin/roles');
 	};
 
 	const handleLogout = async () => {
@@ -128,14 +134,22 @@ const Header = () => {
 									<ListItemText>Profile</ListItemText>
 								</MenuItem>
 								{user.isAdmin && (
-									<MenuItem onClick={handleAdminPanel}>
-										<ListItemIcon>
-											<AdminPanelSettingsIcon fontSize="small" />
-										</ListItemIcon>
-										<ListItemText>
-											User Management
-										</ListItemText>
-									</MenuItem>
+									<>
+										<MenuItem onClick={handleAdminPanel}>
+											<ListItemIcon>
+												<AdminPanelSettingsIcon fontSize="small" />
+											</ListItemIcon>
+											<ListItemText>
+												User Management
+											</ListItemText>
+										</MenuItem>
+										<MenuItem onClick={handleRoles}>
+											<ListItemIcon>
+												<SupervisorAccountIcon fontSize="small" />
+											</ListItemIcon>
+											<ListItemText>Roles</ListItemText>
+										</MenuItem>
+									</>
 								)}
 								<MenuItem onClick={handleLogout}>
 									<ListItemIcon>

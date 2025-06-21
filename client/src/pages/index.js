@@ -5,5 +5,6 @@ import Home from './Home';
 import Product from './Product';
 import Profile from './Profile';
 import UserManagement from './UserManagement';
+import RoleManagement from './RoleManagement';
 
-export { Auth, Cart, Checkout, Home, Product, Profile, UserManagement };
+export { Auth, Cart, Checkout, Home, Product, Profile, UserManagement, RoleManagement };

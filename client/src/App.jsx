@@ -12,6 +12,7 @@ import {
 	Product,
 	Profile,
 	UserManagement,
+	RoleManagement,
 } from './pages/index';
 import Header from './components/layout/Header';
 import Footer from './components/layout/Footer';
@@ -46,6 +47,10 @@ const App = () => {
 									<Route
 										path="/admin/users"
 										element={<UserManagement />}
+									/>
+									<Route
+										path="/admin/roles"
+										element={<RoleManagement />}
 									/>
 								</Routes>
 							</main>
