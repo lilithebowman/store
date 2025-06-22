@@ -1,0 +1,71 @@
+name: Coverage Report
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  coverage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.x"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          npm ci --prefix client
+
+      - name: Run tests with coverage
+        run: |
+          npm run client:test -- --coverage --watchAll=false
+          npm run test:coverage:ci || true
+
+      - name: Generate coverage badge
+        uses: tj-actions/coverage-badge-js@v1
+        if: github.ref == 'refs/heads/main'
+        with:
+          output: coverage-badge.svg
+
+      - name: Verify coverage badge
+        if: github.ref == 'refs/heads/main'
+        run: |
+          ls -la coverage-badge.svg || echo "Badge not generated"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./client/coverage/lcov.info
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Coverage Summary
+        run: |
+          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
+          if [ -f "client/coverage/coverage-summary.json" ]; then
+            node -e "
+              const fs = require('fs');
+              const coverage = JSON.parse(fs.readFileSync('client/coverage/coverage-summary.json', 'utf8'));
+              const total = coverage.total;
+              console.log('| Metric | Percentage | Covered/Total |');
+              console.log('|--------|------------|---------------|');
+              console.log('| Statements | ' + total.statements.pct + '% | ' + total.statements.covered + '/' + total.statements.total + ' |');
+              console.log('| Branches | ' + total.branches.pct + '% | ' + total.branches.covered + '/' + total.branches.total + ' |');
+              console.log('| Functions | ' + total.functions.pct + '% | ' + total.functions.covered + '/' + total.functions.total + ' |');
+              console.log('| Lines | ' + total.lines.pct + '% | ' + total.lines.covered + '/' + total.lines.total + ' |');
+            " >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage summary not found" >> $GITHUB_STEP_SUMMARY
+          fi

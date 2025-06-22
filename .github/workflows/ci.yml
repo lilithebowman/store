@@ -1,0 +1,102 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: "npm"
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install client dependencies
+        run: npm ci --prefix client
+
+      - name: Install server dependencies
+        run: npm ci --prefix server
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run client tests with coverage
+        run: npm run client:test -- --coverage --watchAll=false
+
+      - name: Run server tests with coverage (if any)
+        run: npm run test:coverage:ci
+        continue-on-error: true # Allow to continue if no server tests exist yet
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./client/coverage/lcov.info,./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          fail_ci_if_error: false # Don't fail CI if codecov upload fails
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: Comment coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./client/coverage/lcov.info
+
+      - name: Check coverage thresholds
+        run: |
+          echo "Checking coverage thresholds..."
+          npm run test:coverage:ci || {
+            echo "❌ Coverage thresholds not met!"
+            echo "Please ensure your code meets the minimum coverage requirements:"
+            echo "  - Statements: 75%"
+            echo "  - Branches: 70%"
+            echo "  - Functions: 75%"
+            echo "  - Lines: 75%"
+            echo "  - Components: 85% (statements, functions, lines), 80% (branches)"
+            exit 1
+          }
+          echo "✅ Coverage thresholds met!"
+
+  build:
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "npm"
+
+      - name: Install client dependencies
+        run: npm ci --prefix client
+
+      - name: Build client
+        run: npm run client:build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-files
+          path: client/build/
