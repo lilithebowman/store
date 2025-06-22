@@ -1,6 +1,17 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render, screen } from '@testing-library/react';
+import { CartProvider } from '../../../contexts/CartContext';
 import ProductCard from './ProductCard';
+
+// Mock component wrapper with CartProvider
+const TestWrapper = ({ children }) => {
+	return <CartProvider>{children}</CartProvider>;
+};
+
+TestWrapper.propTypes = {
+	children: PropTypes.node.isRequired,
+};
 
 describe('ProductCard', () => {
 	const mockProduct = {
@@ -12,26 +23,42 @@ describe('ProductCard', () => {
 	};
 
 	test('renders product name', () => {
-		render(<ProductCard product={mockProduct} />);
-		const productName = screen.getByText(/Test Product/i);
-		expect(productName).toBeInTheDocument();
+		render(
+			<TestWrapper>
+				<ProductCard product={mockProduct} />
+			</TestWrapper>
+		);
+		const productName = screen.getAllByText(/Test Product/i)[0]; // Get the first occurrence (heading)
+		expect(productName).toBeTruthy();
 	});
 
 	test('renders product price', () => {
-		render(<ProductCard product={mockProduct} />);
-		const productPrice = screen.getByText(/\$29.99/i);
-		expect(productPrice).toBeInTheDocument();
+		render(
+			<TestWrapper>
+				<ProductCard product={mockProduct} />
+			</TestWrapper>
+		);
+		const productPrice = screen.getByText(/\$29\.99/i);
+		expect(productPrice).toBeTruthy();
 	});
 
 	test('renders product description', () => {
-		render(<ProductCard product={mockProduct} />);
+		render(
+			<TestWrapper>
+				<ProductCard product={mockProduct} />
+			</TestWrapper>
+		);
 		const productDescription = screen.getByText(/This is a test product./i);
-		expect(productDescription).toBeInTheDocument();
+		expect(productDescription).toBeTruthy();
 	});
 
 	test('renders product image', () => {
-		render(<ProductCard product={mockProduct} />);
+		render(
+			<TestWrapper>
+				<ProductCard product={mockProduct} />
+			</TestWrapper>
+		);
 		const productImage = screen.getByAltText(/Test Product/i);
-		expect(productImage).toHaveAttribute('src', mockProduct.image);
+		expect(productImage.getAttribute('src')).toBe(mockProduct.image);
 	});
 });

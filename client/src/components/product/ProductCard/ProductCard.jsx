@@ -27,26 +27,41 @@ const ProductCard = ({ product }) => {
 	useEffect(() => {
 		const canvas = canvasRef.current;
 		if (canvas) {
-			const ctx = canvas.getContext('2d');
-			const width = canvas.width;
-			const height = canvas.height;
+			try {
+				const ctx = canvas.getContext('2d');
+				if (ctx) {
+					const width = canvas.width;
+					const height = canvas.height;
 
-			// Clear the canvas
-			ctx.clearRect(0, 0, width, height);
+					// Clear the canvas
+					ctx.clearRect(0, 0, width, height);
 
-			// Draw no-entry emoji
-			ctx.font = '100px Arial';
-			ctx.textAlign = 'center';
-			ctx.textBaseline = 'middle';
-			ctx.fillText('🤷🏽‍♀️', width / 2, height / 2 - 20);
+					// Draw no-entry emoji
+					ctx.font = '100px Arial';
+					ctx.textAlign = 'center';
+					ctx.textBaseline = 'middle';
+					ctx.fillText('🤷🏽‍♀️', width / 2, height / 2 - 20);
 
-			// Draw "Image Not Found" text with stroke
-			ctx.font = '20px Arial';
-			ctx.strokeStyle = 'black';
-			ctx.lineWidth = 2;
-			ctx.strokeText('Image Not Found', width / 2, height / 2 + 40);
-			ctx.fillStyle = 'white';
-			ctx.fillText('Image Not Found', width / 2, height / 2 + 40);
+					// Draw "Image Not Found" text with stroke
+					ctx.font = '20px Arial';
+					ctx.strokeStyle = 'black';
+					ctx.lineWidth = 2;
+					ctx.strokeText(
+						'Image Not Found',
+						width / 2,
+						height / 2 + 40
+					);
+					ctx.fillStyle = 'white';
+					ctx.fillText('Image Not Found', width / 2, height / 2 + 40);
+				}
+			} catch (error) {
+				// Canvas operations not supported (e.g., in test environment)
+				// Silently fail and continue
+				console.debug(
+					'Canvas operations not supported:',
+					error.message
+				);
+			}
 		}
 	}, []);
 

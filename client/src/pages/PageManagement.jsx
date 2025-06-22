@@ -28,7 +28,6 @@ import AddIcon from '@mui/icons-material/Add';
 import WebIcon from '@mui/icons-material/Web';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { useAuth } from '../contexts/AuthContext';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
