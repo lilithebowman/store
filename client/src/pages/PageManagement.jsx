@@ -281,20 +281,6 @@ const PageManagement = () => {
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">
-										{page.status === 'published' && (
-											<Tooltip title="View Page">
-												<IconButton
-													color="info"
-													size="small"
-													component={RouterLink}
-													to={`/pages/${page.slug}`}
-													target="_blank"
-													rel="noopener noreferrer"
-												>
-													<OpenInNewIcon />
-												</IconButton>
-											</Tooltip>
-										)}
 										{canEditPage && (
 											<Tooltip title="Edit Page">
 												<IconButton
