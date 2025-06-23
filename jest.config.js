@@ -4,6 +4,20 @@ module.exports = {
 	collectCoverage: true,
 	coverageDirectory: 'coverage',
 	coverageReporters: ['text', 'lcov', 'html', 'json-summary'],
+	transform: {
+		'^.+\\.(js|jsx)$': ['babel-jest', {
+			presets: [
+				['@babel/preset-env', { targets: { node: 'current' } }],
+				['@babel/preset-react', { runtime: 'automatic' }]
+			]
+		}],
+		'^.+\\.css$': 'jest-transform-stub'
+	},
+	moduleFileExtensions: ['js', 'jsx', 'json'],
+	moduleNameMapper: {
+		'\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+		'^@/(.*)$': '<rootDir>/client/src/$1'
+	},
 	collectCoverageFrom: [
 		'client/src/**/*.{js,jsx}',
 		'server/**/*.js',
@@ -41,8 +55,5 @@ module.exports = {
 		'<rootDir>/client/src/**/*.{test,spec}.{js,jsx}',
 		'<rootDir>/server/**/__tests__/**/*.js',
 		'<rootDir>/server/**/*.{test,spec}.js'
-	],
-	moduleNameMapping: {
-		'^@/(.*)$': '<rootDir>/client/src/$1'
-	}
+	]
 };

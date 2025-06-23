@@ -40,8 +40,12 @@ jobs:
         run: npm run client:test -- --coverage --watchAll=false
 
       - name: Run server tests with coverage (if any)
-        run: npm run test:coverage:ci
-        continue-on-error: true # Allow to continue if no server tests exist yet
+        run: |
+          if [ -d "server/test" ] || [ -d "server/tests" ] || [ -f "server/package.json" ] && grep -q '"test"' server/package.json; then
+            npm run test:coverage:ci
+          else
+            echo "No server tests found, skipping..."
+          fi
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'
