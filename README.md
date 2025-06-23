@@ -1,7 +1,7 @@
 # e-commerce-platform
 
-![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPO_NAME/actions/workflows/ci.yml/badge.svg)
-![Coverage](https://img.shields.io/codecov/c/github/YOUR_USERNAME/YOUR_REPO_NAME)
+![CI/CD Pipeline](https://github.com/lilithebowman/store/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/codecov/c/github/lilithebowman/store)
 ![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
 ![React Version](https://img.shields.io/badge/react-18.3.1-blue)
 
