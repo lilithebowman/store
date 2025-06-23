@@ -1,5 +1,5 @@
-// Simple script to create home page via API
-const fetch = require('node-fetch');
+// Template data generator for home page creation
+// Outputs JSON that can be used to create a home page via the Page Management UI
 
 async function createHomePage() {
 	try {
