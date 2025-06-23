@@ -24,6 +24,8 @@ module.exports = {
 		'!client/src/index.js',
 		'!client/src/setupTests.js',
 		'!client/src/stories/**',
+		'!client/src/**/*.stories.{js,jsx}',
+		'!client/src/**/*.story.{js,jsx}',
 		'!server/migrations/**',
 		'!**/node_modules/**',
 		'!**/coverage/**',
