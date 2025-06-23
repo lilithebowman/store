@@ -1,14 +1,17 @@
 // Utility functions for ProductCard components
 export const createProductCardComponent = (product) => {
+    const timestamp = Date.now();
     return {
-        id: `product-card-${product.id || Date.now()}`,
+        id: `product-card-${product.id || timestamp}`,
         componentId: 'product-card',
         props: {
             product: {
-                id: product.id || Date.now(),
+                id: product.id || timestamp,
                 name: product.name || 'Untitled Product',
                 description: product.description || 'No description available',
-                price: typeof product.price === 'number' ? product.price.toFixed(2) : product.price || '0.00',
+                price: typeof product.price === 'number'
+                    ? product.price.toFixed(2)
+                    : (product.price || '0.00'),
                 image: product.image || 'https://via.placeholder.com/400x300/cccccc/ffffff?text=No+Image',
                 stock: product.stock || 0
             }
