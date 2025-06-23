@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [18.x, 20.x]
+        node-version: [20.x]
 
     steps:
       - name: Checkout code
@@ -42,16 +42,6 @@ jobs:
       - name: Run server tests with coverage (if any)
         run: npm run test:coverage:ci
         continue-on-error: true # Allow to continue if no server tests exist yet
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./client/coverage/lcov.info,./coverage/lcov.info
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: false # Don't fail CI if codecov upload fails
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Comment coverage on PR
         if: github.event_name == 'pull_request'

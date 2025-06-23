@@ -34,7 +34,7 @@ jobs:
         uses: tj-actions/coverage-badge-js@v1
         if: github.ref == 'refs/heads/main'
         with:
-          output: coverage-badge.svg
+          output_path: coverage-badge.svg
 
       - name: Verify coverage badge
         if: github.ref == 'refs/heads/main'
