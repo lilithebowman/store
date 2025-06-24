@@ -4,13 +4,23 @@ import '@testing-library/jest-dom';
 import Footer from './Footer';
 
 describe('Footer Component', () => {
+import { render, screen } from '@testing-library/react';
+import { BrowserRouter } from 'react-router-dom';
+import Footer from './Footer';
+
+describe('Footer Component', () => {
 	test('renders footer component', () => {
-		render(<Footer />);
+		render(
+			<BrowserRouter>
+				<Footer />
+			</BrowserRouter>
+		);
 
 		// Footer should be present in the document
 		const footer = screen.getByRole('contentinfo');
 		expect(footer).toBeInTheDocument();
 	});
+});
 
 	test('displays copyright information', () => {
 		render(<Footer />);
