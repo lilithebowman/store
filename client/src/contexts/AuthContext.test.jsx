@@ -115,23 +115,25 @@ describe('AuthContext', () => {
 		});
 	});
 
-	test('handles login error', async () => {
-		const errorMessage = 'Login failed';
-		authService.login.mockRejectedValue(new Error(errorMessage));
+test('handles login error', async () => {
+	const errorMessage = 'Login failed';
+	authService.login.mockRejectedValue(new Error(errorMessage));
 
-		render(
-			<AuthProvider>
-				<TestComponent />
-			</AuthProvider>
-		);
+	render(
+		<AuthProvider>
+			<TestComponent />
+		</AuthProvider>
+	);
 
-		// Click login button
+	// Click login button
+	await act(async () => {
 		fireEvent.click(screen.getByText('Login'));
-
-		await waitFor(() => {
-			expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
-		});
 	});
+
+	await waitFor(() => {
+		expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
+	});
+});
 
 	test('handles successful registration', async () => {
 		const mockUser = {
