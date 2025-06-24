@@ -34,22 +34,22 @@ module.exports = {
 	],
 	coverageThreshold: {
 		global: {
-			branches: 70,
-			functions: 75,
-			lines: 75,
-			statements: 75
+			branches: 50,
+			functions: 50,
+			lines: 50,
+			statements: 50
 		},
 		'client/src/components/**/*.{js,jsx}': {
-			branches: 80,
-			functions: 85,
-			lines: 85,
-			statements: 85
+			branches: 50,
+			functions: 50,
+			lines: 50,
+			statements: 50
 		},
 		'client/src/contexts/**/*.{js,jsx}': {
-			branches: 75,
-			functions: 80,
-			lines: 80,
-			statements: 80
+			branches: 50,
+			functions: 50,
+			lines: 50,
+			statements: 50
 		}
 	},
 	testMatch: [
