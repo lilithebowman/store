@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
@@ -26,6 +27,9 @@ jest.mock('../../contexts/AuthContext', () => ({
 // Test wrapper with necessary providers
 const TestWrapper = ({ children }) => {
 	return <BrowserRouter>{children}</BrowserRouter>;
+};
+TestWrapper.propTypes = {
+	children: PropTypes.node.isRequired,
 };
 
 describe('CogMenu Component', () => {

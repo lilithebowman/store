@@ -1,7 +1,7 @@
-const User = require('../models/User');
-const bcrypt = require('bcrypt');
-const path = require('path');
-const fs = require('fs');
+const User = require("../models/User");
+const bcrypt = require("bcrypt");
+const path = require("path");
+const fs = require("fs");
 
 // Create a new user
 exports.createUser = async (req, res) => {
@@ -12,12 +12,12 @@ exports.createUser = async (req, res) => {
 		await User.create({
 			username,
 			email,
-			password // Password will be hashed by the beforeCreate hook
+			password, // Password will be hashed by the beforeCreate hook
 		});
 
-		res.status(201).json({ message: 'User created successfully' });
+		res.status(201).json({ message: "User created successfully" });
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating user', error });
+		res.status(500).json({ message: "Error creating user", error });
 	}
 };
 
@@ -26,11 +26,11 @@ exports.getAllUsers = async (req, res) => {
 	try {
 		// Use findAll instead of find
 		const users = await User.findAll({
-			attributes: { exclude: ['password'] } // Exclude password field
+			attributes: { exclude: ["password"] }, // Exclude password field
 		});
 		res.status(200).json(users);
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching users', error });
+		res.status(500).json({ message: "Error fetching users", error });
 	}
 };
 
@@ -41,22 +41,23 @@ exports.getUserById = async (req, res) => {
 	try {
 		// findByPk is already Sequelize
 		const user = await User.findByPk(id, {
-			attributes: { exclude: ['password'] }
+			attributes: { exclude: ["password"] },
 		});
 
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({ message: "User not found" });
 		}
 		res.status(200).json(user);
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching user', error });
+		res.status(500).json({ message: "Error fetching user", error });
 	}
 };
 
 // Update user
 exports.updateUser = async (req, res) => {
 	const { id } = req.params;
-	const { username, email, password, profileImage, isAdmin, roles } = req.body;
+	const { username, email, password, profileImage, isAdmin, roles } =
+		req.body;
 
 	try {
 		const updatedData = { username, email };
@@ -75,20 +76,20 @@ exports.updateUser = async (req, res) => {
 
 		// Replace findByIdAndUpdate with update + findByPk
 		const [updated] = await User.update(updatedData, {
-			where: { id }
+			where: { id },
 		});
 
 		if (updated === 0) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({ message: "User not found" });
 		}
 
 		const updatedUser = await User.findByPk(id, {
-			attributes: { exclude: ['password'] }
+			attributes: { exclude: ["password"] },
 		});
 
 		res.status(200).json(updatedUser);
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating user', error });
+		res.status(500).json({ message: "Error updating user", error });
 	}
 };
 
@@ -99,13 +100,17 @@ exports.updateProfileImage = async (req, res) => {
 	try {
 		// Check if file was uploaded
 		if (!req.file) {
-			return res.status(400).json({ message: 'No image file provided' });
+			return res.status(400).json({ message: "No image file provided" });
 		}
 
 		// Delete old profile image if it exists
 		const existingUser = await User.findByPk(userId);
 		if (existingUser && existingUser.profileImage) {
-			const oldImagePath = path.join(__dirname, '..', existingUser.profileImage);
+			const oldImagePath = path.join(
+				__dirname,
+				"..",
+				existingUser.profileImage,
+			);
 			if (fs.existsSync(oldImagePath)) {
 				fs.unlinkSync(oldImagePath);
 			}
@@ -115,26 +120,26 @@ exports.updateProfileImage = async (req, res) => {
 		const relativePath = `uploads/profile-images/${req.file.filename}`;
 		const [updated] = await User.update(
 			{ profileImage: relativePath },
-			{ where: { id: userId } }
+			{ where: { id: userId } },
 		);
 
 		if (updated === 0) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({ message: "User not found" });
 		}
 
 		const updatedUser = await User.findByPk(userId, {
-			attributes: { exclude: ['password'] }
+			attributes: { exclude: ["password"] },
 		});
 
 		res.status(200).json({
-			message: 'Profile image updated successfully',
-			user: updatedUser
+			message: "Profile image updated successfully",
+			user: updatedUser,
 		});
 	} catch (error) {
-		console.error('Profile image update error:', error);
+		console.error("Profile image update error:", error);
 		res.status(500).json({
-			message: 'Error updating profile image',
-			error: error.message
+			message: "Error updating profile image",
+			error: error.message,
 		});
 	}
 };
@@ -146,16 +151,16 @@ exports.deleteUser = async (req, res) => {
 	try {
 		// Replace findByIdAndDelete with destroy
 		const deleted = await User.destroy({
-			where: { id }
+			where: { id },
 		});
 
 		if (deleted === 0) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({ message: "User not found" });
 		}
 
-		res.status(200).json({ message: 'User deleted successfully' });
+		res.status(200).json({ message: "User deleted successfully" });
 	} catch (error) {
-		res.status(500).json({ message: 'Error deleting user', error });
+		res.status(500).json({ message: "Error deleting user", error });
 	}
 };
 
@@ -166,16 +171,19 @@ exports.getUserPermissions = async (req, res) => {
 	try {
 		const user = await User.findByPk(id);
 		if (!user) {
-			return res.status(404).json({ message: 'User not found' });
+			return res.status(404).json({ message: "User not found" });
 		}
 
 		const permissions = await user.getPermissions();
 		res.status(200).json({
 			userId: user.id,
-			permissions
+			permissions,
 		});
 	} catch (error) {
-		console.error('Get user permissions error:', error);
-		res.status(500).json({ message: 'Error fetching user permissions', error: error.message });
+		console.error("Get user permissions error:", error);
+		res.status(500).json({
+			message: "Error fetching user permissions",
+			error: error.message,
+		});
 	}
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
@@ -33,6 +34,9 @@ const TestWrapper = ({ children }) => {
 			<CartProvider>{children}</CartProvider>
 		</BrowserRouter>
 	);
+};
+TestWrapper.propTypes = {
+	children: PropTypes.node.isRequired,
 };
 
 describe('Header Component', () => {

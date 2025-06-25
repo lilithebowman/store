@@ -1,5 +1,5 @@
-const { sequelize } = require('./config/database');
-const User = require('./models/User');
+const { sequelize } = require("./config/database");
+const User = require("./models/User");
 
 async function verify() {
 	try {
@@ -9,7 +9,7 @@ async function verify() {
 		await sequelize.close();
 		process.exit(0);
 	} catch (error) {
-		console.error('Error:', error.message);
+		console.error("Error:", error.message);
 		process.exit(1);
 	}
 }

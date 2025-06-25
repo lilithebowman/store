@@ -1,34 +1,61 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import App from './App';
 
 // Mock the components and contexts
+const MockAuthProvider = ({ children }) => (
+	<div data-testid="auth-provider">{children}</div>
+);
+MockAuthProvider.propTypes = {
+	children: PropTypes.node.isRequired,
+};
+
+const MockCartProvider = ({ children }) => (
+	<div data-testid="cart-provider">{children}</div>
+);
+MockCartProvider.propTypes = {
+	children: PropTypes.node.isRequired,
+};
+
 jest.mock('./contexts/AuthContext', () => ({
-	AuthProvider: ({ children }) => (
-		<div data-testid="auth-provider">{children}</div>
-	),
+	AuthProvider: MockAuthProvider,
 }));
 
 jest.mock('./contexts/CartContext', () => ({
-	CartProvider: ({ children }) => (
-		<div data-testid="cart-provider">{children}</div>
-	),
+	CartProvider: MockCartProvider,
 }));
 
 // Mock react-router-dom
+const MockBrowserRouter = ({ children }) => (
+	<div data-testid="browser-router">{children}</div>
+);
+MockBrowserRouter.propTypes = {
+	children: PropTypes.node.isRequired,
+};
+
+const MockRoutes = ({ children }) => <div data-testid="routes">{children}</div>;
+MockRoutes.propTypes = {
+	children: PropTypes.node.isRequired,
+};
+
+const MockRoute = ({ path, element }) => (
+	<div
+		data-testid={`route-${path?.replace(/[^a-zA-Z0-9]/g, '_') || 'default'}`}
+	>
+		{element}
+	</div>
+);
+MockRoute.propTypes = {
+	path: PropTypes.string,
+	element: PropTypes.node,
+};
+
 jest.mock('react-router-dom', () => ({
-	BrowserRouter: ({ children }) => (
-		<div data-testid="browser-router">{children}</div>
-	),
-	Routes: ({ children }) => <div data-testid="routes">{children}</div>,
-	Route: ({ path, element }) => (
-		<div
-			data-testid={`route-${path?.replace(/[^a-zA-Z0-9]/g, '_') || 'default'}`}
-		>
-			{element}
-		</div>
-	),
+	BrowserRouter: MockBrowserRouter,
+	Routes: MockRoutes,
+	Route: MockRoute,
 }));
 
 // Mock page components
@@ -71,10 +98,15 @@ jest.mock('./components/layout/Footer', () => {
 });
 
 // Mock MUI theme provider
+const MockThemeProvider = ({ children }) => (
+	<div data-testid="theme-provider">{children}</div>
+);
+MockThemeProvider.propTypes = {
+	children: PropTypes.node.isRequired,
+};
+
 jest.mock('@mui/material/styles', () => ({
-	ThemeProvider: ({ children }) => (
-		<div data-testid="theme-provider">{children}</div>
-	),
+	ThemeProvider: MockThemeProvider,
 }));
 
 jest.mock('./theme', () => ({

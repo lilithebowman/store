@@ -5,7 +5,7 @@
 ![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
 ![React Version](https://img.shields.io/badge/react-18.3.1-blue)
 
-Welcome to the e-commerce platform project! This project is designed to provide a comprehensive online shopping experience, featuring a client-side application built with React and a server-side application powered by Node.js and Express. 
+Welcome to the e-commerce platform project! This project is designed to provide a comprehensive online shopping experience, featuring a client-side application built with React and a server-side application powered by Node.js and Express.
 
 ## Project Structure
 
@@ -47,43 +47,49 @@ The `server` directory contains the back-end application built with Node.js and 
 To get started with the project, follow these steps:
 
 1. Clone the repository:
+
    ```
    git clone <repository-url>
    ```
 
 2. Navigate to the project directory:
+
    ```
    cd e-commerce-platform
    ```
 
 3. Install dependencies for the client:
+
    ```
    cd client
    npm install
    ```
 
 4. Install dependencies for the server:
+
    ```
    cd ../server
    npm install
    ```
 
 5. Set up environment variables:
+
    - Copy `.env.example` to `.env` and fill in the required values.
    - Create a new JWT secret
      - `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
      - or
      - `openssl rand -hex 64`
      - put the result in place of `your_jwt_secret`
-     
 
 6. Start the server:
+
    ```
    cd server
    npm start
    ```
 
 7. Start the client:
+
    ```
    cd ../client
    npm start
@@ -96,11 +102,13 @@ To get started with the project, follow these steps:
 To develop and test components in isolation, you can run Storybook:
 
 1. Navigate to the client directory:
+
    ```
    cd client
    ```
 
 2. Start Storybook:
+
    ```
    npm run storybook
    ```
@@ -114,7 +122,7 @@ This project maintains high test coverage standards to ensure code quality and r
 ### Coverage Standards
 
 - **Global Minimum**: 75% statements, functions, lines; 70% branches
-- **Components**: 85% statements, functions, lines; 80% branches  
+- **Components**: 85% statements, functions, lines; 80% branches
 - **Critical Areas**: 90%+ coverage for business logic and data handling
 
 ### Running Tests

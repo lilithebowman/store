@@ -55,49 +55,49 @@ const PageEditor = () => {
 	const isNewPage = pageId === 'new';
 
 	useEffect(() => {
+		const fetchPage = async () => {
+			try {
+				setLoading(true);
+				const baseURL =
+					process.env.REACT_APP_API_BASE_URL ||
+					`http://${window.location.hostname}:2048/api`;
+				const response = await fetch(`${baseURL}/pages/${pageId}`, {
+					headers: {
+						Authorization: `Bearer ${localStorage.getItem('token')}`,
+						'Content-Type': 'application/json',
+					},
+				});
+
+				if (response.ok) {
+					const page = await response.json();
+					setEditedPage({
+						title: page.title,
+						slug: page.slug,
+						content: page.content || '',
+						components: page.components || [],
+						status: page.status,
+						metaDescription: page.metaDescription || '',
+					});
+				} else {
+					throw new Error('Failed to fetch page');
+				}
+			} catch (error) {
+				console.error('Error fetching page:', error);
+				setSnackbar({
+					open: true,
+					message: 'Failed to load page',
+					severity: 'error',
+				});
+				navigate('/admin/pages');
+			} finally {
+				setLoading(false);
+			}
+		};
+
 		if (!isNewPage) {
 			fetchPage();
 		}
-	}, [pageId]);
-
-	const fetchPage = async () => {
-		try {
-			setLoading(true);
-			const baseURL =
-				process.env.REACT_APP_API_BASE_URL ||
-				`http://${window.location.hostname}:2048/api`;
-			const response = await fetch(`${baseURL}/pages/${pageId}`, {
-				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
-					'Content-Type': 'application/json',
-				},
-			});
-
-			if (response.ok) {
-				const page = await response.json();
-				setEditedPage({
-					title: page.title,
-					slug: page.slug,
-					content: page.content || '',
-					components: page.components || [],
-					status: page.status,
-					metaDescription: page.metaDescription || '',
-				});
-			} else {
-				throw new Error('Failed to fetch page');
-			}
-		} catch (error) {
-			console.error('Error fetching page:', error);
-			setSnackbar({
-				open: true,
-				message: 'Failed to load page',
-				severity: 'error',
-			});
-			navigate('/admin/pages');
-		} finally {
-			setLoading(false);
-		}
-	};
+	}, [pageId, isNewPage, navigate]);
 
 	const handleTitleChange = title => {
 		setEditedPage(prev => ({

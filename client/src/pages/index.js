@@ -11,4 +11,17 @@ import PageManagement from './PageManagement';
 import PageEditor from './PageEditor';
 import Page from './Page';
 
-export { Auth, Cart, Checkout, Home, Product, Profile, UserManagement, RoleManagement, ProductManagement, PageManagement, PageEditor, Page };
+export {
+	Auth,
+	Cart,
+	Checkout,
+	Home,
+	Product,
+	Profile,
+	UserManagement,
+	RoleManagement,
+	ProductManagement,
+	PageManagement,
+	PageEditor,
+	Page,
+};

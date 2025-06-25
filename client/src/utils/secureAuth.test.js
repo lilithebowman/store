@@ -13,8 +13,8 @@ describe('SecureAuth Utility', () => {
 		});
 
 		// Mock console methods
-		jest.spyOn(console, 'error').mockImplementation(() => { });
-		jest.spyOn(console, 'warn').mockImplementation(() => { });
+		jest.spyOn(console, 'error').mockImplementation(() => {});
+		jest.spyOn(console, 'warn').mockImplementation(() => {});
 	});
 
 	afterEach(() => {
@@ -24,13 +24,20 @@ describe('SecureAuth Utility', () => {
 	describe('setToken', () => {
 		test('stores valid JWT token with expiration', () => {
 			// Mock a valid JWT token (simplified)
-			const mockToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.Lhw3-lXvfgZxhW_5aA3vNXlWJ-P8XkQ8BfP9y7K5qV8';
+			const mockToken =
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyLCJleHAiOjk5OTk5OTk5OTl9.Lhw3-lXvfgZxhW_5aA3vNXlWJ-P8XkQ8BfP9y7K5qV8';
 
 			const result = SecureAuth.setToken(mockToken);
 
 			expect(result).toBe(true);
-			expect(localStorage.setItem).toHaveBeenCalledWith('token', mockToken);
-			expect(localStorage.setItem).toHaveBeenCalledWith('token_exp', expect.any(String));
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'token',
+				mockToken
+			);
+			expect(localStorage.setItem).toHaveBeenCalledWith(
+				'token_exp',
+				expect.any(String)
+			);
 		});
 
 		test('handles invalid token gracefully', () => {
@@ -50,7 +57,7 @@ describe('SecureAuth Utility', () => {
 	describe('getToken', () => {
 		test('returns valid token when not expired', () => {
 			const futureExp = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
-			localStorage.getItem.mockImplementation((key) => {
+			localStorage.getItem.mockImplementation(key => {
 				if (key === 'token') return 'valid-token';
 				if (key === 'token_exp') return futureExp.toString();
 				return null;
@@ -63,7 +70,7 @@ describe('SecureAuth Utility', () => {
 
 		test('returns null when token is expired', () => {
 			const pastExp = Math.floor(Date.now() / 1000) - 3600; // 1 hour ago
-			localStorage.getItem.mockImplementation((key) => {
+			localStorage.getItem.mockImplementation(key => {
 				if (key === 'token') return 'expired-token';
 				if (key === 'token_exp') return pastExp.toString();
 				return null;
@@ -102,7 +109,7 @@ describe('SecureAuth Utility', () => {
 				username: 'testuser',
 				email: 'test@example.com',
 				password: 'sensitive-data', // Should be filtered out
-				token: 'also-sensitive' // Should be filtered out
+				token: 'also-sensitive', // Should be filtered out
 			};
 
 			SecureAuth.setUserData(userData);
@@ -148,7 +155,7 @@ describe('SecureAuth Utility', () => {
 	describe('isAuthenticated', () => {
 		test('returns true when valid token exists', () => {
 			const futureExp = Math.floor(Date.now() / 1000) + 3600;
-			localStorage.getItem.mockImplementation((key) => {
+			localStorage.getItem.mockImplementation(key => {
 				if (key === 'token') return 'valid-token';
 				if (key === 'token_exp') return futureExp.toString();
 				if (key === 'user') return '{"id":1,"username":"test"}';
@@ -170,7 +177,7 @@ describe('SecureAuth Utility', () => {
 
 		test('returns false when token is expired', () => {
 			const pastExp = Math.floor(Date.now() / 1000) - 3600;
-			localStorage.getItem.mockImplementation((key) => {
+			localStorage.getItem.mockImplementation(key => {
 				if (key === 'token') return 'expired-token';
 				if (key === 'token_exp') return pastExp.toString();
 				return null;
@@ -185,14 +192,15 @@ describe('SecureAuth Utility', () => {
 	describe('decodeJWT', () => {
 		test('decodes valid JWT token', () => {
 			// Simple JWT token with payload: {"sub":"1234567890","name":"John Doe","iat":1516239022}
-			const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
+			const token =
+				'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c';
 
 			const result = SecureAuth.decodeJWT(token);
 
 			expect(result).toEqual({
 				sub: '1234567890',
 				name: 'John Doe',
-				iat: 1516239022
+				iat: 1516239022,
 			});
 		});
 

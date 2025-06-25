@@ -7,6 +7,7 @@ The ProductCard component has been successfully integrated into the page builder
 ## Features
 
 ### ✅ Core Functionality
+
 - **Visual Product Display**: Shows product image, name, description, and price
 - **Add to Cart Integration**: Fully integrated with the shopping cart system
 - **Error Handling**: Graceful fallback with custom canvas when images fail to load
@@ -14,12 +15,14 @@ The ProductCard component has been successfully integrated into the page builder
 - **Cart Context Safety**: Handles cases where CartContext might not be available
 
 ### ✅ Page Builder Integration
+
 - **Drag & Drop**: Can be dragged from component palette to page canvas
 - **Live Editing**: Properties can be edited through the visual props editor
 - **Nested Properties**: Supports editing product.name, product.price, etc.
 - **JSON Editor**: Advanced users can edit component props as JSON
 
 ### ✅ Storybook Stories
+
 - **Multiple Variants**: Default, out of stock, long names, no image, expensive products
 - **Grid Layout**: Example showing multiple products in a responsive grid
 - **Isolated Testing**: Stories work with and without CartProvider
@@ -29,6 +32,7 @@ The ProductCard component has been successfully integrated into the page builder
 ### Adding a ProductCard Component
 
 1. **Through Visual Builder**:
+
    - Navigate to Admin → Page Management
    - Create or edit a page
    - Switch to "Visual Builder" tab
@@ -82,26 +86,30 @@ The ProductCard component has been successfully integrated into the page builder
 
 ## Component Props
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `product` | Object | Yes | Product data object |
-| `product.id` | String/Number | No | Unique product identifier |
-| `product.name` | String | Yes | Product name |
-| `product.description` | String | No | Product description |
-| `product.price` | String/Number | Yes | Product price |
-| `product.image` | String | No | Product image URL |
-| `product.stock` | Number | No | Available stock quantity |
+| Prop                  | Type          | Required | Description               |
+| --------------------- | ------------- | -------- | ------------------------- |
+| `product`             | Object        | Yes      | Product data object       |
+| `product.id`          | String/Number | No       | Unique product identifier |
+| `product.name`        | String        | Yes      | Product name              |
+| `product.description` | String        | No       | Product description       |
+| `product.price`       | String/Number | Yes      | Product price             |
+| `product.image`       | String        | No       | Product image URL         |
+| `product.stock`       | Number        | No       | Available stock quantity  |
 
 ## Error Handling
 
 ### Missing Images
+
 When a product image fails to load or is not provided:
+
 - Component automatically hides the broken image
 - Shows a custom canvas with a shrug emoji (🤷🏽‍♀️)
 - Displays "Image Not Found" text with proper styling
 
 ### Missing CartContext
+
 If CartContext is not available (shouldn't happen in normal usage):
+
 - "Add to Cart" button becomes disabled
 - Console warning is logged
 - Component still renders the product information
@@ -109,7 +117,9 @@ If CartContext is not available (shouldn't happen in normal usage):
 ## Integration Points
 
 ### 1. ComponentRegistry
+
 The ProductCard is registered in `/src/components/pageBuilder/ComponentRegistry.js` with:
+
 - Component ID: `'product-card'`
 - Category: `'E-commerce'`
 - Icon: `'🛍️'`
@@ -117,11 +127,13 @@ The ProductCard is registered in `/src/components/pageBuilder/ComponentRegistry.
 - Editable props configuration for nested properties
 
 ### 2. CartContext Integration
+
 - Uses `useCart()` hook from `CartContext`
 - Safely handles missing context
 - Adds products to cart with proper quantity management
 
 ### 3. Page Rendering
+
 - Works seamlessly in `PageRenderer` component
 - Maintains cart functionality when rendered on public pages
 - Props are properly merged from defaults and user customizations
@@ -129,7 +141,9 @@ The ProductCard is registered in `/src/components/pageBuilder/ComponentRegistry.
 ## Testing
 
 ### Storybook Stories
+
 Available at `http://localhost:6006` under "Product/ProductCard":
+
 - **Default**: Basic product card example
 - **OutOfStock**: Shows out of stock product
 - **WithoutCartProvider**: Tests without cart context
@@ -139,10 +153,12 @@ Available at `http://localhost:6006` under "Product/ProductCard":
 - **ProductGrid**: Shows multiple products in grid layout
 
 ### Test Page
+
 A test page with multiple ProductCard components is available at:
 `http://localhost:3000/pages/test-product-showcase`
 
 ### Manual Testing Steps
+
 1. Create a new page in Page Management
 2. Add ProductCard components using visual builder
 3. Edit product properties through props editor
@@ -153,6 +169,7 @@ A test page with multiple ProductCard components is available at:
 ## Utilities
 
 ### Helper Functions
+
 Located in `/src/utils/productCardHelpers.js`:
 
 - `createProductCardComponent(product)`: Creates a properly formatted component object
@@ -160,8 +177,12 @@ Located in `/src/utils/productCardHelpers.js`:
 - `sampleProducts`: Array of sample product data for testing
 
 ### Usage Example
+
 ```javascript
-import { createProductCardComponent, sampleProducts } from '../utils/productCardHelpers';
+import {
+  createProductCardComponent,
+  sampleProducts,
+} from "../utils/productCardHelpers";
 
 const productComponent = createProductCardComponent(sampleProducts[0]);
 // Add to page components array
@@ -170,6 +191,7 @@ const productComponent = createProductCardComponent(sampleProducts[0]);
 ## Future Enhancements
 
 ### Potential Improvements
+
 - **Product Variants**: Support for size, color options
 - **Ratings/Reviews**: Star ratings and review counts
 - **Sale/Discount Badges**: Special pricing indicators
@@ -178,6 +200,7 @@ const productComponent = createProductCardComponent(sampleProducts[0]);
 - **Inventory Warnings**: Low stock notifications
 
 ### Development Notes
+
 - Component follows Material-UI design patterns
 - Responsive grid layout works well with 3-4 products per row
 - Image aspect ratio is optimized for 4:3 (400x300)
@@ -189,16 +212,19 @@ const productComponent = createProductCardComponent(sampleProducts[0]);
 ### Common Issues
 
 1. **ProductCard not appearing in component palette**
+
    - Check ComponentRegistry.js import
    - Verify component is properly exported
    - Restart development server
 
 2. **Add to Cart not working**
+
    - Ensure CartProvider wraps the application
    - Check browser console for context errors
    - Verify product has required fields (id, name, price)
 
 3. **Image not loading**
+
    - Verify image URL is accessible
    - Check for CORS issues
    - Canvas fallback should appear automatically
@@ -209,6 +235,7 @@ const productComponent = createProductCardComponent(sampleProducts[0]);
    - Try using JSON editor for complex updates
 
 ### Debug Steps
+
 1. Open browser developer tools
 2. Check console for error messages
 3. Verify component props in React DevTools
@@ -217,6 +244,7 @@ const productComponent = createProductCardComponent(sampleProducts[0]);
 ## Conclusion
 
 The ProductCard component integration is now complete and production-ready. Users can:
+
 - Add product cards to any page through the visual page builder
 - Customize all product properties through an intuitive interface
 - Leverage the shopping cart functionality seamlessly

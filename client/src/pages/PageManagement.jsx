@@ -268,15 +268,15 @@ const PageManagement = () => {
 									<TableCell>
 										{page.createdAt
 											? new Date(
-												page.createdAt
-											).toLocaleDateString()
+													page.createdAt
+												).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell>
 										{page.updatedAt
 											? new Date(
-												page.updatedAt
-											).toLocaleDateString()
+													page.updatedAt
+												).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">

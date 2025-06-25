@@ -16,15 +16,15 @@ export const COMPONENT_REGISTRY = {
 		icon: '📋',
 		defaultProps: {
 			user: null,
-			onLogin: () => { },
-			onLogout: () => { },
-			onCreateAccount: () => { }
+			onLogin: () => {},
+			onLogout: () => {},
+			onCreateAccount: () => {},
 		},
 		editableProps: {
-			user: { type: 'object', label: 'User Data (JSON)' }
-		}
+			user: { type: 'object', label: 'User Data (JSON)' },
+		},
 	},
-	'button': {
+	button: {
 		id: 'button',
 		name: 'Button',
 		category: 'Basic',
@@ -43,22 +43,57 @@ export const COMPONENT_REGISTRY = {
 			productPrice: '99.99',
 			productImage: 'https://via.placeholder.com/400x300',
 			productDescription: 'Sample product description',
-			showNotifications: true
+			showNotifications: true,
 		},
 		editableProps: {
 			label: { type: 'text', label: 'Button Text' },
-			variant: { type: 'select', label: 'Variant', options: ['text', 'contained', 'outlined'] },
-			color: { type: 'select', label: 'Color', options: ['primary', 'secondary', 'success', 'error', 'info', 'warning'] },
-			size: { type: 'select', label: 'Size', options: ['small', 'medium', 'large'] },
+			variant: {
+				type: 'select',
+				label: 'Variant',
+				options: ['text', 'contained', 'outlined'],
+			},
+			color: {
+				type: 'select',
+				label: 'Color',
+				options: [
+					'primary',
+					'secondary',
+					'success',
+					'error',
+					'info',
+					'warning',
+				],
+			},
+			size: {
+				type: 'select',
+				label: 'Size',
+				options: ['small', 'medium', 'large'],
+			},
 			fullWidth: { type: 'boolean', label: 'Full Width' },
-			actionType: { type: 'select', label: 'Action Type', options: ['custom', 'none', 'link', 'addToCart'] },
+			actionType: {
+				type: 'select',
+				label: 'Action Type',
+				options: ['custom', 'none', 'link', 'addToCart'],
+			},
 			linkUrl: { type: 'text', label: 'Link URL (for link action)' },
 			productId: { type: 'text', label: 'Product ID (for cart action)' },
-			productName: { type: 'text', label: 'Product Name (for cart action)' },
-			productPrice: { type: 'text', label: 'Product Price (for cart action)' },
-			productImage: { type: 'text', label: 'Product Image URL (for cart action)' },
-			productDescription: { type: 'textarea', label: 'Product Description (for cart action)' }
-		}
+			productName: {
+				type: 'text',
+				label: 'Product Name (for cart action)',
+			},
+			productPrice: {
+				type: 'text',
+				label: 'Product Price (for cart action)',
+			},
+			productImage: {
+				type: 'text',
+				label: 'Product Image URL (for cart action)',
+			},
+			productDescription: {
+				type: 'textarea',
+				label: 'Product Description (for cart action)',
+			},
+		},
 	},
 	'product-card': {
 		id: 'product-card',
@@ -73,51 +108,63 @@ export const COMPONENT_REGISTRY = {
 				description: 'This is a sample product description',
 				price: '99.99',
 				image: 'https://via.placeholder.com/400x300',
-				stock: 10
-			}
+				stock: 10,
+			},
 		},
 		editableProps: {
 			'product.name': { type: 'text', label: 'Product Name' },
 			'product.description': { type: 'textarea', label: 'Description' },
 			'product.price': { type: 'text', label: 'Price' },
 			'product.image': { type: 'text', label: 'Image URL' },
-			'product.stock': { type: 'number', label: 'Stock' }
-		}
+			'product.stock': { type: 'number', label: 'Stock' },
+		},
 	},
 	'text-block': {
 		id: 'text-block',
 		name: 'Text Block',
 		category: 'Content',
-		component: ({ content }) => React.createElement('div', {
-			style: { margin: '16px 0' }
-		}, React.createElement('div', {
-			dangerouslySetInnerHTML: { __html: content || 'Add your text here...' }
-		})),
+		component: ({ content }) =>
+			React.createElement(
+				'div',
+				{
+					style: { margin: '16px 0' },
+				},
+				React.createElement('div', {
+					dangerouslySetInnerHTML: {
+						__html: content || 'Add your text here...',
+					},
+				})
+			),
 		icon: '📝',
 		defaultProps: {
 			content: '<p>Add your text content here...</p>',
-			variant: 'body1'
+			variant: 'body1',
 		},
 		editableProps: {
 			content: { type: 'richtext', label: 'Content' },
-			variant: { type: 'select', label: 'Text Style', options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2'] }
-		}
+			variant: {
+				type: 'select',
+				label: 'Text Style',
+				options: ['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'body1', 'body2'],
+			},
+		},
 	},
-	'spacer': {
+	spacer: {
 		id: 'spacer',
 		name: 'Spacer',
 		category: 'Layout',
-		component: ({ height = 20 }) => React.createElement('div', {
-			style: { height: `${height}px`, width: '100%' }
-		}),
+		component: ({ height = 20 }) =>
+			React.createElement('div', {
+				style: { height: `${height}px`, width: '100%' },
+			}),
 		icon: '⏸️',
 		defaultProps: {
-			height: 20
+			height: 20,
 		},
 		editableProps: {
-			height: { type: 'number', label: 'Height (px)' }
-		}
-	}
+			height: { type: 'number', label: 'Height (px)' },
+		},
+	},
 };
 
 export const getComponentsByCategory = () => {
@@ -131,25 +178,31 @@ export const getComponentsByCategory = () => {
 	return categories;
 };
 
-export const getComponentById = (id) => {
+export const getComponentById = id => {
 	return COMPONENT_REGISTRY[id];
 };
 
-export const renderComponent = (componentData) => {
+export const renderComponent = componentData => {
 	const { componentId, props, id } = componentData;
 	const componentConfig = getComponentById(componentId);
 
 	if (!componentConfig) {
-		console.warn(`Component with id "${componentId}" not found in registry`);
-		return React.createElement('div', {
-			key: id,
-			style: {
-				padding: '20px',
-				border: '2px dashed #ccc',
-				textAlign: 'center',
-				color: '#666'
-			}
-		}, `Component "${componentId}" not found`);
+		console.warn(
+			`Component with id "${componentId}" not found in registry`
+		);
+		return React.createElement(
+			'div',
+			{
+				key: id,
+				style: {
+					padding: '20px',
+					border: '2px dashed #ccc',
+					textAlign: 'center',
+					color: '#666',
+				},
+			},
+			`Component "${componentId}" not found`
+		);
 	}
 
 	const Component = componentConfig.component;

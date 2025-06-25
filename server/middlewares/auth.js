@@ -1,11 +1,13 @@
-const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const jwt = require("jsonwebtoken");
+const User = require("../models/User");
 
 const authMiddleware = async (req, res, next) => {
-	const token = req.header('Authorization')?.replace('Bearer ', '');
+	const token = req.header("Authorization")?.replace("Bearer ", "");
 
 	if (!token) {
-		return res.status(401).json({ message: 'Access denied. No token provided.' });
+		return res
+			.status(401)
+			.json({ message: "Access denied. No token provided." });
 	}
 
 	try {
@@ -14,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
 		req.userId = decoded.id; // Add userId for easy access
 		next();
 	} catch (error) {
-		res.status(400).json({ message: 'Invalid token.' });
+		res.status(400).json({ message: "Invalid token." });
 	}
 };
 

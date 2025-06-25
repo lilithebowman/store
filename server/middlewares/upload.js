@@ -1,9 +1,9 @@
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const multer = require("multer");
+const path = require("path");
+const fs = require("fs");
 
 // Ensure upload directory exists
-const uploadDir = path.join(__dirname, '..', 'uploads', 'profile-images');
+const uploadDir = path.join(__dirname, "..", "uploads", "profile-images");
 if (!fs.existsSync(uploadDir)) {
 	fs.mkdirSync(uploadDir, { recursive: true });
 }
@@ -15,21 +15,21 @@ const storage = multer.diskStorage({
 	},
 	filename: (req, file, cb) => {
 		// Generate unique filename: userId-timestamp-originalname
-		const userId = req.userId || req.user?.id || 'anonymous';
+		const userId = req.userId || req.user?.id || "anonymous";
 		const timestamp = Date.now();
 		const extension = path.extname(file.originalname);
 		const filename = `${userId}-${timestamp}${extension}`;
 		cb(null, filename);
-	}
+	},
 });
 
 // File filter to only allow images
 const fileFilter = (req, file, cb) => {
 	// Check if file is an image
-	if (file.mimetype.startsWith('image/')) {
+	if (file.mimetype.startsWith("image/")) {
 		cb(null, true);
 	} else {
-		cb(new Error('Only image files are allowed!'), false);
+		cb(new Error("Only image files are allowed!"), false);
 	}
 };
 
@@ -39,11 +39,11 @@ const upload = multer({
 	fileFilter: fileFilter,
 	limits: {
 		fileSize: 5 * 1024 * 1024, // 5MB limit
-	}
+	},
 });
 
 // Export single file upload for profile images
 module.exports = {
-	uploadProfileImage: upload.single('profileImage'),
-	uploadDir
+	uploadProfileImage: upload.single("profileImage"),
+	uploadDir,
 };

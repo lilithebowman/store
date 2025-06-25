@@ -7,8 +7,8 @@ async function createTestPage() {
 		// const baseURL = 'http://localhost:2048/api';
 
 		const samplePage = {
-			title: 'Welcome to Our Store',
-			slug: 'welcome',
+			title: "Welcome to Our Store",
+			slug: "welcome",
 			content: `# Welcome to Our E-Commerce Store
 
 ## About Us
@@ -28,13 +28,16 @@ For any questions or concerns, please don't hesitate to reach out to us!
 
 **Email:** support@example.com  
 **Phone:** +1 (555) 123-4567`,
-			metaDescription: 'Welcome to our e-commerce store - discover quality products at great prices',
-			status: 'published'
+			metaDescription:
+				"Welcome to our e-commerce store - discover quality products at great prices",
+			status: "published",
 		};
 
-		console.log('Creating test page...');
-		console.log('Note: You need to replace the authToken with a valid admin JWT token');
-		console.log('\nSample page data:');
+		console.log("Creating test page...");
+		console.log(
+			"Note: You need to replace the authToken with a valid admin JWT token",
+		);
+		console.log("\nSample page data:");
 		console.log(JSON.stringify(samplePage, null, 2));
 
 		// Uncomment the lines below when you have a valid auth token
@@ -50,9 +53,11 @@ For any questions or concerns, please don't hesitate to reach out to us!
 		console.log('Page ID:', response.data.id);
 		console.log('You can now view it at: http://localhost:3000/pages/welcome');
 		*/
-
 	} catch (error) {
-		console.error('Error creating test page:', error.response?.data || error.message);
+		console.error(
+			"Error creating test page:",
+			error.response?.data || error.message,
+		);
 	}
 }
 

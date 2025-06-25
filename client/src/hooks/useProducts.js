@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const API_URL = process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`;
+const API_URL =
+	process.env.REACT_APP_API_BASE_URL ||
+	`http://${window.location.hostname}:2048/api`;
 
 const useProducts = () => {
 	const [products, setProducts] = useState([]);
@@ -14,7 +16,7 @@ const useProducts = () => {
 		const fetchProducts = async () => {
 			try {
 				const response = await axios.get(`${API_URL}/products`, {
-					signal: abortController.signal
+					signal: abortController.signal,
 				});
 				setProducts(response.data);
 				setLoading(false);
