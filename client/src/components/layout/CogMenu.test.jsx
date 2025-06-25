@@ -3,7 +3,6 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import CogMenu from './CogMenu';
-import { AuthProvider } from '../../contexts/AuthContext';
 
 // Mock the navigate function
 const mockNavigate = jest.fn();
@@ -12,39 +11,39 @@ jest.mock('react-router-dom', () => ({
 	useNavigate: () => mockNavigate,
 }));
 
-// Test wrapper with necessary providers
-const TestWrapper = ({ children, authValue }) => {
-	const defaultAuthValue = {
-		user: null,
-		userPermissions: {},
-		isAuthenticated: false,
-		loading: false,
-	};
+// Mock AuthContext
+const mockAuthContext = {
+	user: null,
+	userPermissions: {},
+	isAuthenticated: false,
+	loading: false,
+};
 
-	return (
-		<BrowserRouter>
-			<AuthProvider value={authValue || defaultAuthValue}>
-				{children}
-			</AuthProvider>
-		</BrowserRouter>
-	);
+jest.mock('../../contexts/AuthContext', () => ({
+	useAuth: () => mockAuthContext,
+}));
+
+// Test wrapper with necessary providers
+const TestWrapper = ({ children }) => {
+	return <BrowserRouter>{children}</BrowserRouter>;
 };
 
 describe('CogMenu Component', () => {
 	beforeEach(() => {
 		mockNavigate.mockClear();
+		// Reset auth mock to default state
+		mockAuthContext.user = null;
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = false;
 	});
 
 	test('does not render when user has no permissions', () => {
-		const authValue = {
-			user: { id: 1, username: 'user' },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'user' };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -54,15 +53,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('renders when user is admin', () => {
-		const authValue = {
-			user: { id: 1, username: 'admin', isAdmin: true },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'admin', isAdmin: true };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -72,15 +68,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('renders when user has product permissions', () => {
-		const authValue = {
-			user: { id: 1, username: 'user' },
-			userPermissions: { add_product: true },
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'user' };
+		mockAuthContext.userPermissions = { add_product: true };
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -90,15 +83,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('renders when user has page permissions', () => {
-		const authValue = {
-			user: { id: 1, username: 'user' },
-			userPermissions: { edit_page: true },
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'user' };
+		mockAuthContext.userPermissions = { edit_page: true };
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -108,15 +98,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('opens menu when cog icon is clicked', () => {
-		const authValue = {
-			user: { id: 1, username: 'admin', isAdmin: true },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'admin', isAdmin: true };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -131,15 +118,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('navigates to products management when products item is clicked', () => {
-		const authValue = {
-			user: { id: 1, username: 'admin', isAdmin: true },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'admin', isAdmin: true };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -157,15 +141,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('navigates to pages management when pages item is clicked', () => {
-		const authValue = {
-			user: { id: 1, username: 'admin', isAdmin: true },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'admin', isAdmin: true };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -183,15 +164,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('closes menu when clicking outside', () => {
-		const authValue = {
-			user: { id: 1, username: 'admin', isAdmin: true },
-			userPermissions: {},
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'admin', isAdmin: true };
+		mockAuthContext.userPermissions = {};
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);
@@ -211,15 +189,12 @@ describe('CogMenu Component', () => {
 	});
 
 	test('shows only relevant menu items based on permissions', () => {
-		const authValue = {
-			user: { id: 1, username: 'user' },
-			userPermissions: { add_product: true },
-			isAuthenticated: true,
-			loading: false,
-		};
+		mockAuthContext.user = { id: 1, username: 'user' };
+		mockAuthContext.userPermissions = { add_product: true };
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<CogMenu />
 			</TestWrapper>
 		);

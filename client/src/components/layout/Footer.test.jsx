@@ -1,11 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import '@testing-library/jest-dom';
-import Footer from './Footer';
-
-describe('Footer Component', () => {
-import { render, screen } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import '@testing-library/jest-dom';
 import Footer from './Footer';
 
 describe('Footer Component', () => {
@@ -20,10 +16,13 @@ describe('Footer Component', () => {
 		const footer = screen.getByRole('contentinfo');
 		expect(footer).toBeInTheDocument();
 	});
-});
 
 	test('displays copyright information', () => {
-		render(<Footer />);
+		render(
+			<BrowserRouter>
+				<Footer />
+			</BrowserRouter>
+		);
 
 		// Should display current year and copyright
 		const currentYear = new Date().getFullYear();
@@ -34,7 +33,11 @@ describe('Footer Component', () => {
 	});
 
 	test('contains footer content and styling', () => {
-		render(<Footer />);
+		render(
+			<BrowserRouter>
+				<Footer />
+			</BrowserRouter>
+		);
 
 		const footer = screen.getByRole('contentinfo');
 

@@ -4,7 +4,6 @@ import { BrowserRouter } from 'react-router-dom';
 import '@testing-library/jest-dom';
 import Header from './Header';
 import { CartProvider } from '../../contexts/CartContext';
-import { AuthProvider } from '../../contexts/AuthContext';
 
 // Mock the navigate function
 const mockNavigate = jest.fn();
@@ -13,31 +12,37 @@ jest.mock('react-router-dom', () => ({
 	useNavigate: () => mockNavigate,
 }));
 
-// Test wrapper with all necessary providers
-const TestWrapper = ({ children, authValue = null }) => {
-	const defaultAuthValue = {
-		user: null,
-		logout: jest.fn(),
-		isAuthenticated: false,
-		loading: false,
-		error: null,
-		userPermissions: {},
-	};
+// Mock AuthContext
+const mockAuthContext = {
+	user: null,
+	logout: jest.fn(),
+	isAuthenticated: false,
+	loading: false,
+	error: null,
+	userPermissions: {},
+};
 
+jest.mock('../../contexts/AuthContext', () => ({
+	useAuth: () => mockAuthContext,
+}));
+
+// Test wrapper with all necessary providers
+const TestWrapper = ({ children }) => {
 	return (
 		<BrowserRouter>
-			<AuthProvider value={authValue || defaultAuthValue}>
-				<CartProvider>
-					{children}
-				</CartProvider>
-			</AuthProvider>
+			<CartProvider>{children}</CartProvider>
 		</BrowserRouter>
 	);
 };
 
 describe('Header Component', () => {
 	beforeEach(() => {
-		mockNavigate.mockClear();
+		jest.clearAllMocks();
+		// Reset auth mock to default state
+		mockAuthContext.user = null;
+		mockAuthContext.isAuthenticated = false;
+		mockAuthContext.logout = jest.fn();
+		mockAuthContext.userPermissions = {};
 	});
 
 	test('renders header with store title', () => {
@@ -83,17 +88,12 @@ describe('Header Component', () => {
 			isAdmin: false,
 		};
 
-		const authValue = {
-			user: mockUser,
-			logout: jest.fn(),
-			isAuthenticated: true,
-			loading: false,
-			error: null,
-			userPermissions: {},
-		};
+		// Update the mock for this test
+		mockAuthContext.user = mockUser;
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<Header />
 			</TestWrapper>
 		);
@@ -111,17 +111,12 @@ describe('Header Component', () => {
 			isAdmin: false,
 		};
 
-		const authValue = {
-			user: mockUser,
-			logout: jest.fn(),
-			isAuthenticated: true,
-			loading: false,
-			error: null,
-			userPermissions: {},
-		};
+		// Update the mock for this test
+		mockAuthContext.user = mockUser;
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<Header />
 			</TestWrapper>
 		);
@@ -144,17 +139,12 @@ describe('Header Component', () => {
 			isAdmin: true,
 		};
 
-		const authValue = {
-			user: mockAdminUser,
-			logout: jest.fn(),
-			isAuthenticated: true,
-			loading: false,
-			error: null,
-			userPermissions: {},
-		};
+		// Update the mock for this test
+		mockAuthContext.user = mockAdminUser;
+		mockAuthContext.isAuthenticated = true;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<Header />
 			</TestWrapper>
 		);
@@ -163,9 +153,10 @@ describe('Header Component', () => {
 		const userButton = screen.getByLabelText(/account of current user/i);
 		fireEvent.click(userButton);
 
-		// Should show admin panel option
+		// Should show admin options
 		await waitFor(() => {
-			expect(screen.getByText(/admin panel/i)).toBeInTheDocument();
+			expect(screen.getByText(/user management/i)).toBeInTheDocument();
+			expect(screen.getByText(/roles/i)).toBeInTheDocument();
 		});
 	});
 
@@ -178,17 +169,13 @@ describe('Header Component', () => {
 			isAdmin: false,
 		};
 
-		const authValue = {
-			user: mockUser,
-			logout: mockLogout,
-			isAuthenticated: true,
-			loading: false,
-			error: null,
-			userPermissions: {},
-		};
+		// Update the mock for this test
+		mockAuthContext.user = mockUser;
+		mockAuthContext.isAuthenticated = true;
+		mockAuthContext.logout = mockLogout;
 
 		render(
-			<TestWrapper authValue={authValue}>
+			<TestWrapper>
 				<Header />
 			</TestWrapper>
 		);
@@ -198,27 +185,22 @@ describe('Header Component', () => {
 		fireEvent.click(userButton);
 
 		// Click logout
-		await waitFor(() => {
-			const logoutButton = screen.getByText(/logout/i);
-			fireEvent.click(logoutButton);
-		});
+		const logoutButton = await screen.findByText(/logout/i);
+		fireEvent.click(logoutButton);
 
 		// Should call logout function
 		expect(mockLogout).toHaveBeenCalled();
 	});
 
-	test('navigates to cart when cart icon is clicked', () => {
+	test('cart icon has correct link', () => {
 		render(
 			<TestWrapper>
 				<Header />
 			</TestWrapper>
 		);
 
-		// Click on cart icon
+		// Check cart icon link
 		const cartButton = screen.getByLabelText(/shopping cart/i);
-		fireEvent.click(cartButton);
-
-		// Should navigate to cart
-		expect(mockNavigate).toHaveBeenCalledWith('/cart');
+		expect(cartButton).toHaveAttribute('href', '/cart');
 	});
 });

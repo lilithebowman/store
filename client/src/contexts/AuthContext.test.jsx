@@ -1,5 +1,11 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import {
+	render,
+	screen,
+	fireEvent,
+	waitFor,
+	act,
+} from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { AuthProvider, useAuth } from './AuthContext';
 
@@ -83,7 +89,7 @@ describe('AuthContext', () => {
 
 		expect(screen.getByTestId('user')).toHaveTextContent('No user');
 		expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
-		expect(screen.getByTestId('loading')).toHaveTextContent('true');
+		expect(screen.getByTestId('loading')).toHaveTextContent('false'); // Loading becomes false after useEffect
 		expect(screen.getByTestId('error')).toHaveTextContent('No error');
 		expect(screen.getByTestId('permissions')).toHaveTextContent('{}');
 	});
@@ -115,35 +121,33 @@ describe('AuthContext', () => {
 		});
 	});
 
-test('handles login error', async () => {
-	const errorMessage = 'Login failed';
-	authService.login.mockRejectedValue(new Error(errorMessage));
+	test('handles login error', async () => {
+		const errorMessage = 'Login failed';
+		authService.login.mockRejectedValue(new Error(errorMessage));
 
-	render(
-		<AuthProvider>
-			<TestComponent />
-		</AuthProvider>
-	);
+		render(
+			<AuthProvider>
+				<TestComponent />
+			</AuthProvider>
+		);
 
-	// Click login button
-	await act(async () => {
-		fireEvent.click(screen.getByText('Login'));
+		// Click login button
+		await act(async () => {
+			fireEvent.click(screen.getByText('Login'));
+		});
+
+		await waitFor(() => {
+			expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
+		});
+		expect(screen.getByTestId('isAuthenticated')).toHaveTextContent(
+			'false'
+		);
 	});
-
-	await waitFor(() => {
-		expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
-	});
-});
 
 	test('handles successful registration', async () => {
-		const mockUser = {
-			id: 1,
-			username: 'newuser',
-			email: 'new@example.com',
-		};
+		const mockResponse = { message: 'Registration successful' };
 
-		authService.register.mockResolvedValue(mockUser);
-		authService.getUserPermissions.mockResolvedValue({});
+		authService.register.mockResolvedValue(mockResponse);
 
 		render(
 			<AuthProvider>
@@ -161,6 +165,9 @@ test('handles login error', async () => {
 				'password'
 			);
 		});
+
+		// Should not automatically log in after registration
+		expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
 	});
 
 	test('handles logout', async () => {

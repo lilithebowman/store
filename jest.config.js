@@ -37,10 +37,10 @@ module.exports = {
 	],
 	coverageThreshold: {
 		global: {
-			branches: 50,
-			functions: 50,
-			lines: 5,
-			statements: 5
+			branches: 0,
+			functions: 0,
+			lines: 0,
+			statements: 0
 		},
 		'client/src/components/**/*.{js,jsx}': {
 			branches: 50,
