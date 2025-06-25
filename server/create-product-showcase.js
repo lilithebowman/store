@@ -1,6 +1,5 @@
 // Quick script to create product showcase pages
 const { Page, User } = require('./models');
-const { sampleProducts } = require('../client/src/utils/productCardHelpers');
 
 const createProductShowcase = async (title, products = null) => {
 	try {

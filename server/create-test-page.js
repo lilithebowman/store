@@ -1,12 +1,10 @@
-const axios = require('axios');
-
 // Test script to create a sample page for demonstration
 async function createTestPage() {
 	try {
 		// You'll need to replace this with a valid JWT token from an admin user
-		const authToken = 'your-admin-jwt-token-here';
+		// const authToken = 'your-admin-jwt-token-here';
 
-		const baseURL = 'http://localhost:2048/api';
+		// const baseURL = 'http://localhost:2048/api';
 
 		const samplePage = {
 			title: 'Welcome to Our Store',

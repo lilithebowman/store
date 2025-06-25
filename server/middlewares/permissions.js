@@ -1,5 +1,3 @@
-const User = require('../models/User');
-
 // Middleware to check if user has specific permission
 const requirePermission = (permission) => {
 	return async (req, res, next) => {

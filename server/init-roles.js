@@ -1,10 +1,9 @@
 const Role = require('./models/Role');
-const User = require('./models/User');
 
 async function initializeDefaultRoles() {
   try {
     console.log('Initializing default roles...');
-    
+
     // Check if roles already exist
     const existingRoles = await Role.count();
     if (existingRoles > 0) {
@@ -98,7 +97,7 @@ async function initializeDefaultRoles() {
     }
 
     console.log('✅ Default roles initialized successfully!');
-    
+
     // Show available roles
     const allRoles = await Role.findAll();
     console.log('\nAvailable roles:');

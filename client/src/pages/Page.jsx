@@ -285,16 +285,16 @@ const Page = () => {
 							)}
 							{page.updatedAt &&
 								page.updatedAt !== page.createdAt && (
-									<Typography
-										variant="caption"
-										color="text.secondary"
-									>
+								<Typography
+									variant="caption"
+									color="text.secondary"
+								>
 										Last updated:{' '}
-										{new Date(
-											page.updatedAt
-										).toLocaleDateString()}
-									</Typography>
-								)}
+									{new Date(
+										page.updatedAt
+									).toLocaleDateString()}
+								</Typography>
+							)}
 						</Box>
 					</>
 				)}

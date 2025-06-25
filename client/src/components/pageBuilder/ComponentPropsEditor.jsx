@@ -88,173 +88,173 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 		const value = getPropValue(propKey);
 
 		switch (propConfig.type) {
-			case 'text':
-				return (
-					<TextField
-						key={propKey}
-						fullWidth
-						label={propConfig.label}
-						value={value}
-						onChange={e =>
-							handlePropChange(propKey, e.target.value)
-						}
-						margin="normal"
-					/>
-				);
+		case 'text':
+			return (
+				<TextField
+					key={propKey}
+					fullWidth
+					label={propConfig.label}
+					value={value}
+					onChange={e =>
+						handlePropChange(propKey, e.target.value)
+					}
+					margin="normal"
+				/>
+			);
 
-			case 'textarea':
-				return (
+		case 'textarea':
+			return (
+				<TextField
+					key={propKey}
+					fullWidth
+					label={propConfig.label}
+					value={value}
+					onChange={e =>
+						handlePropChange(propKey, e.target.value)
+					}
+					margin="normal"
+					multiline
+					rows={4}
+				/>
+			);
+
+		case 'richtext':
+			return (
+				<Box key={propKey} sx={{ mb: 2 }}>
+					<Typography variant="subtitle2" gutterBottom>
+						{propConfig.label}
+					</Typography>
 					<TextField
-						key={propKey}
 						fullWidth
-						label={propConfig.label}
 						value={value}
 						onChange={e =>
 							handlePropChange(propKey, e.target.value)
 						}
-						margin="normal"
+						multiline
+						rows={6}
+						placeholder="Enter HTML content..."
+						variant="outlined"
+					/>
+					<Typography variant="caption" color="text.secondary">
+							You can use HTML tags for formatting
+					</Typography>
+				</Box>
+			);
+
+		case 'number':
+			return (
+				<TextField
+					key={propKey}
+					fullWidth
+					label={propConfig.label}
+					type="number"
+					value={value}
+					onChange={e =>
+						handlePropChange(
+							propKey,
+							parseFloat(e.target.value) || 0
+						)
+					}
+					margin="normal"
+				/>
+			);
+
+		case 'boolean':
+			return (
+				<FormControlLabel
+					key={propKey}
+					control={
+						<Switch
+							checked={Boolean(value)}
+							onChange={e =>
+								handlePropChange(propKey, e.target.checked)
+							}
+						/>
+					}
+					label={propConfig.label}
+					sx={{ mt: 2, mb: 1 }}
+				/>
+			);
+
+		case 'select':
+			return (
+				<FormControl key={propKey} fullWidth margin="normal">
+					<InputLabel>{propConfig.label}</InputLabel>
+					<Select
+						value={value}
+						label={propConfig.label}
+						onChange={e =>
+							handlePropChange(propKey, e.target.value)
+						}
+					>
+						{propConfig.options?.map(option => (
+							<MenuItem key={option} value={option}>
+								{option}
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+			);
+
+		case 'color':
+			return (
+				<TextField
+					key={propKey}
+					fullWidth
+					label={propConfig.label}
+					type="color"
+					value={value}
+					onChange={e =>
+						handlePropChange(propKey, e.target.value)
+					}
+					margin="normal"
+				/>
+			);
+
+		case 'object':
+			return (
+				<Box key={propKey} sx={{ mb: 2 }}>
+					<Typography variant="subtitle2" gutterBottom>
+						{propConfig.label}
+					</Typography>
+					<TextField
+						fullWidth
+						value={JSON.stringify(value, null, 2)}
+						onChange={e => {
+							try {
+								const parsed = JSON.parse(e.target.value);
+								handlePropChange(propKey, parsed);
+								setJsonError('');
+							} catch (error) {
+								setJsonError(
+									`${propKey}: ${error.message}`
+								);
+							}
+						}}
 						multiline
 						rows={4}
+						variant="outlined"
+						placeholder="Enter valid JSON..."
 					/>
-				);
-
-			case 'richtext':
-				return (
-					<Box key={propKey} sx={{ mb: 2 }}>
-						<Typography variant="subtitle2" gutterBottom>
-							{propConfig.label}
-						</Typography>
-						<TextField
-							fullWidth
-							value={value}
-							onChange={e =>
-								handlePropChange(propKey, e.target.value)
-							}
-							multiline
-							rows={6}
-							placeholder="Enter HTML content..."
-							variant="outlined"
-						/>
-						<Typography variant="caption" color="text.secondary">
-							You can use HTML tags for formatting
-						</Typography>
-					</Box>
-				);
-
-			case 'number':
-				return (
-					<TextField
-						key={propKey}
-						fullWidth
-						label={propConfig.label}
-						type="number"
-						value={value}
-						onChange={e =>
-							handlePropChange(
-								propKey,
-								parseFloat(e.target.value) || 0
-							)
-						}
-						margin="normal"
-					/>
-				);
-
-			case 'boolean':
-				return (
-					<FormControlLabel
-						key={propKey}
-						control={
-							<Switch
-								checked={Boolean(value)}
-								onChange={e =>
-									handlePropChange(propKey, e.target.checked)
-								}
-							/>
-						}
-						label={propConfig.label}
-						sx={{ mt: 2, mb: 1 }}
-					/>
-				);
-
-			case 'select':
-				return (
-					<FormControl key={propKey} fullWidth margin="normal">
-						<InputLabel>{propConfig.label}</InputLabel>
-						<Select
-							value={value}
-							label={propConfig.label}
-							onChange={e =>
-								handlePropChange(propKey, e.target.value)
-							}
-						>
-							{propConfig.options?.map(option => (
-								<MenuItem key={option} value={option}>
-									{option}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
-				);
-
-			case 'color':
-				return (
-					<TextField
-						key={propKey}
-						fullWidth
-						label={propConfig.label}
-						type="color"
-						value={value}
-						onChange={e =>
-							handlePropChange(propKey, e.target.value)
-						}
-						margin="normal"
-					/>
-				);
-
-			case 'object':
-				return (
-					<Box key={propKey} sx={{ mb: 2 }}>
-						<Typography variant="subtitle2" gutterBottom>
-							{propConfig.label}
-						</Typography>
-						<TextField
-							fullWidth
-							value={JSON.stringify(value, null, 2)}
-							onChange={e => {
-								try {
-									const parsed = JSON.parse(e.target.value);
-									handlePropChange(propKey, parsed);
-									setJsonError('');
-								} catch (error) {
-									setJsonError(
-										`${propKey}: ${error.message}`
-									);
-								}
-							}}
-							multiline
-							rows={4}
-							variant="outlined"
-							placeholder="Enter valid JSON..."
-						/>
-						<Typography variant="caption" color="text.secondary">
+					<Typography variant="caption" color="text.secondary">
 							Enter valid JSON object
-						</Typography>
-					</Box>
-				);
+					</Typography>
+				</Box>
+			);
 
-			default:
-				return (
-					<TextField
-						key={propKey}
-						fullWidth
-						label={propConfig.label}
-						value={value}
-						onChange={e =>
-							handlePropChange(propKey, e.target.value)
-						}
-						margin="normal"
-					/>
-				);
+		default:
+			return (
+				<TextField
+					key={propKey}
+					fullWidth
+					label={propConfig.label}
+					value={value}
+					onChange={e =>
+						handlePropChange(propKey, e.target.value)
+					}
+					margin="normal"
+				/>
+			);
 		}
 	};
 
