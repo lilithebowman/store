@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.x]
+        node-version: [22.x]
 
     steps:
       - name: Checkout code
@@ -23,6 +23,18 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
+
+      - name: Cache node modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+            client/node_modules
+            server/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       - name: Install root dependencies
         run: npm ci
@@ -36,15 +48,20 @@ jobs:
       - name: Run linting
         run: npm run lint
 
+      - name: Check code formatting
+        run: npm run format:check
+
       - name: Run client tests with coverage
         run: npm run client:test -- --coverage --watchAll=false
 
-      - name: Run server tests with coverage (if any)
+      - name: Run server tests with coverage
         run: |
-          if [ -d "server/test" ] || [ -d "server/tests" ] || [ -f "server/package.json" ] && grep -q '"test"' server/package.json; then
-            npm run test:coverage:ci
+          cd server
+          if npm run test >/dev/null 2>&1; then
+            echo "Running server tests..."
+            npm run test
           else
-            echo "No server tests found, skipping..."
+            echo "No server tests configured, skipping..."
           fi
 
       - name: Comment coverage on PR

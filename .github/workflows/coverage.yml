@@ -17,7 +17,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.x"
+          node-version: "22.x"
           cache: "npm"
 
       - name: Install dependencies
@@ -28,7 +28,7 @@ jobs:
       - name: Run tests with coverage
         run: |
           npm run client:test -- --coverage --watchAll=false
-          npm run test:coverage:ci || true
+          npm run test:coverage:ci
 
       - name: Generate coverage badge
         uses: tj-actions/coverage-badge-js@v1
