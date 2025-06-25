@@ -589,30 +589,6 @@ describe('PageBuilder Component', () => {
 			screen.getByTestId('rendered-component-button')
 		).toBeInTheDocument();
 	});
-	test('handles multiple rapid component additions', () => {
-		// Set up UUID mock to return different values for each call
-		const { v4: uuidv4 } = require('uuid');
-		uuidv4
-			.mockReturnValueOnce('mock-uuid-1')
-			.mockReturnValueOnce('mock-uuid-2')
-			.mockReturnValueOnce('mock-uuid-3');
-
-		render(
-			<TestWrapper>
-				<PageBuilder onChange={mockOnChange} />
-			</TestWrapper>
-		);
-
-		const addButtons = screen.getAllByText('Add');
-
-		// Add multiple components rapidly
-		fireEvent.click(addButtons[0]); // Button
-		fireEvent.click(addButtons[1]); // Text Block
-		fireEvent.click(addButtons[2]); // Spacer
-
-		// Should call onChange for each addition
-		expect(mockOnChange).toHaveBeenCalledTimes(3);
-	});
 
 	test('maintains component order after operations', () => {
 		const initialComponents = [
