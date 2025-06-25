@@ -123,25 +123,56 @@ describe('AuthContext', () => {
 
 	test('handles login error', async () => {
 		const errorMessage = 'Login failed';
+
+		// Mock authService to reject
 		authService.login.mockRejectedValue(new Error(errorMessage));
+
+		// Suppress console.error for this test
+		const consoleSpy = jest
+			.spyOn(console, 'error')
+			.mockImplementation(() => {});
+
+		// Create a test component that calls login directly
+		const TestLoginComponent = () => {
+			const { login, error, isAuthenticated } = useAuth();
+
+			const handleLogin = async () => {
+				try {
+					await login('test@example.com', 'password');
+				} catch (err) {
+					// Expected to catch the error
+				}
+			};
+
+			return (
+				<div>
+					<div data-testid="error">{error || 'No error'}</div>
+					<div data-testid="authenticated">
+						{isAuthenticated ? 'true' : 'false'}
+					</div>
+					<button onClick={handleLogin}>Login</button>
+				</div>
+			);
+		};
 
 		render(
 			<AuthProvider>
-				<TestComponent />
+				<TestLoginComponent />
 			</AuthProvider>
 		);
 
-		// Click login button
-		await act(async () => {
-			fireEvent.click(screen.getByText('Login'));
-		});
+		// Trigger login and wait for error state
+		fireEvent.click(screen.getByText('Login'));
 
+		// Wait for error state to be updated
 		await waitFor(() => {
 			expect(screen.getByTestId('error')).toHaveTextContent(errorMessage);
 		});
-		expect(screen.getByTestId('isAuthenticated')).toHaveTextContent(
-			'false'
-		);
+
+		expect(screen.getByTestId('authenticated')).toHaveTextContent('false');
+
+		// Restore console.error
+		consoleSpy.mockRestore();
 	});
 
 	test('handles successful registration', async () => {
