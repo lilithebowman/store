@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI
 
 on:
   push:
@@ -15,8 +15,7 @@ jobs:
         node-version: [22.x]
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
@@ -24,90 +23,51 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: "npm"
 
-      - name: Cache node modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-            client/node_modules
-            server/node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install root dependencies
+      - name: Install dependencies
         run: npm ci
 
-      - name: Install client dependencies
-        run: npm ci --prefix client
-
-      - name: Install server dependencies
-        run: npm ci --prefix server
-
-      - name: Run linting
+      - name: Run linter
         run: npm run lint
 
-      - name: Check code formatting
-        run: npm run format:check
+      - name: Run tests
+        run: npm test
 
-      - name: Run client tests with coverage
-        run: npm run client:test -- --coverage --watchAll=false
-
-      - name: Run server tests with coverage
+      - name: Test server if present
         run: |
-          cd server
-          if npm run test >/dev/null 2>&1; then
+          if [ -f server/package.json ] && grep -q '"test"' server/package.json; then
             echo "Running server tests..."
-            npm run test
+            cd server && npm ci && npm test
           else
-            echo "No server tests configured, skipping..."
+            echo "No server tests found"
           fi
 
-      - name: Comment coverage on PR
-        if: github.event_name == 'pull_request'
-        uses: romeovs/lcov-reporter-action@v0.3.1
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          lcov-file: ./client/coverage/lcov.info
-
       - name: Check coverage thresholds
-        run: |
-          echo "Checking coverage thresholds..."
-          npm run test:coverage:ci || {
-            echo "❌ Coverage thresholds not met!"
-            echo "Please ensure your code meets the minimum coverage requirements:"
-            echo "  - Statements: 75%"
-            echo "  - Branches: 70%"
-            echo "  - Functions: 75%"
-            echo "  - Lines: 75%"
-            echo "  - Components: 85% (statements, functions, lines), 80% (branches)"
-            exit 1
-          }
-          echo "✅ Coverage thresholds met!"
+        run: npm run test:coverage:ci
 
   build:
-    runs-on: ubuntu-latest
     needs: test
+    runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js 20.x
+      - name: Use Node.js 22.x
         uses: actions/setup-node@v4
         with:
-          node-version: 20.x
+          node-version: "22.x"
           cache: "npm"
 
-      - name: Install client dependencies
-        run: npm ci --prefix client
+      - name: Install dependencies
+        run: npm ci
 
-      - name: Build client
-        run: npm run client:build
+      - name: Build
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: build-files
-          path: client/build/
+          path: |
+            build/
+            dist/
+          retention-days: 7

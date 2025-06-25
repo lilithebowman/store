@@ -2,70 +2,51 @@ name: Coverage Report
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   coverage:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Use Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "22.x"
           cache: "npm"
 
       - name: Install dependencies
-        run: |
-          npm ci
-          npm ci --prefix client
+        run: npm ci
 
       - name: Run tests with coverage
+        run: npm run test:coverage:ci
+
+      - name: Generate Coverage Summary
         run: |
-          npm run client:test -- --coverage --watchAll=false
-          npm run test:coverage:ci
-
-      - name: Generate coverage badge
-        uses: tj-actions/coverage-badge-js@v1
-        if: github.ref == 'refs/heads/main'
-        with:
-          output_path: coverage-badge.svg
-
-      - name: Verify coverage badge
-        if: github.ref == 'refs/heads/main'
-        run: |
-          ls -la coverage-badge.svg || echo "Badge not generated"
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./client/coverage/lcov.info
-          flags: frontend
-          name: frontend-coverage
-          fail_ci_if_error: false
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Coverage Summary
-        run: |
-          echo "## Coverage Summary" >> $GITHUB_STEP_SUMMARY
-          if [ -f "client/coverage/coverage-summary.json" ]; then
-            node -e "
-              const fs = require('fs');
-              const coverage = JSON.parse(fs.readFileSync('client/coverage/coverage-summary.json', 'utf8'));
-              const total = coverage.total;
-              console.log('| Metric | Percentage | Covered/Total |');
-              console.log('|--------|------------|---------------|');
-              console.log('| Statements | ' + total.statements.pct + '% | ' + total.statements.covered + '/' + total.statements.total + ' |');
-              console.log('| Branches | ' + total.branches.pct + '% | ' + total.branches.covered + '/' + total.branches.total + ' |');
-              console.log('| Functions | ' + total.functions.pct + '% | ' + total.functions.covered + '/' + total.functions.total + ' |');
-              console.log('| Lines | ' + total.lines.pct + '% | ' + total.lines.covered + '/' + total.lines.total + ' |');
-            " >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/lcov.info ]; then
+            echo "## 📊 Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            npx lcov-summary coverage/lcov.info >> $GITHUB_STEP_SUMMARY || echo "Coverage summary generation failed" >> $GITHUB_STEP_SUMMARY
           else
-            echo "Coverage summary not found" >> $GITHUB_STEP_SUMMARY
+            echo "## ⚠️ Coverage Report" >> $GITHUB_STEP_SUMMARY
+            echo "No coverage file found" >> $GITHUB_STEP_SUMMARY
           fi
+
+      - name: Comment Coverage on PR
+        if: github.event_name == 'pull_request'
+        uses: romeovs/lcov-reporter-action@v0.3.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          lcov-file: ./coverage/lcov.info
+          delete-old-comments: true
+
+      - name: Upload Coverage Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
