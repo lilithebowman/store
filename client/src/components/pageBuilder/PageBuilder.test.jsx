@@ -1,4 +1,24 @@
 /* eslint-disable react/prop-types */
+/**
+ * Comprehensive test suite for PageBuilder component
+ *
+ * This test file covers:
+ * 1. Basic rendering and component structure
+ * 2. Component palette functionality
+ * 3. Drag and drop operations
+ * 4. Component addition, editing, and deletion
+ * 5. Props editor interactions
+ * 6. Error handling and edge cases
+ * 7. State management and consistency
+ * 8. Layout and styling variations
+ * 9. Performance with rapid operations
+ * 10. Integration with external libraries (react-beautiful-dnd, MUI)
+ *
+ * Test coverage includes 37 test cases across 3 describe blocks:
+ * - PageBuilder Component (main functionality)
+ * - PageBuilder Drag and Drop (DnD specific tests)
+ * - PageBuilder State Management (state consistency tests)
+ */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { render, screen, fireEvent } from '@testing-library/react';
@@ -569,8 +589,14 @@ describe('PageBuilder Component', () => {
 			screen.getByTestId('rendered-component-button')
 		).toBeInTheDocument();
 	});
-
 	test('handles multiple rapid component additions', () => {
+		// Set up UUID mock to return different values for each call
+		const { v4: uuidv4 } = require('uuid');
+		uuidv4
+			.mockReturnValueOnce('mock-uuid-1')
+			.mockReturnValueOnce('mock-uuid-2')
+			.mockReturnValueOnce('mock-uuid-3');
+
 		render(
 			<TestWrapper>
 				<PageBuilder onChange={mockOnChange} />
