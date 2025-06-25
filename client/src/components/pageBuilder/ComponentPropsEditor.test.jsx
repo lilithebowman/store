@@ -27,7 +27,7 @@ jest.mock('./ComponentRegistry', () => ({
 	getComponentById: jest.fn(() => mockComponentConfig),
 }));
 
-describe.skip('ComponentPropsEditor', () => {
+describe('ComponentPropsEditor', () => {
 	const mockOnClose = jest.fn();
 	const mockOnSave = jest.fn();
 

@@ -12,7 +12,7 @@ jest.mock('./ComponentRegistry', () => ({
 	)),
 }));
 
-describe.skip('PageRenderer Component', () => {
+describe('PageRenderer Component', () => {
 	test('renders empty state when no components', () => {
 		render(<PageRenderer components={[]} />);
 

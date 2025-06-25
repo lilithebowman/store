@@ -2,7 +2,6 @@ import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PageBuilder from './PageBuilder';
-import { DragDropContext } from '@hello-pangea/dnd';
 
 // Mock the ComponentRegistry
 jest.mock('./ComponentRegistry', () => ({
@@ -63,7 +62,7 @@ jest.mock('@hello-pangea/dnd', () => ({
 		),
 }));
 
-describe.skip('PageBuilder Component', () => {
+describe('PageBuilder Component', () => {
 	const mockOnChange = jest.fn();
 
 	beforeEach(() => {
@@ -106,9 +105,9 @@ describe.skip('PageBuilder Component', () => {
 	test('adds component when clicked from palette', () => {
 		render(<PageBuilder onChange={mockOnChange} />);
 
-		// Find and click a component from the palette
-		const textComponent = screen.getByText('Text');
-		fireEvent.click(textComponent);
+		// Find and click the "Add" button for the text component
+		const addButton = screen.getByRole('button', { name: /add/i });
+		fireEvent.click(addButton);
 
 		// Should call onChange with the new component
 		expect(mockOnChange).toHaveBeenCalledWith(
@@ -153,8 +152,8 @@ describe.skip('PageBuilder Component', () => {
 			/>
 		);
 
-		// Find and click the edit button
-		const editButton = screen.getByLabelText(/edit component/i);
+		// Find and click the edit button (it has a tooltip "Edit properties")
+		const editButton = screen.getByLabelText(/edit properties/i);
 		fireEvent.click(editButton);
 
 		// Should open the props editor dialog
@@ -193,11 +192,11 @@ describe.skip('PageBuilder Component', () => {
 		);
 
 		// Open props editor
-		const editButton = screen.getByLabelText(/edit component/i);
+		const editButton = screen.getByLabelText(/edit properties/i);
 		fireEvent.click(editButton);
 
 		// Find and click save button in the props editor
-		const saveButton = screen.getByText(/save/i);
+		const saveButton = screen.getByText(/save changes/i);
 		fireEvent.click(saveButton);
 
 		// Should close the dialog
@@ -217,7 +216,7 @@ describe.skip('PageBuilder Component', () => {
 		);
 
 		// Open props editor
-		const editButton = screen.getByLabelText(/edit component/i);
+		const editButton = screen.getByLabelText(/edit properties/i);
 		fireEvent.click(editButton);
 
 		// Find and click cancel button
