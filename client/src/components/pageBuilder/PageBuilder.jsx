@@ -36,7 +36,7 @@ const PageBuilder = ({
 	const [editingComponent, setEditingComponent] = useState(null);
 	const [propsEditorOpen, setPropsEditorOpen] = useState(false);
 
-	const componentsByCategory = getComponentsByCategory();
+	const componentsByCategory = getComponentsByCategory() || {};
 
 	const handleDragEnd = useCallback(
 		result => {
