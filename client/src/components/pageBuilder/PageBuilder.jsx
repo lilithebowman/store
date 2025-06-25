@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
 	Box,
@@ -26,12 +27,16 @@ import { v4 as uuidv4 } from 'uuid';
 import { getComponentsByCategory, renderComponent } from './ComponentRegistry';
 import ComponentPropsEditor from './ComponentPropsEditor';
 
-const PageBuilder = ({ initialComponents = [], onChange }) => {
+const PageBuilder = ({
+	initialComponents = [],
+	onChange,
+	height = '100vh',
+}) => {
 	const [components, setComponents] = useState(initialComponents);
 	const [editingComponent, setEditingComponent] = useState(null);
 	const [propsEditorOpen, setPropsEditorOpen] = useState(false);
 
-	const componentsByCategory = getComponentsByCategory();
+	const componentsByCategory = getComponentsByCategory() || {};
 
 	const handleDragEnd = useCallback(
 		result => {
@@ -113,10 +118,24 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 
 	return (
 		<DragDropContext onDragEnd={handleDragEnd}>
-			<Grid container spacing={3} sx={{ height: '100vh' }}>
+			<Grid
+				container
+				spacing={3}
+				sx={{
+					height: height === 'auto' ? 'auto' : height,
+					minHeight: '500px',
+				}}
+			>
 				{/* Component Palette */}
 				<Grid item xs={12} md={3}>
-					<Paper sx={{ p: 2, height: '100%', overflowY: 'auto' }}>
+					<Paper
+						sx={{
+							p: 2,
+							height: height === 'auto' ? 'auto' : '100%',
+							minHeight: '500px',
+							overflowY: 'auto',
+						}}
+					>
 						<Typography variant="h6" gutterBottom>
 							Component Library
 						</Typography>
@@ -258,7 +277,14 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 
 				{/* Page Canvas */}
 				<Grid item xs={12} md={9}>
-					<Paper sx={{ p: 2, height: '100%', overflowY: 'auto' }}>
+					<Paper
+						sx={{
+							p: 2,
+							height: height === 'auto' ? 'auto' : '100%',
+							minHeight: '500px',
+							overflowY: 'auto',
+						}}
+					>
 						<Typography variant="h6" gutterBottom>
 							Page Canvas
 						</Typography>
@@ -303,8 +329,8 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 												your page
 											</Typography>
 											<Typography variant="body2">
-												Or click "Add" buttons from the
-												component library
+												Or click &quot;Add&quot; buttons
+												from the component library
 											</Typography>
 										</Box>
 									) : (
@@ -452,6 +478,12 @@ const PageBuilder = ({ initialComponents = [], onChange }) => {
 			)}
 		</DragDropContext>
 	);
+};
+
+PageBuilder.propTypes = {
+	initialComponents: PropTypes.array,
+	onChange: PropTypes.func,
+	height: PropTypes.string,
 };
 
 export default PageBuilder;

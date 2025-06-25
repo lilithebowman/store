@@ -39,10 +39,14 @@ const Input = ({
 			rows={rows}
 			InputProps={{
 				startAdornment: startAdornment ? (
-					<InputAdornment position="start">{startAdornment}</InputAdornment>
+					<InputAdornment position="start">
+						{startAdornment}
+					</InputAdornment>
 				) : null,
 				endAdornment: endAdornment ? (
-					<InputAdornment position="end">{endAdornment}</InputAdornment>
+					<InputAdornment position="end">
+						{endAdornment}
+					</InputAdornment>
 				) : null,
 			}}
 		/>

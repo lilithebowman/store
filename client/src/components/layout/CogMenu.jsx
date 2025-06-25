@@ -66,6 +66,7 @@ const CogMenu = () => {
 					aria-controls={open ? 'cog-menu' : undefined}
 					aria-haspopup="true"
 					aria-expanded={open ? 'true' : undefined}
+					aria-label="settings"
 				>
 					<SettingsIcon />
 				</IconButton>

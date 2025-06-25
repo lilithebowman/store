@@ -14,16 +14,19 @@ This is the server-side of the E-Commerce Platform, built with Node.js and Expre
 ## Installation
 
 1. Clone the repository:
+
    ```
    git clone https://github.com/yourusername/e-commerce-platform.git
    ```
 
 2. Navigate to the server directory:
+
    ```
    cd e-commerce-platform/server
    ```
 
 3. Install the dependencies:
+
    ```
    npm install
    ```
@@ -33,6 +36,7 @@ This is the server-side of the E-Commerce Platform, built with Node.js and Expre
 ## Usage
 
 To start the server, run:
+
 ```
 npm start
 ```
@@ -42,11 +46,13 @@ The server will run on `${window.location.hostname}:2048/api` by default.
 ## API Endpoints
 
 - **Authentication**
+
   - `POST /api/auth/register` - Register a new user
   - `POST /api/auth/login` - Login an existing user
   - `GET /api/auth/logout` - Logout the current user
 
 - **Products**
+
   - `GET /api/products` - Get all products
   - `GET /api/products/:id` - Get a product by ID
   - `POST /api/products` - Create a new product (admin only)

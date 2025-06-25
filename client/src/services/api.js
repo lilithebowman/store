@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || `${window.location.hostname}:2048/api`;
+const API_BASE_URL =
+	process.env.REACT_APP_API_BASE_URL ||
+	`${window.location.hostname}:2048/api`;
 
 const api = axios.create({
 	baseURL: API_BASE_URL,
@@ -20,7 +22,7 @@ export const fetchProducts = async () => {
 };
 
 // Example API call to create a new user
-export const createUser = async (userData) => {
+export const createUser = async userData => {
 	try {
 		const response = await api.post('/auth/register', userData);
 		return response.data;
@@ -30,7 +32,7 @@ export const createUser = async (userData) => {
 };
 
 // Example API call to login a user
-export const loginUser = async (credentials) => {
+export const loginUser = async credentials => {
 	try {
 		const response = await api.post('/auth/login', credentials);
 		return response.data;

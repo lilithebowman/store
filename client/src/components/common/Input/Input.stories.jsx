@@ -8,7 +8,10 @@ export default {
 	component: Input,
 	argTypes: {
 		variant: {
-			control: { type: 'select', options: ['standard', 'filled', 'outlined'] },
+			control: {
+				type: 'select',
+				options: ['standard', 'filled', 'outlined'],
+			},
 		},
 		size: {
 			control: { type: 'select', options: ['small', 'medium'] },
@@ -16,9 +19,15 @@ export default {
 	},
 };
 
-const Template = (args) => {
+const Template = args => {
 	const [value, setValue] = useState(args.value || '');
-	return <Input {...args} value={value} onChange={(e) => setValue(e.target.value)} />;
+	return (
+		<Input
+			{...args}
+			value={value}
+			onChange={e => setValue(e.target.value)}
+		/>
+	);
 };
 
 export const Default = Template.bind({});

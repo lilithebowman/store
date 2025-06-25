@@ -7,22 +7,25 @@ This is the client-side application for the E-Commerce Platform, built using Rea
 To get started with the client application, follow these steps:
 
 1. **Clone the repository:**
-   ```
-   git clone <repository-url>
-   cd e-commerce-platform/client
-   ```
+
+    ```
+    git clone <repository-url>
+    cd e-commerce-platform/client
+    ```
 
 2. **Install dependencies:**
-   ```
-   npm install
-   ```
+
+    ```
+    npm install
+    ```
 
 3. **Run the application:**
-   ```
-   npm start
-   ```
 
-   This will start the development server and open the application in your default web browser.
+    ```
+    npm start
+    ```
+
+    This will start the development server and open the application in your default web browser.
 
 ## Storybook
 
@@ -38,18 +41,18 @@ This will open Storybook in your browser, where you can view and interact with t
 
 - **public/**: Contains static files such as the favicon and the main HTML file.
 - **src/**: Contains the source code for the application.
-  - **assets/**: Contains images and other static assets.
-  - **components/**: Contains reusable UI components.
-    - **common/**: Commonly used components like Button and Input.
-    - **layout/**: Layout components such as Header, Footer, and Sidebar.
-    - **product/**: Components related to product display, including ProductCard and ProductList.
-  - **contexts/**: Contains context providers for managing global state (e.g., authentication and cart).
-  - **hooks/**: Custom hooks for encapsulating logic.
-  - **pages/**: Contains the main pages of the application.
-  - **services/**: Contains service files for API calls and authentication.
-  - **utils/**: Utility functions used throughout the application.
-  - **App.jsx**: The main application component.
-  - **index.jsx**: The entry point for the React application.
+    - **assets/**: Contains images and other static assets.
+    - **components/**: Contains reusable UI components.
+        - **common/**: Commonly used components like Button and Input.
+        - **layout/**: Layout components such as Header, Footer, and Sidebar.
+        - **product/**: Components related to product display, including ProductCard and ProductList.
+    - **contexts/**: Contains context providers for managing global state (e.g., authentication and cart).
+    - **hooks/**: Custom hooks for encapsulating logic.
+    - **pages/**: Contains the main pages of the application.
+    - **services/**: Contains service files for API calls and authentication.
+    - **utils/**: Utility functions used throughout the application.
+    - **App.jsx**: The main application component.
+    - **index.jsx**: The entry point for the React application.
 
 ## Authentication
 

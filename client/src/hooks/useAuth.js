@@ -10,7 +10,9 @@ const useAuth = () => {
 	useEffect(() => {
 		const checkAuthStatus = async () => {
 			try {
-				const baseURL = process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`;
+				const baseURL =
+					process.env.REACT_APP_API_BASE_URL ||
+					`http://${window.location.hostname}:2048/api`;
 				const response = await fetch(`${baseURL}/auth/status`);
 				const data = await response.json();
 				if (data.isAuthenticated) {
@@ -26,7 +28,7 @@ const useAuth = () => {
 		checkAuthStatus();
 	}, [setAuthData]);
 
-	const login = async (credentials) => {
+	const login = async credentials => {
 		setLoading(true);
 		try {
 			const user = await loginUser(credentials);
@@ -38,7 +40,7 @@ const useAuth = () => {
 		}
 	};
 
-	const register = async (userData) => {
+	const register = async userData => {
 		setLoading(true);
 		try {
 			const user = await registerUser(userData);

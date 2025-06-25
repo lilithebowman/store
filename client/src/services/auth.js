@@ -3,21 +3,23 @@ import { SecureAuth } from '../utils/secureAuth';
 
 // Create axios instance with base URL
 const api = axios.create({
-	baseURL: process.env.REACT_APP_API_BASE_URL || `http://${window.location.hostname}:2048/api`,
-	withCredentials: true
+	baseURL:
+		process.env.REACT_APP_API_BASE_URL ||
+		`http://${window.location.hostname}:2048/api`,
+	withCredentials: true,
 	// Don't set default Content-Type - let axios determine it automatically
 });
 
 // Add request interceptor to include token
 api.interceptors.request.use(
-	(config) => {
+	config => {
 		const token = SecureAuth.getToken(); // Use secure token retrieval
 		if (token) {
 			config.headers.Authorization = `Bearer ${token}`;
 		}
 		return config;
 	},
-	(error) => {
+	error => {
 		return Promise.reject(error);
 	}
 );
@@ -25,11 +27,15 @@ api.interceptors.request.use(
 export const login = async (email, password) => {
 	try {
 		console.log('Login request starting...');
-		const response = await api.post('/auth/login', { email, password }, {
-			headers: {
-				'Content-Type': 'application/json'
+		const response = await api.post(
+			'/auth/login',
+			{ email, password },
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			}
-		});
+		);
 
 		console.log('Response status:', response.status);
 		console.log('Response data:', response.data);
@@ -54,9 +60,15 @@ export const login = async (email, password) => {
 		}
 
 		if (error.response) {
-			throw error.response.data || { message: `Server error: ${error.response.status}` };
+			throw (
+				error.response.data || {
+					message: `Server error: ${error.response.status}`,
+				}
+			);
 		} else if (error.request) {
-			throw { message: 'No response from server. Check if server is running.' };
+			throw {
+				message: 'No response from server. Check if server is running.',
+			};
 		} else {
 			throw { message: error.message || 'Unknown error occurred' };
 		}
@@ -65,11 +77,15 @@ export const login = async (email, password) => {
 
 export const register = async (username, email, password) => {
 	try {
-		const response = await api.post('/auth/register', { username, email, password }, {
-			headers: {
-				'Content-Type': 'application/json'
+		const response = await api.post(
+			'/auth/register',
+			{ username, email, password },
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			}
-		});
+		);
 		if (response.data.token) {
 			SecureAuth.setToken(response.data.token);
 		}
@@ -81,7 +97,9 @@ export const register = async (username, email, password) => {
 		if (error.response) {
 			throw error.response.data;
 		} else if (error.request) {
-			throw { message: 'No response from server. Check if server is running.' };
+			throw {
+				message: 'No response from server. Check if server is running.',
+			};
 		} else {
 			throw { message: error.message || 'Unknown error occurred' };
 		}
@@ -90,11 +108,15 @@ export const register = async (username, email, password) => {
 
 export const logout = async () => {
 	try {
-		await api.post('/auth/logout', {}, {
-			headers: {
-				'Content-Type': 'application/json'
+		await api.post(
+			'/auth/logout',
+			{},
+			{
+				headers: {
+					'Content-Type': 'application/json',
+				},
 			}
-		});
+		);
 	} catch (error) {
 		console.error('Logout error:', error);
 	} finally {
@@ -112,7 +134,7 @@ export const getCurrentUser = () => {
 	return SecureAuth.getUserData();
 };
 
-export const updateProfileImage = async (imageFile) => {
+export const updateProfileImage = async imageFile => {
 	try {
 		const formData = new FormData();
 		formData.append('profileImage', imageFile);
@@ -131,14 +153,16 @@ export const updateProfileImage = async (imageFile) => {
 		if (error.response) {
 			throw error.response.data;
 		} else if (error.request) {
-			throw { message: 'No response from server. Check if server is running.' };
+			throw {
+				message: 'No response from server. Check if server is running.',
+			};
 		} else {
 			throw { message: error.message || 'Unknown error occurred' };
 		}
 	}
 };
 
-export const getUserPermissions = async (userId) => {
+export const getUserPermissions = async userId => {
 	try {
 		const response = await api.get(`/users/${userId}/permissions`);
 		return response.data.permissions;
@@ -146,7 +170,9 @@ export const getUserPermissions = async (userId) => {
 		if (error.response) {
 			throw error.response.data;
 		} else if (error.request) {
-			throw { message: 'No response from server. Check if server is running.' };
+			throw {
+				message: 'No response from server. Check if server is running.',
+			};
 		} else {
 			throw { message: error.message || 'Unknown error occurred' };
 		}
@@ -160,7 +186,7 @@ const authService = {
 	logout,
 	getCurrentUser,
 	updateProfileImage,
-	getUserPermissions
+	getUserPermissions,
 };
 
 export default authService;

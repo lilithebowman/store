@@ -52,7 +52,9 @@ export const AuthProvider = ({ children }) => {
 			localStorage.setItem('user', JSON.stringify(response.user));
 			setIsAuthenticated(true);
 			// Fetch user permissions after successful login
-			await fetchUserPermissions(response.user.id);
+			if (response.user && response.user.id) {
+				await fetchUserPermissions(response.user.id);
+			}
 			return response;
 		} catch (error) {
 			console.error('Login failed:', error);
@@ -62,13 +64,31 @@ export const AuthProvider = ({ children }) => {
 		}
 	};
 
-	const register = async userData => {
+	const register = async (usernameOrUserData, email, password) => {
 		try {
 			setError(null);
+
+			// Support both object and individual arguments
+			let username, userEmail, userPassword;
+			if (
+				typeof usernameOrUserData === 'object' &&
+				usernameOrUserData !== null
+			) {
+				// Called with object argument
+				username = usernameOrUserData.username;
+				userEmail = usernameOrUserData.email;
+				userPassword = usernameOrUserData.password;
+			} else {
+				// Called with individual arguments
+				username = usernameOrUserData;
+				userEmail = email;
+				userPassword = password;
+			}
+
 			const response = await authService.register(
-				userData.username,
-				userData.email,
-				userData.password
+				username,
+				userEmail,
+				userPassword
 			);
 			// Registration doesn't return user data, so redirect to login
 			setError(null);

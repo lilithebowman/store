@@ -14,19 +14,25 @@ describe('Button Component', () => {
 
 	it('renders with custom variant', () => {
 		render(<Button label="Outlined Button" variant="outlined" />);
-		const buttonElement = screen.getByRole('button', { name: /outlined button/i });
+		const buttonElement = screen.getByRole('button', {
+			name: /outlined button/i,
+		});
 		expect(buttonElement).toHaveClass('MuiButton-outlined');
 	});
 
 	it('renders with custom color', () => {
 		render(<Button label="Primary Button" color="primary" />);
-		const buttonElement = screen.getByRole('button', { name: /primary button/i });
+		const buttonElement = screen.getByRole('button', {
+			name: /primary button/i,
+		});
 		expect(buttonElement).toHaveClass('MuiButton-containedPrimary');
 	});
 
 	it('renders with icon', () => {
 		render(<Button label="Add to Cart" startIcon={<span>🛒</span>} />);
-		const buttonElement = screen.getByRole('button', { name: /add to cart/i });
+		const buttonElement = screen.getByRole('button', {
+			name: /add to cart/i,
+		});
 		expect(buttonElement).toContainHTML('<span>🛒</span>');
 	});
 });

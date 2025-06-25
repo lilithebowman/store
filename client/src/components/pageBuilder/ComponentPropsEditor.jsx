@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import {
 	Dialog,
 	DialogTitle,
@@ -14,7 +15,6 @@ import {
 	Switch,
 	Box,
 	Typography,
-	Divider,
 	Tab,
 	Tabs,
 	Alert,
@@ -280,9 +280,54 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 					<Box sx={{ pt: 1 }}>
 						{Object.entries(
 							componentConfig.editableProps || {}
-						).map(([propKey, propConfig]) =>
-							renderPropEditor(propKey, propConfig)
-						)}
+						).map(([propKey, propConfig]) => {
+							// For buttons, conditionally show properties based on actionType
+							if (component?.componentId === 'button') {
+								const currentActionType =
+									getPropValue('actionType') || 'custom';
+
+								// Always show basic properties
+								if (
+									[
+										'label',
+										'variant',
+										'color',
+										'size',
+										'fullWidth',
+										'actionType',
+									].includes(propKey)
+								) {
+									return renderPropEditor(
+										propKey,
+										propConfig
+									);
+								}
+
+								// Show link properties only when actionType is 'link'
+								if (
+									propKey === 'linkUrl' &&
+									currentActionType !== 'link'
+								) {
+									return null;
+								}
+
+								// Show product properties only when actionType is 'addToCart'
+								if (
+									[
+										'productId',
+										'productName',
+										'productPrice',
+										'productImage',
+										'productDescription',
+									].includes(propKey) &&
+									currentActionType !== 'addToCart'
+								) {
+									return null;
+								}
+							}
+
+							return renderPropEditor(propKey, propConfig);
+						})}
 
 						{Object.keys(componentConfig.editableProps || {})
 							.length === 0 && (
@@ -332,6 +377,16 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 			</DialogActions>
 		</Dialog>
 	);
+};
+
+ComponentPropsEditor.propTypes = {
+	open: PropTypes.bool.isRequired,
+	component: PropTypes.shape({
+		componentId: PropTypes.string.isRequired,
+		props: PropTypes.object,
+	}),
+	onClose: PropTypes.func.isRequired,
+	onSave: PropTypes.func.isRequired,
 };
 
 export default ComponentPropsEditor;

@@ -4,6 +4,7 @@ module.exports = {
 		browser: true,
 		node: true,
 		es2021: true,
+		jest: true,
 	},
 	extends: [
 		'eslint:recommended',
@@ -23,9 +24,9 @@ module.exports = {
 		},
 	},
 	rules: {
-		'indent': ['warn', 'tab'],
+		indent: ['warn', 'tab'],
 		'no-tabs': 'off',
-		'react/jsx-indent': ['none', 'tab'],
-		'react/jsx-indent-props': ['none', 'tab'],
+		'react/jsx-indent': [0, 'tab'],
+		'react/jsx-indent-props': [0, 'tab'],
 	},
 };

@@ -87,6 +87,7 @@ const Header = () => {
 						color="inherit"
 						component={RouterLink}
 						to="/cart"
+						aria-label="shopping cart"
 					>
 						<Badge badgeContent={getTotalItems()} color="secondary">
 							<ShoppingCartIcon />
@@ -103,6 +104,7 @@ const Header = () => {
 								aria-controls={open ? 'user-menu' : undefined}
 								aria-haspopup="true"
 								aria-expanded={open ? 'true' : undefined}
+								aria-label="account of current user"
 							>
 								<AccountCircleIcon />
 							</IconButton>

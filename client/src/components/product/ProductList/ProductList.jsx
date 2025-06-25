@@ -31,7 +31,8 @@ const ProductList = ({ products = [] }) => {
 ProductList.propTypes = {
 	products: PropTypes.arrayOf(
 		PropTypes.shape({
-			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+			id: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
+				.isRequired,
 			name: PropTypes.string.isRequired,
 			price: PropTypes.string.isRequired,
 			image: PropTypes.string,

@@ -1,6 +1,11 @@
 # e-commerce-platform
 
-Welcome to the e-commerce platform project! This project is designed to provide a comprehensive online shopping experience, featuring a client-side application built with React and a server-side application powered by Node.js and Express. 
+![CI/CD Pipeline](https://github.com/lilithebowman/store/actions/workflows/ci.yml/badge.svg)
+![Coverage](https://img.shields.io/codecov/c/github/lilithebowman/store)
+![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)
+![React Version](https://img.shields.io/badge/react-18.3.1-blue)
+
+Welcome to the e-commerce platform project! This project is designed to provide a comprehensive online shopping experience, featuring a client-side application built with React and a server-side application powered by Node.js and Express.
 
 ## Project Structure
 
@@ -42,43 +47,49 @@ The `server` directory contains the back-end application built with Node.js and 
 To get started with the project, follow these steps:
 
 1. Clone the repository:
+
    ```
    git clone <repository-url>
    ```
 
 2. Navigate to the project directory:
+
    ```
    cd e-commerce-platform
    ```
 
 3. Install dependencies for the client:
+
    ```
    cd client
    npm install
    ```
 
 4. Install dependencies for the server:
+
    ```
    cd ../server
    npm install
    ```
 
 5. Set up environment variables:
+
    - Copy `.env.example` to `.env` and fill in the required values.
    - Create a new JWT secret
      - `node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"`
      - or
      - `openssl rand -hex 64`
      - put the result in place of `your_jwt_secret`
-     
 
 6. Start the server:
+
    ```
    cd server
    npm start
    ```
 
 7. Start the client:
+
    ```
    cd ../client
    npm start
@@ -91,16 +102,68 @@ To get started with the project, follow these steps:
 To develop and test components in isolation, you can run Storybook:
 
 1. Navigate to the client directory:
+
    ```
    cd client
    ```
 
 2. Start Storybook:
+
    ```
    npm run storybook
    ```
 
 3. Access Storybook in your browser at `http://localhost:6006`.
+
+## Testing and Coverage
+
+This project maintains high test coverage standards to ensure code quality and reliability.
+
+### Coverage Standards
+
+- **Global Minimum**: 0% statements, functions, lines; 70% branches
+- **Components**: 0% statements, functions, lines; 80% branches
+- **Critical Areas**: 0%+ coverage for business logic and data handling
+
+To be improved while we add more tests.
+
+### Running Tests
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+
+# Run client tests only
+npm run client:test
+
+# Run client tests with coverage
+npm run client:test -- --coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Coverage Reports
+
+Coverage reports are automatically generated and can be found in:
+
+- `client/coverage/` - Client-side coverage reports
+- `coverage/` - Server-side coverage reports (when available)
+
+Open `client/coverage/lcov-report/index.html` in your browser to view detailed coverage reports.
+
+### Continuous Integration
+
+GitHub Actions automatically:
+
+- Runs all tests on every push and pull request
+- Checks coverage thresholds
+- Generates coverage reports
+- Posts coverage summaries on pull requests
+- Uploads coverage data to Codecov
 
 ## Contributing
 

@@ -30,11 +30,15 @@ const Checkout = () => {
 					<h2>Your Items:</h2>
 					<ul>
 						{cartItems.map((item, index) => (
-							<li key={index}>{item.name} - ${item.price}</li>
+							<li key={index}>
+								{item.name} - ${item.price}
+							</li>
 						))}
 					</ul>
 					<h3>Total Amount: ${getTotalPrice()}</h3>
-					<button onClick={handleCheckout}>Proceed to Checkout</button>
+					<button onClick={handleCheckout}>
+						Proceed to Checkout
+					</button>
 				</div>
 			)}
 		</div>
