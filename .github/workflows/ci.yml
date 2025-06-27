@@ -25,9 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          npm i
-          cd client && npm i
-          cd ../server && npm i
+          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
 
       - name: Run linter
         run: npm run lint
@@ -61,16 +61,14 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          npm ci
+          cd client && npm ci
+          cd ../server && npm ci
 
       - name: Build
         run: |
-          cd client
-          npm i
-          npm run build
-          cd ../server
-          npm i
-          npm run build
+          cd client && npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
