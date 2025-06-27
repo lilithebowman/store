@@ -1,0 +1,64 @@
+.rich-text-editor {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+		'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+		sans-serif;
+}
+
+.rich-text-editor .editor-content {
+	overflow-wrap: break-word;
+	word-wrap: break-word;
+	word-break: break-word;
+}
+
+/* Style for links in the editor */
+.rich-text-editor .editor-content a {
+	color: #1976d2;
+	text-decoration: underline;
+}
+
+.rich-text-editor .editor-content a:hover {
+	color: #1565c0;
+}
+
+/* Style for bold text */
+.rich-text-editor .editor-content strong,
+.rich-text-editor .editor-content b {
+	font-weight: bold;
+}
+
+/* Style for italic text */
+.rich-text-editor .editor-content em,
+.rich-text-editor .editor-content i {
+	font-style: italic;
+}
+
+/* Ensure proper spacing for lists */
+.rich-text-editor .editor-content ul,
+.rich-text-editor .editor-content ol {
+	margin: 1em 0;
+	padding-left: 2em;
+}
+
+.rich-text-editor .editor-content p {
+	margin: 0.5em 0;
+}
+
+.rich-text-editor .editor-content p:first-child {
+	margin-top: 0;
+}
+
+.rich-text-editor .editor-content p:last-child {
+	margin-bottom: 0;
+}
+
+/* Focus styles */
+.rich-text-editor .editor-content:focus {
+	outline: none;
+}
+
+/* Disabled state */
+.rich-text-editor .editor-content[contenteditable="false"] {
+	background-color: #f5f5f5;
+	color: #666;
+	cursor: not-allowed;
+}
