@@ -10,6 +10,7 @@ module.exports = {
 		'eslint:recommended',
 		'plugin:react/recommended',
 		'plugin:react-hooks/recommended',
+		'prettier', // This should be last to override other configs
 	],
 	parserOptions: {
 		ecmaVersion: 'latest',
@@ -24,9 +25,9 @@ module.exports = {
 		},
 	},
 	rules: {
-		indent: ['warn', 'tab'],
+		indent: ['error', 'tab'],
 		'no-tabs': 'off',
-		'react/jsx-indent': [0, 'tab'],
-		'react/jsx-indent-props': [0, 'tab'],
+		'react/jsx-indent': ['error', 'tab'],
+		'react/jsx-indent-props': ['error', 'tab'],
 	},
 };

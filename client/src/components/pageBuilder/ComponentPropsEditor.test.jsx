@@ -23,9 +23,13 @@ const mockComponentConfig = {
 	},
 };
 
+// Mock the getComponentById function
 jest.mock('./ComponentRegistry', () => ({
-	getComponentById: jest.fn(() => mockComponentConfig),
+	getComponentById: jest.fn(),
 }));
+
+// Import the mocked function after mocking
+import { getComponentById } from './ComponentRegistry';
 
 describe('ComponentPropsEditor', () => {
 	const mockOnClose = jest.fn();
@@ -41,6 +45,14 @@ describe('ComponentPropsEditor', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+
+		// Set up the mock implementation
+		getComponentById.mockImplementation(id => {
+			if (id === 'text') {
+				return mockComponentConfig;
+			}
+			return null;
+		});
 	});
 
 	test('does not render when open is false', () => {
@@ -68,8 +80,8 @@ describe('ComponentPropsEditor', () => {
 			/>
 		);
 
-		// Just check if the dialog exists, avoid complex interactions
-		expect(screen.getByRole('dialog')).toBeInTheDocument();
+		// Check if the dialog title is present instead
+		expect(screen.getByText('Edit Text Properties')).toBeInTheDocument();
 	});
 
 	test('handles null component gracefully', () => {
@@ -82,7 +94,7 @@ describe('ComponentPropsEditor', () => {
 			/>
 		);
 
-		// Should render without crashing
-		expect(screen.getByRole('dialog')).toBeInTheDocument();
+		// Should render nothing (null) when component is null
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 	});
 });

@@ -27,6 +27,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import Inventory2Icon from '@mui/icons-material/Inventory2';
 import { useAuth } from '../contexts/AuthContext';
+import RichTextEditor from '../components/common/RichTextEditor/RichTextEditor';
 
 const ProductManagement = () => {
 	const { user, userPermissions } = useAuth();
@@ -328,19 +329,19 @@ const ProductManagement = () => {
 										</Typography>
 									</TableCell>
 									<TableCell>
-										<Typography
-											variant="body2"
-											color="text.secondary"
+										<Box
 											sx={{
 												maxWidth: 200,
 												overflow: 'hidden',
 												textOverflow: 'ellipsis',
 												whiteSpace: 'nowrap',
 											}}
-										>
-											{product.description ||
-												'No description'}
-										</Typography>
+											dangerouslySetInnerHTML={{
+												__html:
+													product.description ||
+													'No description',
+											}}
+										/>
 									</TableCell>
 									<TableCell>
 										$
@@ -350,8 +351,8 @@ const ProductManagement = () => {
 												'number'
 													? product.price
 													: parseFloat(
-															product.price || 0
-														);
+														product.price || 0
+													);
 											return isNaN(price)
 												? '0.00'
 												: price.toFixed(2);
@@ -365,8 +366,8 @@ const ProductManagement = () => {
 									<TableCell>
 										{product.createdAt
 											? new Date(
-													product.createdAt
-												).toLocaleDateString()
+												product.createdAt
+											).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">
@@ -439,20 +440,22 @@ const ProductManagement = () => {
 							margin="normal"
 							required
 						/>
-						<TextField
-							fullWidth
-							label="Description"
-							value={editedProduct.description}
-							onChange={e =>
-								setEditedProduct({
-									...editedProduct,
-									description: e.target.value,
-								})
-							}
-							margin="normal"
-							multiline
-							rows={3}
-						/>
+						<Box sx={{ mb: 2 }}>
+							<Typography variant="subtitle2" gutterBottom>
+								Description
+							</Typography>
+							<RichTextEditor
+								value={editedProduct.description || ''}
+								onChange={content =>
+									setEditedProduct({
+										...editedProduct,
+										description: content,
+									})
+								}
+								placeholder="Enter product description..."
+								height={150}
+							/>
+						</Box>
 						<TextField
 							fullWidth
 							label="Price"

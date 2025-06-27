@@ -104,11 +104,48 @@ const Page = () => {
 		}
 	}, [slug]);
 
-	// Simple function to render content with basic formatting
+	// Function to render content - now handles HTML from RichTextEditor
 	const renderContent = content => {
 		if (!content) return null;
 
-		// Split content into paragraphs and apply basic formatting
+		// If content contains HTML tags, render as HTML
+		if (content.includes('<') && content.includes('>')) {
+			return (
+				<Box
+					dangerouslySetInnerHTML={{ __html: content }}
+					sx={{
+						'& p': { marginBottom: 2 },
+						'& h1, & h2, & h3, & h4, & h5, & h6': {
+							marginTop: 3,
+							marginBottom: 2,
+							fontWeight: 600,
+						},
+						'& ul, & ol': {
+							marginBottom: 2,
+							paddingLeft: 3,
+						},
+						'& li': {
+							marginBottom: 0.5,
+						},
+						'& a': {
+							color: 'primary.main',
+							textDecoration: 'underline',
+							'&:hover': {
+								color: 'primary.dark',
+							},
+						},
+						'& strong, & b': {
+							fontWeight: 'bold',
+						},
+						'& em, & i': {
+							fontStyle: 'italic',
+						},
+					}}
+				/>
+			);
+		}
+
+		// Fallback for plain text content (legacy support)
 		const paragraphs = content.split('\n\n').filter(p => p.trim());
 
 		return paragraphs.map((paragraph, index) => {
@@ -285,16 +322,16 @@ const Page = () => {
 							)}
 							{page.updatedAt &&
 								page.updatedAt !== page.createdAt && (
-									<Typography
-										variant="caption"
-										color="text.secondary"
-									>
-										Last updated:{' '}
-										{new Date(
-											page.updatedAt
-										).toLocaleDateString()}
-									</Typography>
-								)}
+								<Typography
+									variant="caption"
+									color="text.secondary"
+								>
+									Last updated:{' '}
+									{new Date(
+										page.updatedAt
+									).toLocaleDateString()}
+								</Typography>
+							)}
 						</Box>
 					</>
 				)}
