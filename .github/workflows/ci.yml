@@ -66,8 +66,10 @@ jobs:
       - name: Build
         run: |
           cd client
+          npm i
           npm run build
           cd ../server
+          npm i
           npm run build
 
       - name: Upload build artifacts
