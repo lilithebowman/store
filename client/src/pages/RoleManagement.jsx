@@ -32,6 +32,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import { useAuth } from '../contexts/AuthContext';
+import RichTextEditor from '../components/common/RichTextEditor/RichTextEditor';
 
 const RoleManagement = () => {
 	const { user } = useAuth();
@@ -320,13 +321,19 @@ const RoleManagement = () => {
 										</Typography>
 									</TableCell>
 									<TableCell>
-										<Typography
-											variant="body2"
-											color="text.secondary"
-										>
-											{role.description ||
-												'No description'}
-										</Typography>
+										<Box
+											sx={{
+												maxWidth: 250,
+												overflow: 'hidden',
+												textOverflow: 'ellipsis',
+												whiteSpace: 'nowrap',
+											}}
+											dangerouslySetInnerHTML={{
+												__html:
+													role.description ||
+													'No description',
+											}}
+										/>
 									</TableCell>
 									<TableCell>
 										<Chip
@@ -406,20 +413,22 @@ const RoleManagement = () => {
 							margin="normal"
 							required
 						/>
-						<TextField
-							fullWidth
-							label="Description"
-							value={editedRole.description}
-							onChange={e =>
-								setEditedRole({
-									...editedRole,
-									description: e.target.value,
-								})
-							}
-							margin="normal"
-							multiline
-							rows={3}
-						/>
+						<Box sx={{ mb: 2 }}>
+							<Typography variant="subtitle2" gutterBottom>
+								Description
+							</Typography>
+							<RichTextEditor
+								value={editedRole.description || ''}
+								onChange={content =>
+									setEditedRole({
+										...editedRole,
+										description: content,
+									})
+								}
+								placeholder="Enter role description..."
+								height={120}
+							/>
+						</Box>
 
 						<Card sx={{ mt: 3 }}>
 							<CardContent>

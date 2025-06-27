@@ -29,6 +29,7 @@ import {
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 import PageBuilder from '../components/pageBuilder/PageBuilder';
+import RichTextEditor from '../components/common/RichTextEditor/RichTextEditor';
 
 const PageEditor = () => {
 	const { pageId } = useParams(); // 'new' for new pages or actual ID for editing
@@ -377,20 +378,29 @@ const PageEditor = () => {
 
 						{editorTab === 1 && (
 							<Box sx={{ p: 3 }}>
-								<TextField
-									fullWidth
-									label="Content"
-									value={editedPage.content}
-									onChange={e =>
+								<Typography variant="h6" gutterBottom>
+									Page Content
+								</Typography>
+								<RichTextEditor
+									value={editedPage.content || ''}
+									onChange={content =>
 										setEditedPage({
 											...editedPage,
-											content: e.target.value,
+											content,
 										})
 									}
-									multiline
-									rows={20}
-									helperText="Page content (Markdown supported)"
+									placeholder="Enter your page content..."
+									height={400}
 								/>
+								<Typography
+									variant="caption"
+									color="text.secondary"
+									sx={{ mt: 1, display: 'block' }}
+								>
+									Use the rich text editor to format your
+									content with headings, bold text, italic
+									text, and links.
+								</Typography>
 							</Box>
 						)}
 					</Box>

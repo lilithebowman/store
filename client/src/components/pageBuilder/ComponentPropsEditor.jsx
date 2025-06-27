@@ -20,6 +20,7 @@ import {
 	Alert,
 } from '@mui/material';
 import { getComponentById } from './ComponentRegistry';
+import RichTextEditor from '../common/RichTextEditor/RichTextEditor';
 
 const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 	const [props, setProps] = useState({});
@@ -124,19 +125,17 @@ const ComponentPropsEditor = ({ open, component, onClose, onSave }) => {
 						<Typography variant="subtitle2" gutterBottom>
 							{propConfig.label}
 						</Typography>
-						<TextField
-							fullWidth
-							value={value}
-							onChange={e =>
-								handlePropChange(propKey, e.target.value)
+						<RichTextEditor
+							value={value || ''}
+							onChange={content =>
+								handlePropChange(propKey, content)
 							}
-							multiline
-							rows={6}
-							placeholder="Enter HTML content..."
-							variant="outlined"
+							placeholder="Enter your content..."
+							height={200}
 						/>
 						<Typography variant="caption" color="text.secondary">
-							You can use HTML tags for formatting
+							Use the toolbar to format text with bold, italic,
+							and links
 						</Typography>
 					</Box>
 				);
