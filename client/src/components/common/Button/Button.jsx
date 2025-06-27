@@ -68,72 +68,72 @@ const Button = ({
 		event.preventDefault();
 
 		switch (actionType) {
-			case 'link':
-				if (linkUrl) {
-					if (
-						linkUrl.startsWith('http') ||
+		case 'link':
+			if (linkUrl) {
+				if (
+					linkUrl.startsWith('http') ||
 						linkUrl.startsWith('https')
-					) {
-						// External link
-						window.open(linkUrl, '_blank', 'noopener,noreferrer');
-					} else {
-						// Internal link
-						navigate(linkUrl);
-					}
-				} else if (showNotifications) {
-					setNotification({
-						open: true,
-						message: 'No URL specified for link action',
-						severity: 'warning',
-					});
+				) {
+					// External link
+					window.open(linkUrl, '_blank', 'noopener,noreferrer');
+				} else {
+					// Internal link
+					navigate(linkUrl);
 				}
-				break;
+			} else if (showNotifications) {
+				setNotification({
+					open: true,
+					message: 'No URL specified for link action',
+					severity: 'warning',
+				});
+			}
+			break;
 
-			case 'addToCart':
-				if (cartContext && cartContext.addToCart && productId) {
-					const product = {
-						id: productId,
-						name: productName,
-						price: parseFloat(productPrice) || 0,
-						image: productImage,
-						description: productDescription,
-					};
-					cartContext.addToCart(product);
+		case 'addToCart':
+			if (cartContext && cartContext.addToCart && productId) {
+				const product = {
+					id: productId,
+					name: productName,
+					price: parseFloat(productPrice) || 0,
+					image: productImage,
+					description: productDescription,
+				};
+				cartContext.addToCart(product);
 
-					if (showNotifications) {
-						setNotification({
-							open: true,
-							message: `Added "${productName}" to cart!`,
-							severity: 'success',
-						});
-					}
-				} else if (showNotifications) {
-					setNotification({
-						open: true,
-						message:
-							'Unable to add to cart. Please check product settings.',
-						severity: 'error',
-					});
-				}
-				break;
-
-			case 'none':
 				if (showNotifications) {
 					setNotification({
 						open: true,
-						message: `Button "${label}" clicked!`,
-						severity: 'info',
+						message: `Added "${productName}" to cart!`,
+						severity: 'success',
 					});
 				}
-				break;
+			} else if (showNotifications) {
+				setNotification({
+					open: true,
+					message:
+							'Unable to add to cart. Please check product settings.',
+					severity: 'error',
+				});
+			}
+			break;
 
-			case 'custom':
-			default:
-				// Use the provided onClick handler for custom behavior
-				if (onClick) {
-					onClick(event);
-				}
-				break;
+		case 'none':
+			if (showNotifications) {
+				setNotification({
+					open: true,
+					message: `Button "${label}" clicked!`,
+					severity: 'info',
+				});
+			}
+			break;
+
+		case 'custom':
+		default:
+			// Use the provided onClick handler for custom behavior
+			if (onClick) {
+				onClick(event);
+			}
+			break;
 		}
 	};
 
