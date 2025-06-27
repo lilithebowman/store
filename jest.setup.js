@@ -1,5 +1,5 @@
 // Example setup file
-require("@testing-library/jest-dom/extend-expect");
+require("@testing-library/jest-dom");
 
 // Mock HTMLCanvasElement.getContext for tests
 HTMLCanvasElement.prototype.getContext = jest.fn(() => ({
