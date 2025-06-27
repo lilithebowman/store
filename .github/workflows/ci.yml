@@ -25,14 +25,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pwd
-          npm ci
-          cd client
-          pwd
-          npm i
-          pwd
-          cd ../server
-          npm i
+          npm ci --workspaces --include-workspace-root
+          (cd client && npm ci || true)
+          (cd server && npm ci || true)
 
       - name: Run linter
         run: npm run lint
