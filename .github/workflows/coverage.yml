@@ -21,14 +21,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pwd
           npm ci
-          cd client
-          pwd
-          npm i
-          pwd
-          cd ../server
-          npm i
+          cd client && npm ci
+          cd ../server && npm ci
 
       - name: Run tests with coverage
         run: npm run test:coverage:ci
