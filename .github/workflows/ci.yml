@@ -24,11 +24,13 @@ jobs:
           cache: "npm"
 
       - name: Install dependencies
-        run:
-          npm i
+        run: |
+          pwd
           npm ci
           cd client
+          pwd
           npm i
+          pwd
           cd ../server
           npm i
 
