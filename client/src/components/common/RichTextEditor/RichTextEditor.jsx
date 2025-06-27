@@ -223,6 +223,7 @@ const RichTextEditor = ({
 				{/* Toolbar */}
 				<Toolbar
 					variant="dense"
+					role="toolbar"
 					sx={{
 						minHeight: 48,
 						borderBottom: 1,

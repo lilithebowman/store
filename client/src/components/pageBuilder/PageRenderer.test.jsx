@@ -3,16 +3,55 @@ import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import PageRenderer from './PageRenderer';
 
-// Mock the ComponentRegistry
+// Mock the ComponentRegistry with a simpler approach
 jest.mock('./ComponentRegistry', () => ({
-	renderComponent: jest.fn(component => (
-		<div data-testid={`rendered-component-${component.componentId}`}>
-			{component.componentId}
-		</div>
-	)),
+	renderComponent: jest.fn(),
 }));
 
+// Import the mocked function after mocking
+import { renderComponent } from './ComponentRegistry';
+const mockRenderComponent = renderComponent;
+
 describe('PageRenderer Component', () => {
+	beforeEach(() => {
+		mockRenderComponent.mockImplementation(componentData => {
+			const { componentId, props, id } = componentData;
+
+			if (componentId === 'text-block') {
+				const textContent =
+					props.content?.replace(/<[^>]*>/g, '') || 'Default text';
+				return React.createElement(
+					'div',
+					{
+						key: id,
+						'data-testid': `rendered-component-${componentId}`,
+					},
+					textContent
+				);
+			}
+
+			if (componentId === 'button') {
+				return React.createElement(
+					'button',
+					{
+						key: id,
+						'data-testid': `rendered-component-${componentId}`,
+					},
+					props.label || 'Button'
+				);
+			}
+
+			return React.createElement(
+				'div',
+				{
+					key: id,
+					'data-testid': `rendered-component-${componentId}`,
+				},
+				`${componentId} component`
+			);
+		});
+	});
+
 	test('renders empty state when no components', () => {
 		render(<PageRenderer components={[]} />);
 
@@ -23,18 +62,18 @@ describe('PageRenderer Component', () => {
 
 	test('renders components when provided', () => {
 		const components = [
-			{ id: '1', componentId: 'text', props: { text: 'Hello' } },
-			{ id: '2', componentId: 'heading', props: { text: 'World' } },
+			{
+				id: '1',
+				componentId: 'text-block',
+				props: { content: '<p>Hello</p>' },
+			},
+			{ id: '2', componentId: 'button', props: { label: 'World' } },
 		];
 
 		render(<PageRenderer components={components} />);
 
-		expect(
-			screen.getByTestId('rendered-component-text')
-		).toBeInTheDocument();
-		expect(
-			screen.getByTestId('rendered-component-heading')
-		).toBeInTheDocument();
+		expect(screen.getByText('Hello')).toBeInTheDocument();
+		expect(screen.getByText('World')).toBeInTheDocument();
 	});
 
 	test('renders with container by default', () => {
@@ -78,7 +117,11 @@ describe('PageRenderer Component', () => {
 
 	test('renders with custom container props', () => {
 		const components = [
-			{ id: '1', componentId: 'text', props: { text: 'Hello' } },
+			{
+				id: '1',
+				componentId: 'text-block',
+				props: { content: '<p>Hello</p>' },
+			},
 		];
 
 		render(
@@ -88,8 +131,6 @@ describe('PageRenderer Component', () => {
 			/>
 		);
 
-		expect(
-			screen.getByTestId('rendered-component-text')
-		).toBeInTheDocument();
+		expect(screen.getByText('Hello')).toBeInTheDocument();
 	});
 });
