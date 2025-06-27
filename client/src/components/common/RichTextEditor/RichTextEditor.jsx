@@ -138,16 +138,16 @@ const RichTextEditor = ({
 		e => {
 			if (e.ctrlKey || e.metaKey) {
 				switch (e.key.toLowerCase()) {
-					case 'b':
-						e.preventDefault();
-						executeCommand('bold');
-						break;
-					case 'i':
-						e.preventDefault();
-						executeCommand('italic');
-						break;
-					default:
-						break;
+				case 'b':
+					e.preventDefault();
+					executeCommand('bold');
+					break;
+				case 'i':
+					e.preventDefault();
+					executeCommand('italic');
+					break;
+				default:
+					break;
 				}
 			}
 		},

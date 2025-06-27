@@ -345,8 +345,8 @@ const RoleManagement = () => {
 									<TableCell>
 										{role.createdAt
 											? new Date(
-													role.createdAt
-												).toLocaleDateString()
+												role.createdAt
+											).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">

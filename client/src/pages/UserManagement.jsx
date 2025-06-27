@@ -311,12 +311,12 @@ const UserManagement = () => {
 												>
 													{!userItem.profileImage &&
 													userItem.username ? (
-														userItem.username
-															.charAt(0)
-															.toUpperCase()
-													) : (
-														<PersonIcon />
-													)}
+															userItem.username
+																.charAt(0)
+																.toUpperCase()
+														) : (
+															<PersonIcon />
+														)}
 												</Avatar>
 												{userItem.isAdmin && (
 													<Box
@@ -371,39 +371,39 @@ const UserManagement = () => {
 										>
 											{userItem.roles &&
 											roles.length > 0 ? (
-												userItem.roles
-													.split(',')
-													.map(roleId => {
-														const roleIdNum =
+													userItem.roles
+														.split(',')
+														.map(roleId => {
+															const roleIdNum =
 															parseInt(
 																roleId.trim()
 															);
-														const role = roles.find(
-															r =>
-																r.id ===
+															const role = roles.find(
+																r =>
+																	r.id ===
 																roleIdNum
-														);
-														return role ? (
-															<Chip
-																key={roleIdNum}
-																label={
-																	role.name
-																}
-																size="small"
-																variant="outlined"
-																color="secondary"
-															/>
-														) : null;
-													})
-													.filter(Boolean)
-											) : (
-												<Typography
-													variant="body2"
-													color="text.secondary"
-												>
-													No roles
-												</Typography>
-											)}
+															);
+															return role ? (
+																<Chip
+																	key={roleIdNum}
+																	label={
+																		role.name
+																	}
+																	size="small"
+																	variant="outlined"
+																	color="secondary"
+																/>
+															) : null;
+														})
+														.filter(Boolean)
+												) : (
+													<Typography
+														variant="body2"
+														color="text.secondary"
+													>
+														No roles
+													</Typography>
+												)}
 										</Box>
 									</TableCell>
 									<TableCell>
@@ -428,8 +428,8 @@ const UserManagement = () => {
 									<TableCell>
 										{userItem.createdAt
 											? new Date(
-													userItem.createdAt
-												).toLocaleDateString()
+												userItem.createdAt
+											).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">
@@ -538,9 +538,9 @@ const UserManagement = () => {
 								value={
 									editedUser.roles
 										? editedUser.roles
-												.split(',')
-												.map(id => parseInt(id.trim()))
-												.filter(id => !isNaN(id))
+											.split(',')
+											.map(id => parseInt(id.trim()))
+											.filter(id => !isNaN(id))
 										: []
 								}
 								onChange={e => {

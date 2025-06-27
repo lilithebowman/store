@@ -351,8 +351,8 @@ const ProductManagement = () => {
 												'number'
 													? product.price
 													: parseFloat(
-															product.price || 0
-														);
+														product.price || 0
+													);
 											return isNaN(price)
 												? '0.00'
 												: price.toFixed(2);
@@ -366,8 +366,8 @@ const ProductManagement = () => {
 									<TableCell>
 										{product.createdAt
 											? new Date(
-													product.createdAt
-												).toLocaleDateString()
+												product.createdAt
+											).toLocaleDateString()
 											: 'Unknown'}
 									</TableCell>
 									<TableCell align="center">
