@@ -26,6 +26,13 @@
 		"sequelize": "^6.37.7",
 		"sequelize-cli": "^6.6.3"
 	},
+	"optionalDependencies": {
+		"mongoose": "^8.0.0",
+		"pg": "^8.11.0",
+		"pg-hstore": "^2.3.4",
+		"sqlite3": "^5.1.6",
+		"tedious": "^16.0.0"
+	},
 	"devDependencies": {
 		"@types/dotenv": "^8.2.3",
 		"jest": "^26.6.3",
