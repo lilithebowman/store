@@ -23,9 +23,9 @@ class MongoDatabase extends DatabaseInterface {
 			const connectionString = this.config.url ||
 				`mongodb://${this.config.host}:${this.config.port}/${this.config.database}`;
 
+			console.log(`🔗 Attempting to connect to MongoDB: ${connectionString.replace(/\/\/.*@/, '//***:***@')}`);
+
 			await this.mongoose.connect(connectionString, {
-				useNewUrlParser: true,
-				useUnifiedTopology: true,
 				...this.config.options,
 			});
 
