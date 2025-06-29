@@ -203,7 +203,7 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 				} : {
 					type: DataTypes.INTEGER,
 					references: {
-						model: 'Users',
+						model: 'User',
 						key: 'id',
 					},
 				},
@@ -265,7 +265,7 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 					type: DataTypes.INTEGER,
 					allowNull: true,
 					references: {
-						model: 'Users',
+						model: 'User',
 						key: 'id',
 					},
 				},

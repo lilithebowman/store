@@ -1,129 +1,150 @@
 const fs = require("fs");
 const path = require("path");
-const Sequelize = require("sequelize");
 const basename = path.basename(__filename);
-const { sequelize } = require("../config/database"); // Use your existing connection
 const db = {};
 
-// Skip loading the current file
-fs.readdirSync(__dirname)
-	.filter((file) => {
-		return (
-			file.indexOf(".") !== 0 &&
-			file !== basename &&
-			file.slice(-3) === ".js" &&
-			file.indexOf(".test.js") === -1
-		);
-	})
-	.forEach((file) => {
-		// Simply require the model (don't try to call it as a function)
-		let model;
-		try {
-			model = require(path.join(__dirname, file));
-		} catch (err) {
-			console.error(`Failed to load model file ${file}:`, err);
-			throw err; // re-throw so CI fails fast
-		}
-		if (!model?.name) {
-			throw new Error(
-				`Model in ${file} does not export a Sequelize model instance`,
+// Check database type to determine which models to load
+const dbType = process.env.DB_TYPE || 'mysql';
+
+if (['mongodb', 'mongo'].includes(dbType.toLowerCase())) {
+	// For MongoDB, we'll use the abstraction layer models
+	console.log("📄 Loading MongoDB models through abstraction layer");
+
+	// Export minimal interface for MongoDB
+	db.syncDatabase = async () => {
+		console.log("✅ MongoDB - no sync needed, using dynamic schema");
+		return;
+	};
+
+} else {
+	// For SQL databases, load Sequelize models
+	const Sequelize = require("sequelize");
+	const { sequelize } = require("../config/database");
+
+	if (!sequelize) {
+		throw new Error("Sequelize instance not available for SQL database");
+	}
+
+	// Skip loading the current file
+	fs.readdirSync(__dirname)
+		.filter((file) => {
+			return (
+				file.indexOf(".") !== 0 &&
+				file !== basename &&
+				file.slice(-3) === ".js" &&
+				file.indexOf(".test.js") === -1
 			);
-		}
-		db[model.name] = model;
+		})
+		.forEach((file) => {
+			// Simply require the model (don't try to call it as a function)
+			let model;
+			try {
+				model = require(path.join(__dirname, file));
+			} catch (err) {
+				console.error(`Failed to load model file ${file}:`, err);
+				throw err; // re-throw so CI fails fast
+			}
+			if (!model?.name) {
+				throw new Error(
+					`Model in ${file} does not export a Sequelize model instance`,
+				);
+			}
+			db[model.name] = model;
+		});
+
+	// Define model associations
+	const { User, Product, Order, Page } = db;
+
+	if (!User || !Product || !Order) {
+		throw new Error(
+			"Required models (User, Product, Order) were not registered. " +
+			"Check model filenames and exports.",
+		);
+	}
+
+	// Set up associations
+	User.hasMany(Order, { foreignKey: "userId" });
+	Order.belongsTo(User, { foreignKey: "userId" });
+
+	// Page-User associations (if Page model exists)
+	if (Page) {
+		User.hasMany(Page, { foreignKey: "authorId", as: "pages" });
+		Page.belongsTo(User, { foreignKey: "authorId", as: "author" });
+	}
+
+	// Create the join table for Order-Product
+	const OrderProduct = sequelize.define("OrderProduct", {
+		quantity: {
+			type: Sequelize.DataTypes.INTEGER,
+			allowNull: false,
+			defaultValue: 1,
+			validate: {
+				min: 1,
+			},
+		},
+		price: {
+			type: Sequelize.DataTypes.DECIMAL(10, 2),
+			allowNull: false,
+		},
 	});
 
-// Define model associations
-const { User, Product, Order, Page } = db;
+	Order.belongsToMany(Product, { through: OrderProduct });
+	Product.belongsToMany(Order, { through: OrderProduct });
 
-if (!User || !Product || !Order) {
-	throw new Error(
-		"Required models (User, Product, Order) were not registered. " +
-			"Check model filenames and exports.",
-	);
-}
+	// Add syncDatabase function to synchronize models with the database
+	const syncDatabase = async () => {
+		try {
+			// For SQL databases, use Sequelize sync
+			await sequelize.sync();
+			console.log("Database synchronized successfully");
 
-// Set up associations
-User.hasMany(Order, { foreignKey: "userId" });
-Order.belongsTo(User, { foreignKey: "userId" });
+			// Check if there are any products, and create sample ones if needed
+			const productCount = await Product.count();
+			if (productCount === 0) {
+				// Create some sample products
+				const sampleProducts = [
+					{
+						name: "Laptop",
+						description: "High-performance laptop with latest specs",
+						price: 999.99,
+						imageUrl: "https://via.placeholder.com/300x200?text=Laptop",
+						category: "Electronics",
+						stock: 15,
+					},
+					{
+						name: "Smartphone",
+						description: "Latest smartphone with advanced camera",
+						price: 699.99,
+						imageUrl:
+							"https://via.placeholder.com/300x200?text=Smartphone",
+						category: "Electronics",
+						stock: 25,
+					},
+					{
+						name: "Coffee Maker",
+						description: "Premium coffee maker for perfect brew",
+						price: 129.99,
+						imageUrl:
+							"https://via.placeholder.com/300x200?text=CoffeeMaker",
+						category: "Home",
+						stock: 10,
+					},
+				];
 
-// Page-User associations (if Page model exists)
-if (Page) {
-	User.hasMany(Page, { foreignKey: "authorId", as: "pages" });
-	Page.belongsTo(User, { foreignKey: "authorId", as: "author" });
-}
-
-// Create the join table for Order-Product
-const OrderProduct = sequelize.define("OrderProduct", {
-	quantity: {
-		type: Sequelize.DataTypes.INTEGER,
-		allowNull: false,
-		defaultValue: 1,
-		validate: {
-			min: 1,
-		},
-	},
-	price: {
-		type: Sequelize.DataTypes.DECIMAL(10, 2),
-		allowNull: false,
-	},
-});
-
-Order.belongsToMany(Product, { through: OrderProduct });
-Product.belongsToMany(Order, { through: OrderProduct });
-
-// Add syncDatabase function to synchronize models with the database
-const syncDatabase = async () => {
-	try {
-		// Database sync - no force or alter needed in production
-		await sequelize.sync();
-		console.log("Database synchronized successfully");
-
-		// Check if there are any products, and create sample ones if needed
-		const productCount = await Product.count();
-		if (productCount === 0) {
-			// Create some sample products
-			const sampleProducts = [
-				{
-					name: "Laptop",
-					description: "High-performance laptop with latest specs",
-					price: 999.99,
-					imageUrl: "https://via.placeholder.com/300x200?text=Laptop",
-					category: "Electronics",
-					stock: 15,
-				},
-				{
-					name: "Smartphone",
-					description: "Latest smartphone with advanced camera",
-					price: 699.99,
-					imageUrl:
-						"https://via.placeholder.com/300x200?text=Smartphone",
-					category: "Electronics",
-					stock: 25,
-				},
-				{
-					name: "Coffee Maker",
-					description: "Premium coffee maker for perfect brew",
-					price: 129.99,
-					imageUrl:
-						"https://via.placeholder.com/300x200?text=CoffeeMaker",
-					category: "Home",
-					stock: 10,
-				},
-			];
-
-			await Product.bulkCreate(sampleProducts);
-			console.log("Sample products created successfully");
+				await Product.bulkCreate(sampleProducts);
+				console.log("Sample products created successfully");
+			}
+		} catch (error) {
+			console.error("Error synchronizing database:", error);
+			throw error; // Re-throw to be caught by the caller
 		}
-	} catch (error) {
-		console.error("Error synchronizing database:", error);
-		throw error; // Re-throw to be caught by the caller
-	}
-};
+	};
 
-// Add all models to the db object
-db.sequelize = sequelize;
-db.Sequelize = Sequelize;
-db.OrderProduct = OrderProduct;
-db.syncDatabase = syncDatabase; // Export the syncDatabase function
+	// Add all models to the db object
+	db.sequelize = sequelize;
+	db.Sequelize = Sequelize;
+	db.OrderProduct = OrderProduct;
+	db.syncDatabase = syncDatabase;
+}
 
 module.exports = db;

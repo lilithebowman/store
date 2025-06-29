@@ -5,7 +5,7 @@
 
 const { databaseManager } = require('../database/DatabaseManager');
 const { createModelDefinitions, createAssociations } = require('../database/ModelDefinitions');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 // Initialize database with abstraction layer
 const initializeDatabase = async () => {
@@ -61,6 +61,12 @@ const createDatabaseIfNotExists = async () => {
 let sequelize = null;
 
 const getSequelize = () => {
+	// Only create Sequelize for SQL databases
+	const dbType = process.env.DB_TYPE || 'mysql';
+	if (['mongodb', 'mongo'].includes(dbType.toLowerCase())) {
+		throw new Error('Sequelize should not be used with MongoDB. Use the abstraction layer instead.');
+	}
+
 	if (!sequelize) {
 		// Create Sequelize instance for backwards compatibility
 		if (process.env.DATABASE_URL) {
@@ -93,17 +99,28 @@ const connectDB = async () => {
 		await initializeDatabase();
 		console.log("Database connection established successfully");
 	} catch (error) {
-		console.error("Database connection failed:", error.message);
+		console.error("❌ Database connection failed:", error.message);
 
-		// Fallback to legacy method if abstraction layer fails
-		console.log("Falling back to legacy database connection...");
-		await createDatabaseIfNotExists();
-		const legacySequelize = getSequelize();
-		await legacySequelize.authenticate();
-		console.log("Legacy MySQL connection established successfully");
+		// For SQL databases, try legacy approach as fallback
+		const dbType = process.env.DB_TYPE || 'mysql';
+		if (['mysql', 'mariadb', 'postgres', 'postgresql', 'sqlite'].includes(dbType.toLowerCase())) {
+			console.log("Falling back to legacy database connection...");
+			try {
+				await createDatabaseIfNotExists();
+				const legacySequelize = getSequelize();
+				await legacySequelize.authenticate();
+				console.log("Legacy SQL connection established successfully");
 
-		// Store legacy sequelize in database manager for compatibility
-		databaseManager.legacySequelize = legacySequelize;
+				// Store legacy sequelize in database manager for compatibility
+				databaseManager.legacySequelize = legacySequelize;
+			} catch (legacyError) {
+				console.error("❌ Legacy connection also failed:", legacyError.message);
+				throw legacyError;
+			}
+		} else {
+			// For non-SQL databases, don't try legacy approach
+			throw error;
+		}
 	}
 };
 
@@ -113,8 +130,14 @@ module.exports = {
 	databaseManager,
 	initializeDatabase,
 
-	// Legacy compatibility
-	sequelize: getSequelize(),
+	// Legacy compatibility - only create Sequelize instance for SQL databases
+	get sequelize() {
+		const dbType = process.env.DB_TYPE || 'mysql';
+		if (['mongodb', 'mongo'].includes(dbType.toLowerCase())) {
+			return null; // No Sequelize for MongoDB
+		}
+		return getSequelize();
+	},
 	connectDB,
 	createDatabaseIfNotExists,
 

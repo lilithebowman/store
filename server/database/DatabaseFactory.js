@@ -118,7 +118,16 @@ class DatabaseFactory {
 			config.url = env.DATABASE_URL;
 		} else {
 			config.host = env.DB_HOST || env.MYSQL_HOST || 'localhost';
-			config.port = parseInt(env.DB_PORT || env.MYSQL_PORT || '3306');
+
+			// Set default port based on database type
+			let defaultPort = '3306'; // MySQL default
+			if (['mongodb', 'mongo'].includes(config.type.toLowerCase())) {
+				defaultPort = '27017'; // MongoDB default
+			} else if (['postgres', 'postgresql'].includes(config.type.toLowerCase())) {
+				defaultPort = '5432'; // PostgreSQL default
+			}
+
+			config.port = parseInt(env.DB_PORT || env.MYSQL_PORT || defaultPort);
 			config.database = env.DB_NAME || env.MYSQL_DATABASE || 'ecommerce_db';
 			config.username = env.DB_USER || env.MYSQL_USERNAME || 'root';
 			config.password = env.DB_PASSWORD || env.MYSQL_PASSWORD || '';

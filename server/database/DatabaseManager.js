@@ -4,7 +4,7 @@
  */
 
 const DatabaseFactory = require('./DatabaseFactory');
-require('dotenv').config();
+require('dotenv').config({ path: '../.env' });
 
 class DatabaseManager {
 	constructor() {

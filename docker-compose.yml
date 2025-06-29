@@ -24,7 +24,8 @@ services:
       - ./server:/app
     environment:
       - NODE_ENV=development
-      - MONGO_URI=mongodb://mongo:27017/ecommerce
+      - DB_TYPE=mongodb
+      - DATABASE_URL=mongodb://mongo:27017/ecommerce_db
       - JWT_SECRET=your_jwt_secret
     depends_on:
       - mongo
