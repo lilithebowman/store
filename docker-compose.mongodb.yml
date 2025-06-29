@@ -8,9 +8,9 @@ services:
     ports:
       - "27017:27017"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: mongouser
-      MONGO_INITDB_ROOT_PASSWORD: mongopassword
-      MONGO_INITDB_DATABASE: ecommerce_db
+      MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${DB_NAME}
     volumes:
       - mongodb_data:/data/db
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
@@ -23,12 +23,14 @@ services:
     container_name: ecommerce_mongo_express
     restart: unless-stopped
     ports:
-      - "8081:8081"
+      - "${MONGO_EXPRESS_PORT}:8081"
     environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: mongouser
-      ME_CONFIG_MONGODB_ADMINPASSWORD: mongopassword
-      ME_CONFIG_MONGODB_URL: mongodb://mongouser:mongopassword@mongodb:27017/
-      ME_CONFIG_BASICAUTH: "false"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USER}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
+      ME_CONFIG_MONGODB_URL: mongodb://${DB_USER}:${DB_PASSWORD}@mongodb:27017/
+      ME_CONFIG_BASICAUTH: ${MONGO_EXPRESS_BASICAUTH}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USERNAME}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
     depends_on:
       - mongodb
     networks:
