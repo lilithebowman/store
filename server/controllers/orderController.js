@@ -1,4 +1,4 @@
-const Order = require("../models/Order");
+const { Order } = require("../models/ModelAdapter");
 const { OrderProduct } = require("../models"); // Import the OrderProduct model
 
 // Create a new order

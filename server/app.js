@@ -4,7 +4,7 @@ const session = require("express-session");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const path = require("path");
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/products");
 const orderRoutes = require("./routes/orders");
@@ -15,7 +15,7 @@ const pageRoutes = require("./routes/pages");
 const app = express();
 
 // Load environment variables first
-require("dotenv").config();
+require("dotenv").config({ path: '../.env' });
 
 // Ensure JWT_SECRET is available
 if (!process.env.JWT_SECRET) {

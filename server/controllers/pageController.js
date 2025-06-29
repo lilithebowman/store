@@ -1,5 +1,4 @@
-const Page = require("../models/Page");
-const User = require("../models/User");
+const { Page, User } = require("../models/ModelAdapter");
 
 // Get all pages
 exports.getAllPages = async (req, res) => {
