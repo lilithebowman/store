@@ -1,4 +1,4 @@
-const Product = require("../models/Product");
+const { Product } = require("../models/ModelAdapter");
 
 // Get all products
 exports.getAllProducts = async (req, res) => {

@@ -102,6 +102,17 @@ class DatabaseInterface {
 	}
 
 	/**
+	 * Create multiple records
+	 * @param {string} model - Model name
+	 * @param {Array} data - Array of data objects to create
+	 * @param {Object} options - Bulk create options
+	 * @returns {Promise<Array>}
+	 */
+	async bulkCreate(model, data, options = {}) {
+		throw new Error('bulkCreate() method must be implemented');
+	}
+
+	/**
 	 * Execute raw query
 	 * @param {string} query - Raw query string
 	 * @param {Object} options - Query options

@@ -236,6 +236,14 @@ class SequelizeDatabase extends DatabaseInterface {
 	}
 
 	/**
+	 * Create multiple records
+	 */
+	async bulkCreate(modelName, data, options = {}) {
+		const model = this.getModel(modelName);
+		return await model.bulkCreate(data, options);
+	}
+
+	/**
 	 * Execute raw query
 	 */
 	async query(query, options = {}) {

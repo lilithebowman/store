@@ -10,11 +10,45 @@ if (['mongodb', 'mongo'].includes(dbType.toLowerCase())) {
 	// For MongoDB, we'll use the abstraction layer models
 	console.log("📄 Loading MongoDB models through abstraction layer");
 
+	// Import the database manager and initialize models
+	const { databaseManager } = require('../config/database');
+	const { createModelDefinitions, createAssociations } = require('../database/ModelDefinitions');
+
 	// Export minimal interface for MongoDB
 	db.syncDatabase = async () => {
-		console.log("✅ MongoDB - no sync needed, using dynamic schema");
-		return;
+		try {
+			console.log("🔄 Setting up MongoDB models...");
+
+			// Get database type
+			const databaseType = databaseManager.getDatabaseType() || 'mongodb';
+
+			// Define models if not already defined
+			if (Object.keys(databaseManager.database?.models || {}).length === 0) {
+				const modelDefinitions = createModelDefinitions(databaseType);
+				databaseManager.defineModels(modelDefinitions);
+
+				// Define associations
+				const associations = createAssociations(databaseType);
+				databaseManager.defineAssociations(associations);
+			}
+
+			// Sync database (for MongoDB this creates indexes)
+			await databaseManager.sync();
+
+			console.log("✅ MongoDB models setup completed");
+		} catch (error) {
+			console.error("❌ MongoDB model setup failed:", error.message);
+			throw error;
+		}
 	};
+
+	// Export model adapters for compatibility
+	const { User, Product, Order, Page, Role } = require('./ModelAdapter');
+	db.User = User;
+	db.Product = Product;
+	db.Order = Order;
+	db.Page = Page;
+	db.Role = Role;
 
 } else {
 	// For SQL databases, load Sequelize models
@@ -145,6 +179,13 @@ if (['mongodb', 'mongo'].includes(dbType.toLowerCase())) {
 	db.Sequelize = Sequelize;
 	db.OrderProduct = OrderProduct;
 	db.syncDatabase = syncDatabase;
+}
+
+// Ensure syncDatabase is always available
+if (!db.syncDatabase) {
+	db.syncDatabase = async () => {
+		console.log("⚠️  No syncDatabase function defined for current database type");
+	};
 }
 
 module.exports = db;

@@ -1,4 +1,4 @@
-const User = require("../models/User");
+const { User } = require("../models/ModelAdapter");
 const bcrypt = require("bcrypt");
 const path = require("path");
 const fs = require("fs");

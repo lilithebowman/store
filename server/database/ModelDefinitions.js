@@ -26,7 +26,7 @@ const getDataTypes = (databaseType) => {
 				STRING: String,
 				TEXT: String,
 				BOOLEAN: Boolean,
-				DECIMAL: mongoose.Schema.Types.Decimal128,
+				DECIMAL: Number, // Use Number instead of Decimal128 for simplicity
 				DATE: Date,
 				JSON: mongoose.Schema.Types.Mixed,
 				ENUM: String,
@@ -42,59 +42,150 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 	const DataTypes = getDataTypes(databaseType);
 	const bcrypt = require('bcrypt');
 
+	// Helper function to create field definition based on database type
+	const createField = (baseDefinition, sequelizeExtras = {}, mongoExtras = {}) => {
+		if (databaseType === 'sequelize') {
+			return { ...baseDefinition, ...sequelizeExtras };
+		} else if (databaseType === 'mongodb') {
+			const field = { ...baseDefinition, ...mongoExtras };
+			// Remove Sequelize-specific properties
+			delete field.allowNull;
+			delete field.primaryKey;
+			delete field.autoIncrement;
+			delete field.defaultValue;
+
+			// Convert Sequelize terms to MongoDB terms
+			if (field.required === undefined && baseDefinition.required !== undefined) {
+				field.required = baseDefinition.required;
+			}
+
+			return field;
+		}
+
+		return baseDefinition;
+	};
+
 	const definitions = {
 		User: {
 			schema: {
-				id: databaseType === 'mongodb' ? undefined : {
-					type: DataTypes.INTEGER,
-					primaryKey: true,
-					autoIncrement: true,
-				},
-				username: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					unique: true,
-					validate: databaseType === 'sequelize' ? {
-						notEmpty: true,
-					} : undefined,
-				},
-				email: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					unique: true,
-					validate: databaseType === 'sequelize' ? {
-						isEmail: true,
-					} : undefined,
-				},
-				password: {
-					type: DataTypes.STRING,
-					allowNull: false,
-				},
-				oauthProvider: databaseType === 'sequelize' ? {
-					type: DataTypes.ENUM('google', 'facebook', 'github'),
-					allowNull: true,
-				} : {
-					type: DataTypes.STRING,
-					enum: ['google', 'facebook', 'github'],
-				},
-				oauthId: {
-					type: DataTypes.STRING,
-					allowNull: true,
-				},
-				isAdmin: {
-					type: DataTypes.BOOLEAN,
-					allowNull: false,
-					default: false,
-				},
-				profileImage: {
-					type: DataTypes.STRING,
-					allowNull: true,
-				},
-				roles: {
-					type: DataTypes.STRING,
-					allowNull: true,
-					default: null,
-				},
+				...(databaseType === 'sequelize' && {
+					id: {
+						type: DataTypes.INTEGER,
+						primaryKey: true,
+						autoIncrement: true,
+					}
+				}),
+				username: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+						unique: true,
+					},
+					{
+						allowNull: false,
+						validate: {
+							notEmpty: true,
+						},
+					},
+					{
+						required: true,
+						unique: true,
+					}
+				),
+				email: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+						unique: true,
+					},
+					{
+						allowNull: false,
+						validate: {
+							isEmail: true,
+						},
+					},
+					{
+						required: true,
+						unique: true,
+						match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email'],
+					}
+				),
+				password: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+					},
+					{
+						allowNull: false,
+					},
+					{
+						required: true,
+					}
+				),
+				oauthProvider: createField(
+					{
+						type: DataTypes.STRING,
+					},
+					{
+						type: DataTypes.ENUM('google', 'facebook', 'github'),
+						allowNull: true,
+					},
+					{
+						type: DataTypes.STRING,
+						enum: ['google', 'facebook', 'github'],
+						required: false,
+					}
+				),
+				oauthId: createField(
+					{
+						type: DataTypes.STRING,
+					},
+					{
+						allowNull: true,
+					},
+					{
+						required: false,
+					}
+				),
+				isAdmin: createField(
+					{
+						type: DataTypes.BOOLEAN,
+						default: false,
+					},
+					{
+						allowNull: false,
+						defaultValue: false,
+					},
+					{
+						type: DataTypes.BOOLEAN,
+						default: false,
+					}
+				),
+				profileImage: createField(
+					{
+						type: DataTypes.STRING,
+					},
+					{
+						allowNull: true,
+					},
+					{
+						required: false,
+					}
+				),
+				roles: createField(
+					{
+						type: DataTypes.STRING,
+						default: null,
+					},
+					{
+						allowNull: true,
+						defaultValue: null,
+					},
+					{
+						type: DataTypes.STRING,
+						default: null,
+					}
+				),
 			},
 			options: {
 				timestamps: true,
@@ -110,61 +201,111 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 						}
 					},
 				} : {
-					pre: [
-						{
-							method: 'save',
-							fn: async function (next) {
-								if (this.isModified('password')) {
-									this.password = await bcrypt.hash(this.password, 10);
-								}
-								next();
+					// MongoDB hooks - these will be handled by MongoDatabase.js
+					mongooseHooks: {
+						preSave: async function (next) {
+							if (this.isModified('password')) {
+								this.password = await bcrypt.hash(this.password, 10);
 							}
+							next();
 						}
-					]
+					}
 				},
 			},
 		},
 
 		Product: {
 			schema: {
-				id: databaseType === 'mongodb' ? undefined : {
-					type: DataTypes.INTEGER,
-					primaryKey: true,
-					autoIncrement: true,
-				},
-				name: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					validate: databaseType === 'sequelize' ? {
-						notEmpty: true,
-					} : undefined,
-				},
-				description: {
-					type: DataTypes.TEXT,
-					allowNull: false,
-				},
-				price: {
-					type: DataTypes.DECIMAL,
-					allowNull: false,
-					validate: databaseType === 'sequelize' ? {
+				...(databaseType === 'sequelize' && {
+					id: {
+						type: DataTypes.INTEGER,
+						primaryKey: true,
+						autoIncrement: true,
+					}
+				}),
+				name: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+					},
+					{
+						allowNull: false,
+						validate: {
+							notEmpty: true,
+						},
+					},
+					{
+						required: true,
+					}
+				),
+				description: createField(
+					{
+						type: DataTypes.TEXT,
+						required: true,
+					},
+					{
+						allowNull: false,
+					},
+					{
+						required: true,
+					}
+				),
+				price: createField(
+					{
+						type: DataTypes.DECIMAL,
+						required: true,
+					},
+					{
+						allowNull: false,
+						validate: {
+							min: 0,
+						},
+					},
+					{
+						required: true,
 						min: 0,
-					} : undefined,
-				},
-				imageUrl: {
-					type: DataTypes.STRING,
-					allowNull: false,
-				},
-				category: {
-					type: DataTypes.STRING,
-					allowNull: false,
-				},
-				stock: {
-					type: DataTypes.INTEGER,
-					allowNull: false,
-					validate: databaseType === 'sequelize' ? {
+					}
+				),
+				imageUrl: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+					},
+					{
+						allowNull: false,
+					},
+					{
+						required: true,
+					}
+				),
+				category: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+					},
+					{
+						allowNull: false,
+					},
+					{
+						required: true,
+					}
+				),
+				stock: createField(
+					{
+						type: DataTypes.INTEGER,
+						required: true,
+					},
+					{
+						allowNull: false,
+						validate: {
+							min: 0,
+						},
+					},
+					{
+						required: true,
 						min: 0,
-					} : undefined,
-				},
+					}
+				),
 			},
 			options: {
 				timestamps: true,
@@ -173,40 +314,72 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 
 		Order: {
 			schema: {
-				id: databaseType === 'mongodb' ? undefined : {
-					type: DataTypes.INTEGER,
-					primaryKey: true,
-					autoIncrement: true,
-				},
-				totalAmount: {
-					type: DataTypes.DECIMAL,
-					allowNull: false,
-					validate: databaseType === 'sequelize' ? {
-						min: 0,
-					} : undefined,
-				},
-				orderDate: {
-					type: DataTypes.DATE,
-					default: databaseType === 'sequelize' ? DataTypes.NOW : Date.now,
-				},
-				status: databaseType === 'sequelize' ? {
-					type: DataTypes.ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled'),
-					defaultValue: 'Pending',
-				} : {
-					type: DataTypes.STRING,
-					enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
-					default: 'Pending',
-				},
-				userId: databaseType === 'mongodb' ? {
-					type: DataTypes.ObjectId,
-					ref: 'User',
-				} : {
-					type: DataTypes.INTEGER,
-					references: {
-						model: 'User',
-						key: 'id',
+				...(databaseType === 'sequelize' && {
+					id: {
+						type: DataTypes.INTEGER,
+						primaryKey: true,
+						autoIncrement: true,
+					}
+				}),
+				totalAmount: createField(
+					{
+						type: DataTypes.DECIMAL,
+						required: true,
 					},
-				},
+					{
+						allowNull: false,
+						validate: {
+							min: 0,
+						},
+					},
+					{
+						required: true,
+						min: 0,
+					}
+				),
+				orderDate: createField(
+					{
+						type: DataTypes.DATE,
+						default: Date.now,
+					},
+					{
+						type: DataTypes.DATE,
+						defaultValue: DataTypes.NOW,
+					},
+					{
+						type: DataTypes.DATE,
+						default: Date.now,
+					}
+				),
+				status: createField(
+					{
+						type: DataTypes.STRING,
+						default: 'Pending',
+					},
+					{
+						type: DataTypes.ENUM('Pending', 'Shipped', 'Delivered', 'Cancelled'),
+						defaultValue: 'Pending',
+					},
+					{
+						type: DataTypes.STRING,
+						enum: ['Pending', 'Shipped', 'Delivered', 'Cancelled'],
+						default: 'Pending',
+					}
+				),
+				userId: createField(
+					{},
+					{
+						type: DataTypes.INTEGER,
+						references: {
+							model: 'User',
+							key: 'id',
+						},
+					},
+					{
+						type: DataTypes.ObjectId,
+						ref: 'User',
+					}
+				),
 			},
 			options: {
 				timestamps: true,
@@ -215,64 +388,128 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 
 		Page: {
 			schema: {
-				id: databaseType === 'mongodb' ? undefined : {
-					type: DataTypes.INTEGER,
-					primaryKey: true,
-					autoIncrement: true,
-				},
-				title: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					validate: databaseType === 'sequelize' ? {
-						notEmpty: true,
-						len: [1, 200],
-					} : undefined,
-				},
-				slug: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					unique: true,
-				},
-				content: {
-					type: DataTypes.TEXT,
-					allowNull: true,
-				},
-				components: {
-					type: DataTypes.JSON,
-					allowNull: true,
-					default: null,
-				},
-				metaDescription: {
-					type: DataTypes.STRING,
-					allowNull: true,
-					validate: databaseType === 'sequelize' ? {
-						len: [0, 300],
-					} : undefined,
-				},
-				status: databaseType === 'sequelize' ? {
-					type: DataTypes.ENUM('draft', 'published', 'archived'),
-					defaultValue: 'draft',
-					allowNull: false,
-				} : {
-					type: DataTypes.STRING,
-					enum: ['draft', 'published', 'archived'],
-					default: 'draft',
-				},
-				authorId: databaseType === 'mongodb' ? {
-					type: DataTypes.ObjectId,
-					ref: 'User',
-				} : {
-					type: DataTypes.INTEGER,
-					allowNull: true,
-					references: {
-						model: 'User',
-						key: 'id',
+				...(databaseType === 'sequelize' && {
+					id: {
+						type: DataTypes.INTEGER,
+						primaryKey: true,
+						autoIncrement: true,
+					}
+				}),
+				title: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
 					},
-				},
-				publishedAt: {
-					type: DataTypes.DATE,
-					allowNull: true,
-				},
+					{
+						allowNull: false,
+						validate: {
+							notEmpty: true,
+							len: [1, 200],
+						},
+					},
+					{
+						required: true,
+						maxlength: 200,
+					}
+				),
+				slug: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+						unique: true,
+					},
+					{
+						allowNull: false,
+						unique: true,
+					},
+					{
+						required: true,
+						unique: true,
+					}
+				),
+				content: createField(
+					{
+						type: DataTypes.TEXT,
+					},
+					{
+						allowNull: true,
+					},
+					{
+						required: false,
+					}
+				),
+				components: createField(
+					{
+						type: DataTypes.JSON,
+						default: null,
+					},
+					{
+						allowNull: true,
+						defaultValue: null,
+					},
+					{
+						type: DataTypes.JSON,
+						default: null,
+					}
+				),
+				metaDescription: createField(
+					{
+						type: DataTypes.STRING,
+					},
+					{
+						allowNull: true,
+						validate: {
+							len: [0, 300],
+						},
+					},
+					{
+						required: false,
+						maxlength: 300,
+					}
+				),
+				status: createField(
+					{
+						type: DataTypes.STRING,
+						default: 'draft',
+					},
+					{
+						type: DataTypes.ENUM('draft', 'published', 'archived'),
+						defaultValue: 'draft',
+						allowNull: false,
+					},
+					{
+						type: DataTypes.STRING,
+						enum: ['draft', 'published', 'archived'],
+						default: 'draft',
+					}
+				),
+				authorId: createField(
+					{},
+					{
+						type: DataTypes.INTEGER,
+						allowNull: true,
+						references: {
+							model: 'User',
+							key: 'id',
+						},
+					},
+					{
+						type: DataTypes.ObjectId,
+						ref: 'User',
+						required: false,
+					}
+				),
+				publishedAt: createField(
+					{
+						type: DataTypes.DATE,
+					},
+					{
+						allowNull: true,
+					},
+					{
+						required: false,
+					}
+				),
 			},
 			options: {
 				timestamps: true,
@@ -300,43 +537,59 @@ const createModelDefinitions = (databaseType = 'sequelize') => {
 
 		Role: {
 			schema: {
-				id: databaseType === 'mongodb' ? undefined : {
-					type: DataTypes.INTEGER,
-					primaryKey: true,
-					autoIncrement: true,
-				},
-				name: {
-					type: DataTypes.STRING,
-					allowNull: false,
-					unique: true,
-				},
-				description: {
-					type: DataTypes.TEXT,
-					allowNull: true,
-				},
-				permissions: {
-					type: DataTypes.JSON,
-					allowNull: false,
-					default: {},
-				},
+				...(databaseType === 'sequelize' && {
+					id: {
+						type: DataTypes.INTEGER,
+						primaryKey: true,
+						autoIncrement: true,
+					}
+				}),
+				name: createField(
+					{
+						type: DataTypes.STRING,
+						required: true,
+						unique: true,
+					},
+					{
+						allowNull: false,
+						unique: true,
+					},
+					{
+						required: true,
+						unique: true,
+					}
+				),
+				description: createField(
+					{
+						type: DataTypes.TEXT,
+					},
+					{
+						allowNull: true,
+					},
+					{
+						required: false,
+					}
+				),
+				permissions: createField(
+					{
+						type: DataTypes.JSON,
+						default: {},
+					},
+					{
+						allowNull: false,
+						defaultValue: {},
+					},
+					{
+						type: DataTypes.JSON,
+						default: {},
+					}
+				),
 			},
 			options: {
 				timestamps: true,
 			},
 		},
 	};
-
-	// Filter out undefined fields for MongoDB
-	if (databaseType === 'mongodb') {
-		Object.keys(definitions).forEach(modelName => {
-			const schema = definitions[modelName].schema;
-			Object.keys(schema).forEach(fieldName => {
-				if (schema[fieldName] === undefined) {
-					delete schema[fieldName];
-				}
-			});
-		});
-	}
 
 	return definitions;
 };

@@ -67,6 +67,24 @@ class MongoDatabase extends DatabaseInterface {
 			...options,
 		});
 
+		// Handle MongoDB-specific hooks
+		if (options.hooks && options.hooks.mongooseHooks) {
+			const hooks = options.hooks.mongooseHooks;
+
+			// Add pre-save hook for password hashing
+			if (hooks.preSave) {
+				schema.pre('save', hooks.preSave);
+			}
+		}
+
+		// For User model, add comparePassword method
+		if (name === 'User') {
+			const bcrypt = require('bcrypt');
+			schema.methods.comparePassword = async function (password) {
+				return await bcrypt.compare(password, this.password);
+			};
+		}
+
 		this.schemas[name] = schema;
 		this.models[name] = this.mongoose.model(name, schema);
 		return this.models[name];
@@ -236,6 +254,14 @@ class MongoDatabase extends DatabaseInterface {
 	async count(modelName, options = {}) {
 		const model = this.getModel(modelName);
 		return await model.countDocuments(options.where || {});
+	}
+
+	/**
+	 * Create multiple records
+	 */
+	async bulkCreate(modelName, data, options = {}) {
+		const model = this.getModel(modelName);
+		return await model.insertMany(data, options);
 	}
 
 	/**

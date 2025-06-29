@@ -1,4 +1,4 @@
-const Role = require("../models/Role");
+const { Role } = require("../models/ModelAdapter");
 
 // Get all roles
 exports.getAllRoles = async (req, res) => {
